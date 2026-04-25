@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Product Gallery Animations */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRotate {
+    from {
+        opacity: 0;
+        transform: rotate(-5deg) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0) scale(1);
+    }
+}
+
+/* Product Gallery Styles */
+.product-gallery {
+    @apply space-y-6;
+}
+
+.product-gallery img {
+    @apply transition-all duration-500;
+}
+
+.product-gallery [x-show] {
+    animation: fadeInScale 0.4s ease-out;
+}
+
+.product-gallery button:hover img {
+    @apply brightness-110;
+}
+
+.product-gallery button[aria-current="true"] {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Thumbnail Hover Effect */
+.product-gallery .group img {
+    @apply transition-transform duration-300;
+}
+
+.product-gallery .group:hover img {
+    @apply scale-110;
+}
+
+/* Image Counter Badge */
+.product-gallery > div:first-child > div:last-child {
+    @apply backdrop-blur-sm;
+    animation: fadeInRotate 0.5s ease-out 0.2s both;
+}
+
+/* Thumbnail Grid Responsive */
+@media (max-width: 640px) {
+    .product-gallery {
+        @apply space-y-4;
+    }
+
+    .product-gallery > div:nth-child(2) {
+        @apply gap-2;
+    }
+
+    .product-gallery button {
+        @apply h-20 w-20;
+    }
+}
+
+/* Keyboard Navigation Hint */
+.product-gallery > p {
+    @apply text-center text-xs text-[#8b7f7a] mt-3;
+    animation: slideInUp 0.4s ease-out 0.5s both;
+}
+
+/* Touch-friendly on mobile */
+@media (max-width: 768px) {
+    .product-gallery button {
+        @apply p-1.5;
+    }
+}
+
+/* Product Form Selection Styles */
+.add-to-cart-form label {
+    @apply relative;
+}
+
+.add-to-cart-form input[type="radio"]:checked + * {
+    @apply border-[#1b1b18] bg-[#1b1b18] text-white;
+}
+
+.add-to-cart-form input[type="radio"]:focus + * {
+    @apply ring-2 ring-[#1b1b18] ring-offset-2;
+}
+
+/* Form validation feedback */
+.add-to-cart-form button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+}
