@@ -36,6 +36,11 @@ class AuthController extends Controller
                 return redirect()->intended(route('admin.dashboard'));
             }
 
+            // If user has items in cart after merging, redirect to checkout
+            if ($user->carts()->count() > 0) {
+                return redirect()->route('checkout.index');
+            }
+
             return redirect()->intended(route('home'));
         }
 

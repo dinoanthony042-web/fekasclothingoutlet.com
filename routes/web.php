@@ -23,7 +23,7 @@ Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{product:slug}', [ProductController::class, 'show'])->name('product.show');
 
 // API
-Route::get('/api/products/{product}', [ProductController::class, 'apiShow']);
+Route::get('/api/products/{product:id}', [ProductController::class, 'apiShow']);
 
 /*
 |--------------------------------------------------------------------------

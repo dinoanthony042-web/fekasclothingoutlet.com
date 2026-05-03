@@ -13,7 +13,7 @@ class CheckoutController extends Controller
 {
     public function index(): View
     {
-        $cartItems = Auth::user()->carts()->with('product')->get();
+        $cartItems = Auth::user()->carts()->with('product.category')->get();
 
         return view('checkout.index', compact('cartItems'));
     }

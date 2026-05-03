@@ -3,6 +3,12 @@
 @section('title', 'Cart')
 
 @section('content')
+<script>
+// Debug at load time
+console.log('=== CART PAGE LOAD DEBUG ===');
+console.log('localStorage.getItem("guest_cart"):', localStorage.getItem('guest_cart'));
+console.log('All localStorage keys:', Object.keys(localStorage));
+</script>
 <div class="space-y-8">
     <div class="rounded-[2rem] border border-[#e6d9f5] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
         <div class="flex flex-wrap items-start justify-between gap-4">
@@ -15,11 +21,8 @@
     </div>
 
     <div id="cart-container">
-        @if($cartItems->isEmpty() && !auth()->check())
-            <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-10 text-center text-sm text-[#6b4b8a]">
-                Your cart is empty. Explore our latest collection and add your favorites.
-            </div>
-        @elseif($cartItems->isEmpty())
+        @if(auth()->check())
+            @if($cartItems->isEmpty())
             <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-10 text-center text-sm text-[#6b4b8a]">
                 Your cart is empty. Explore our latest collection and add your favorites.
             </div>
@@ -54,7 +57,7 @@
                                             </button>
                                             <span class="quantity-display w-8 text-center text-sm font-medium">{{ $item->quantity }}</span>
                                             <button type="button" class="increment-btn w-8 h-8 rounded-full border border-[#e6d9f5] bg-[#faf5ff] flex items-center justify-center text-[#5b1e7e] hover:border-[#5b1e7e] transition" data-cart-id="{{ $item->id }}">
-                                                <span class="text-lg leading-none">+</span>
+                                                    <span class="text-lg leading-none">+</span>
                                             </button>
                                         </div>
                                         <form action="{{ route('cart.destroy', $item) }}" method="post">
@@ -86,7 +89,9 @@
                                 <span class="cart-total">₦{{ number_format($cartItems->sum(fn($item) => $item->product->price * $item->quantity), 2) }}</span>
                             </div>
                         </div>
-                        <a href="{{ auth()->check() ? route('checkout.index') : route('login') }}" class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:shadow-lg">{{ auth()->check() ? 'Checkout securely' : 'Login to checkout' }}</a>
+                        <a href="{{ auth()->check() ? route('checkout.index') : route('login') }}" class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:shadow-lg">
+                            {{ auth()->check() ? 'Checkout securely' : 'Login to checkout' }}
+                        </a>
                     </div>
 
                     <div class="rounded-[2rem] border border-[#e6d9f5] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
@@ -94,6 +99,11 @@
                         <p class="mt-4 text-sm leading-7 text-[#5a4570]">Contact our styling team for guidance with fit, sizing and pairing.</p>
                     </div>
                 </aside>
+            </div>
+            @endif
+        @else
+            <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-10 text-center text-sm text-[#6b4b8a]">
+                Loading your cart...
             </div>
         @endif
     </div>
@@ -114,13 +124,10 @@ function getTotalQuantity() {
 }
 
 function renderGuestCart() {
-    const isAuthenticated = document.body.classList.contains('authenticated');
-    if (isAuthenticated) return;
-
     const cart = getGuestCart();
-    console.log('Guest cart:', cart);
+    console.log('Guest cart items:', cart);
     const container = document.getElementById('cart-container');
-    
+
     if (cart.length === 0) {
         console.log('Guest cart is empty');
         container.innerHTML = `
@@ -129,34 +136,58 @@ function renderGuestCart() {
             </div>
         `;
         updateCartCount(0);
-        return;
-    }
+                    return;
+                }
 
     console.log('Fetching product details for', cart.length, 'items');
     // Fetch product details for all items in cart
-    Promise.allSettled(cart.map(item => 
+    const productPromises = cart.map(item =>
         fetch(`/api/products/${item.product_id}`)
             .then(r => {
-                console.log(`API response for product ${item.product_id}:`, r.status);
-                return r.ok ? r.json() : null;
+                console.log(`API response for product ${item.product_id}:`, r.status, r.statusText);
+                if (!r.ok) {
+                    console.error(`API returned status ${r.status} for product ${item.product_id}`);
+                    throw new Error(`HTTP error! status: ${r.status}`);
+                }
+                return r.json().then(data => {
+                    console.log(`Product ${item.product_id} data:`, data);
+                    return data;
+                });
             })
             .catch(error => {
                 console.error(`Error fetching product ${item.product_id}:`, error);
                 return null;
             })
-    ))
-    .then(results => {
-        const products = results.map(result => result.status === 'fulfilled' ? result.value : null);
-        console.log('Product data:', products);
+    );
+
+    console.log('Created', productPromises.length, 'fetch promises');
+    Promise.all(productPromises)
+        .then(products => {
+            console.log('Product data received:', products);
+            
+            if (!products || products.length === 0) {
+                console.log('No products fetched');
+                container.innerHTML = `
+                    <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-10 text-center text-sm text-[#6b4b8a]">
+                        Unable to load cart items. Please refresh the page.
+                    </div>
+                `;
+                return;
+            }
 
         let cartHTML = '<div class="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]"><div class="space-y-6" id="cart-items-list">';
         let subtotal = 0;
 
         cart.forEach((cartItem, index) => {
             const product = products[index];
-            if (!product) return;
+            console.log(`Processing product ${index}:`, product);
+            if (!product) {
+                console.log(`Product ${index} is null/undefined, skipping`);
+                return;
+            }
 
-            const itemTotal = product.price * cartItem.quantity;
+            const price = parseFloat(product.price) || 0;
+            const itemTotal = price * cartItem.quantity;
             subtotal += itemTotal;
 
             cartHTML += `
@@ -169,7 +200,7 @@ function renderGuestCart() {
                                     <h2 class="text-xl font-semibold text-[#1b1b18]">${product.name}</h2>
                                     <p class="text-sm text-[#6e625d]">${product.category?.name || 'Fashion'}</p>
                                 </div>
-                                <span class="text-lg font-semibold text-[#1b1b18] item-total">₦${itemTotal.toFixed(2)}</span>
+                                <span class="text-lg font-semibold text-[#1b1b18] item-total">₦${itemTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                             </div>
                             <div class="flex flex-wrap items-center gap-3 text-sm text-[#5e534c]">
                                 <span>Qty: <span class="quantity-display">${cartItem.quantity}</span></span>
@@ -195,17 +226,21 @@ function renderGuestCart() {
         cartHTML += '</div><aside class="space-y-6"><div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">';
         cartHTML += '<p class="text-sm uppercase tracking-[0.25em] text-[#6b4b8a]">Order summary</p>';
         cartHTML += '<div class="mt-6 space-y-4 text-sm text-[#5a4570]">';
-        cartHTML += `<div class="flex items-center justify-between"><span>Subtotal</span><span class="font-semibold text-[#5b1e7e] cart-subtotal">₦${subtotal.toFixed(2)}</span></div>`;
+        cartHTML += `<div class="flex items-center justify-between"><span>Subtotal</span><span class="font-semibold text-[#5b1e7e] cart-subtotal">₦${subtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span></div>`;
         cartHTML += '<div class="flex items-center justify-between"><span>Estimated delivery</span><span>Free</span></div>';
-        cartHTML += `<div class="flex items-center justify-between text-base font-semibold text-[#5b1e7e]"><span>Total</span><span class="cart-total">₦${subtotal.toFixed(2)}</span></div>`;
+        cartHTML += `<div class="flex items-center justify-between text-base font-semibold text-[#5b1e7e]"><span>Total</span><span class="cart-total">₦${subtotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span></div>`;
         cartHTML += '</div>';
-        cartHTML += '<a href="/login" class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:shadow-lg">Login to checkout</a>';
+        cartHTML += '<a href="{{ route("login") }}" class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:shadow-lg">Login to checkout</a>';
         cartHTML += '</div><div class="rounded-[2rem] border border-[#e6d9f5] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">';
         cartHTML += '<p class="text-sm uppercase tracking-[0.25em] text-[#6b4b8a]">Need help?</p>';
         cartHTML += '<p class="mt-4 text-sm leading-7 text-[#5a4570]">Contact our styling team for guidance with fit, sizing and pairing.</p>';
         cartHTML += '</div></aside></div>';
 
+        console.log('Cart HTML length:', cartHTML.length);
+        console.log('Cart subtotal:', subtotal);
+        console.log('Setting innerHTML...');
         container.innerHTML = cartHTML;
+        console.log('innerHTML set successfully');
         updateCartCount(getTotalQuantity());
 
         // Attach event listeners
@@ -226,19 +261,27 @@ function renderGuestCart() {
                 removeGuestItem(parseInt(this.dataset.productId));
             });
         });
-    });
+        })
+        .catch(error => {
+            console.error('Error rendering guest cart:', error);
+            container.innerHTML = `
+                <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-10 text-center text-sm text-[#6b4b8a]">
+                    Error loading cart items. Please refresh the page.
+                </div>
+            `;
+        });
 }
 
 function updateCartCount(count) {
     document.querySelectorAll('.cart-count').forEach(element => {
         element.textContent = count;
     });
-}
+        }
 
 function updateGuestQuantity(productId, action) {
     let cart = getGuestCart();
     const item = cart.find(i => i.product_id === productId);
-    
+
     if (!item) return;
 
     if (action === 'increment') {
@@ -263,23 +306,30 @@ function removeGuestItem(productId) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const isAuthenticated = document.body.classList.contains('authenticated');
-    
+    const isAuthenticated = @json(auth()->check());
+    console.log('=== CART PAGE DOMContentLoaded ===');
+    console.log('User authenticated:', isAuthenticated);
+    console.log('localStorage guest_cart:', localStorage.getItem('guest_cart'));
+
     // If user is authenticated, check for guest cart and merge it
     if (isAuthenticated) {
+        console.log('User is authenticated, merging guest cart if exists');
         mergeGuestCartToUser();
-    }
-    
-    if (!isAuthenticated) {
-        renderGuestCart();
     } else {
+        // For guests, render cart from localStorage
+        console.log('User is guest, calling renderGuestCart()');
+        renderGuestCart();
+        console.log('renderGuestCart() called');
+    }
+
+    if (isAuthenticated) {
         // Handle increment buttons for authenticated users
         document.querySelectorAll('.increment-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const cartId = this.dataset.cartId;
                 updateQuantity(cartId, 'increment');
-            });
         });
+});
 
         // Handle decrement buttons for authenticated users
         document.querySelectorAll('.decrement-btn').forEach(button => {
@@ -325,8 +375,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateQuantity(cartId, action) {
-        const url = action === 'increment' 
-            ? `/cart/${cartId}/increment` 
+        const url = action === 'increment'
+            ? `/cart/${cartId}/increment`
             : `/cart/${cartId}/decrement`;
 
         fetch(url, {
@@ -414,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         updateCartCount(totalItems);
     }
-    }
 });
 </script>
 @endsection
+

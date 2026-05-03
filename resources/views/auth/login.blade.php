@@ -26,7 +26,7 @@
         </div>
     @endif
 
-    <form method="post" action="{{ route('login.store') }}" class="space-y-6">
+    <form id="login-form" method="post" action="{{ route('login.store') }}" class="space-y-6">
         @csrf
         <input type="hidden" name="guest_cart" id="guest-cart-input" />
         <div>

@@ -14,7 +14,7 @@ class CartController extends Controller
     public function index(): View
     {
         if (Auth::check()) {
-            $cartItems = Auth::user()->carts()->with('product')->get();
+            $cartItems = Auth::user()->carts()->with('product.category')->get();
         } else {
             // For guests, cart items will be managed via localStorage on the frontend
             $cartItems = collect();
