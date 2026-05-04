@@ -2,7 +2,7 @@
 deployment:
   tasks:
     # Set paths
-    - export APPPATH=/home/username/fekasclothingoutlet
+    - export APPPATH=/home/username/fekasclothingoutlet.com
     - export PUBLICPATH=/home/username/public_html
 
     # Copy Laravel core files (except public)
