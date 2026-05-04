@@ -1,0 +1,25 @@
+---
+deployment:
+  tasks:
+    # Set paths
+    - export APPPATH=/home/username/fekasclothingoutlet
+    - export PUBLICPATH=/home/username/public_html
+
+    # Copy Laravel core files (except public)
+    - /bin/cp -R app $APPPATH
+    - /bin/cp -R bootstrap $APPPATH
+    - /bin/cp -R config $APPPATH
+    - /bin/cp -R database $APPPATH
+    - /bin/cp -R resources $APPPATH
+    - /bin/cp -R routes $APPPATH
+    - /bin/cp -R vendor $APPPATH
+
+    # Copy public files
+    - /bin/cp -R public/* $PUBLICPATH
+
+    # Run Laravel optimizations
+    - cd $APPPATH
+    - php artisan migrate --force
+    - php artisan config:cache
+    - php artisan route:cache
+    - php artisan view:cache
