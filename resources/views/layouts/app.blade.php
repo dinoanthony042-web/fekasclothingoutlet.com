@@ -192,21 +192,21 @@
             <div class="flex-1 overflow-hidden">
                 {{-- Level 1: Main Categories --}}
                 <div id="nav-level-1" class="nav-level absolute inset-0 translate-x-0 transition-transform duration-300 ease-in-out">
-                    <div class="p-4 space-y-2">
-                        <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Women</span>
+                    <div class="p-4 space-y-1">
+                        <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center justify-between rounded-2xl border border-[#e6d9f5] bg-[#f7f0ff] px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#e8d9ff]">
+                            <span>Women</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
                         </a>
-                        <a href="{{ route('shop.index', ['category' => 'men']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Men</span>
+                        <a href="{{ route('shop.index', ['category' => 'men']) }}" class="flex items-center justify-between rounded-2xl border border-[#e6d9f5] bg-[#f7f0ff] px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#e8d9ff]">
+                            <span>Men</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
                         </a>
-                        <a href="{{ route('shop.index', ['category' => 'children']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Kids</span>
+                        <a href="{{ route('shop.index', ['category' => 'children']) }}" class="flex items-center justify-between rounded-2xl border border-[#e6d9f5] bg-[#f7f0ff] px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#e8d9ff]">
+                            <span>Kids</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
