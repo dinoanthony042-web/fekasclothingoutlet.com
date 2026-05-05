@@ -21,23 +21,7 @@
 
 @unless(request()->routeIs(['login', 'register']))
 
-{{-- TOP BAR --}}
-<div class="bg-[#f8f6ff] border-b border-[#e6d9f5]">
-    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-3 py-2 text-[10px] md:text-xs gap-2">
-        <span class="w-full md:w-auto text-[#6b4b8a]">Free shipping on orders over ₦50,000</span>
 
-        <div class="flex items-center gap-4">
-            @auth
-                <a href="{{ route('dashboard') }}" class="text-[#5b1e7e] hover:text-[#e91e8c] transition">My Account</a>
-            @else
-                <a href="{{ route('login') }}" class="text-[#5b1e7e] hover:text-[#e91e8c] transition">Sign In</a>
-                <a href="{{ route('register') }}" class="text-[#5b1e7e] hover:text-[#e91e8c] transition">Join</a>
-            @endauth
-
-            <a href="#" class="text-[#5b1e7e] hover:text-[#e91e8c] transition">Help & FAQs</a>
-        </div>
-    </div>
-</div>
 
 {{-- HEADER --}}
 <header class="sticky top-0 z-50 border-b border-[#e6d9f5] bg-white/95 backdrop-blur">
