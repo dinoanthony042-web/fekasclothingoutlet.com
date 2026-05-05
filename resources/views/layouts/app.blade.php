@@ -174,14 +174,14 @@
     <div id="mobile-menu-overlay" class="fixed inset-0 z-50 hidden bg-white md:hidden">
         <div class="flex h-full flex-col">
             {{-- Sticky Header --}}
-            <div class="sticky top-0 flex items-center justify-between border-b border-[#e6d9f5] bg-white px-4 py-4">
+            <div class="sticky top-0 z-50 flex items-center justify-between border-b border-[#e6d9f5] bg-white px-4 py-4">
                 <button id="mobile-menu-back" class="hidden p-2 text-[#5b1e7e] transition hover:text-[#e91e8c]">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </button>
                 <h2 id="mobile-menu-title" class="text-lg font-semibold text-[#1b1b18]">Menu</h2>
-                <button id="mobile-menu-close" class="p-2 text-[#5b1e7e] transition hover:text-[#e91e8c]">
+                <button id="mobile-menu-close" class="p-2 text-[#5b1e7e] transition hover:text-[#e91e8c] cursor-pointer">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -192,7 +192,7 @@
             <div class="flex-1 overflow-hidden">
                 {{-- Level 1: Main Categories --}}
                 <div id="nav-level-1" class="nav-level absolute inset-0 translate-x-0 transition-transform duration-300 ease-in-out">
-                    <div class="p-4 space-y-1">
+                    <div class="p-4 space-y-0">
                         <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center justify-between rounded-2xl border border-[#e6d9f5] bg-[#f7f0ff] px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#e8d9ff]">
                             <span>Women</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,8 +211,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
                         </a>
-                    </div>
-                    <div class="border-t border-[#e6d9f5] p-4 space-y-2">
                         <a href="{{ route('shop.index') }}" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">Shop All</a>
                         <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">New In</a>
                         <a href="#" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">Sale</a>
@@ -230,7 +228,7 @@
 
                 {{-- Level 2: Subcategories for Women --}}
                 <div id="nav-level-2-women" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
-                    <div class="p-4 space-y-2">
+                    <div class="p-4 space-y-0">
                         <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
                             <span class="text-lg font-medium">View All Women</span>
                         </a>
@@ -257,7 +255,7 @@
 
                 {{-- Level 2: Subcategories for Men --}}
                 <div id="nav-level-2-men" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
-                    <div class="p-4 space-y-2">
+                    <div class="p-4 space-y-0">
                         <a href="{{ route('shop.index', ['category' => 'men']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
                             <span class="text-lg font-medium">View All Men</span>
                         </a>
@@ -284,7 +282,7 @@
 
                 {{-- Level 2: Subcategories for Kids --}}
                 <div id="nav-level-2-kids" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
-                    <div class="p-4 space-y-2">
+                    <div class="p-4 space-y-0">
                         <a href="{{ route('shop.index', ['category' => 'children']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
                             <span class="text-lg font-medium">View All Kids</span>
                         </a>
@@ -311,24 +309,24 @@
 
                 {{-- Level 3: Clothing Subcategories --}}
                 <div id="nav-level-3-clothing" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
-                    <div class="p-4 space-y-2">
-                        <a id="view-all-clothing" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">View All Clothing</span>
+                    <div class="p-4 space-y-0">
+                        <a id="view-all-clothing" href="#" class="block rounded-2xl border border-[#e6d9f5] bg-white px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#faf5ff]">
+                            <span>View All Clothing</span>
                         </a>
-                        <a id="polo-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Polo</span>
+                        <a id="polo-link" href="#" class="block rounded-2xl border border-[#e6d9f5] bg-white px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#faf5ff]">
+                            <span>Polo</span>
                         </a>
-                        <a id="tshirts-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">T-Shirts</span>
+                        <a id="tshirts-link" href="#" class="block rounded-2xl border border-[#e6d9f5] bg-white px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#faf5ff]">
+                            <span>T-Shirts</span>
                         </a>
-                        <a id="jeans-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Jeans</span>
+                        <a id="jeans-link" href="#" class="block rounded-2xl border border-[#e6d9f5] bg-white px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#faf5ff]">
+                            <span>Jeans</span>
                         </a>
-                        <a id="jackets-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Jackets</span>
+                        <a id="jackets-link" href="#" class="block rounded-2xl border border-[#e6d9f5] bg-white px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#faf5ff]">
+                            <span>Jackets</span>
                         </a>
-                        <a id="hoodies-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
-                            <span class="text-lg font-medium">Hoodies</span>
+                        <a id="hoodies-link" href="#" class="block rounded-2xl border border-[#e6d9f5] bg-white px-4 py-3 text-base font-semibold text-[#4a1f76] transition hover:bg-[#faf5ff]">
+                            <span>Hoodies</span>
                         </a>
                     </div>
                 </div>
