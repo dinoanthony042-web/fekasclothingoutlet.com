@@ -47,7 +47,7 @@
         <div class="flex items-center justify-between py-3 md:py-4 gap-3">
 
             {{-- MOBILE MENU BUTTON --}}
-            <button class="md:hidden p-2 text-[#5b1e7e] flex-shrink-0" onclick="toggleMobileMenu()">
+            <button id="mobile-menu-toggle" class="md:hidden p-2 text-[#5b1e7e] flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M4 6h16M4 12h16M4 18h16"></path>
@@ -171,32 +171,171 @@
     </div>
 
     {{-- MOBILE MENU --}}
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-[#e6d9f5]">
-        <div class="px-4 py-6 space-y-4">
-            <a href="{{ route('shop.index') }}" class="block text-sm font-semibold text-[#1b1b18]">Shop</a>
-            <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="block text-sm font-semibold text-[#1b1b18]">New In</a>
-            <a href="#" class="block text-sm font-semibold text-[#1b1b18]">Sale</a>
-
-            <div class="border-t pt-4">
-                <p class="text-xs uppercase tracking-[0.2em] text-[#6b4b8a] mb-3">Categories</p>
-                @foreach($categories ?? collect() as $category)
-                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="block py-2 text-sm text-[#5b1e7e] hover:text-[#e91e8c] transition">{{ $category->name }}</a>
-                @endforeach
+    <div id="mobile-menu-overlay" class="fixed inset-0 z-50 hidden bg-white md:hidden">
+        <div class="flex h-full flex-col">
+            {{-- Sticky Header --}}
+            <div class="sticky top-0 flex items-center justify-between border-b border-[#e6d9f5] bg-white px-4 py-4">
+                <button id="mobile-menu-back" class="hidden p-2 text-[#5b1e7e] transition hover:text-[#e91e8c]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <h2 id="mobile-menu-title" class="text-lg font-semibold text-[#1b1b18]">Menu</h2>
+                <button id="mobile-menu-close" class="p-2 text-[#5b1e7e] transition hover:text-[#e91e8c]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
 
-            <div class="border-t pt-4 space-y-2">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="block text-sm font-semibold text-[#1b1e7e]">My Account</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="w-full text-left text-sm font-semibold text-[#5b1e7e] hover:text-[#e91e8c]">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="block text-sm font-semibold text-[#1b1e7e]">Sign In</a>
-                @endauth
+            {{-- Navigation Levels --}}
+            <div class="flex-1 overflow-hidden">
+                {{-- Level 1: Main Categories --}}
+                <div id="nav-level-1" class="nav-level absolute inset-0 translate-x-0 transition-transform duration-300 ease-in-out">
+                    <div class="p-4 space-y-2">
+                        <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Women</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'men']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Men</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'children']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Kids</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="border-t border-[#e6d9f5] p-4 space-y-2">
+                        <a href="{{ route('shop.index') }}" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">Shop All</a>
+                        <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">New In</a>
+                        <a href="#" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">Sale</a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">My Account</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">Logout</button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="block rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">Sign In</a>
+                        @endauth
+                    </div>
+                </div>
+
+                {{-- Level 2: Subcategories for Women --}}
+                <div id="nav-level-2-women" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
+                    <div class="p-4 space-y-2">
+                        <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">View All Women</span>
+                        </a>
+                        <button data-category="women" data-sub="clothing" class="flex items-center justify-between w-full rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Clothing</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        <a href="{{ route('shop.index', ['category' => 'women', 'sub' => 'shoes']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Shoes</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'women', 'sub' => 'accessories']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Accessories</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'women', 'sort' => 'newest']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">New In</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'women', 'sale' => true]) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Sale</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Level 2: Subcategories for Men --}}
+                <div id="nav-level-2-men" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
+                    <div class="p-4 space-y-2">
+                        <a href="{{ route('shop.index', ['category' => 'men']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">View All Men</span>
+                        </a>
+                        <button data-category="men" data-sub="clothing" class="flex items-center justify-between w-full rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Clothing</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        <a href="{{ route('shop.index', ['category' => 'men', 'sub' => 'shoes']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Shoes</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'men', 'sub' => 'accessories']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Accessories</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'men', 'sort' => 'newest']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">New In</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'men', 'sale' => true]) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Sale</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Level 2: Subcategories for Kids --}}
+                <div id="nav-level-2-kids" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
+                    <div class="p-4 space-y-2">
+                        <a href="{{ route('shop.index', ['category' => 'children']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">View All Kids</span>
+                        </a>
+                        <button data-category="kids" data-sub="clothing" class="flex items-center justify-between w-full rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Clothing</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        <a href="{{ route('shop.index', ['category' => 'children', 'sub' => 'shoes']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Shoes</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'children', 'sub' => 'accessories']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Accessories</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'children', 'sort' => 'newest']) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">New In</span>
+                        </a>
+                        <a href="{{ route('shop.index', ['category' => 'children', 'sale' => true]) }}" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Sale</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Level 3: Clothing Subcategories --}}
+                <div id="nav-level-3-clothing" class="nav-level absolute inset-0 translate-x-full transition-transform duration-300 ease-in-out">
+                    <div class="p-4 space-y-2">
+                        <a id="view-all-clothing" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">View All Clothing</span>
+                        </a>
+                        <a id="polo-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Polo</span>
+                        </a>
+                        <a id="tshirts-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">T-Shirts</span>
+                        </a>
+                        <a id="jeans-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Jeans</span>
+                        </a>
+                        <a id="jackets-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Jackets</span>
+                        </a>
+                        <a id="hoodies-link" href="#" class="flex items-center justify-between rounded-2xl bg-[#faf5ff] p-4 text-[#5b1e7e] transition hover:bg-[#f0e6ff]">
+                            <span class="text-lg font-medium">Hoodies</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 
 </header>
 
@@ -207,9 +346,109 @@
 </main>
 
 <script>
+let currentCategory = '';
+
 function toggleMobileMenu() {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    overlay.classList.toggle('hidden');
+    if (!overlay.classList.contains('hidden')) {
+        showLevel('nav-level-1');
+    }
 }
+
+function showLevel(levelId) {
+    const levels = document.querySelectorAll('.nav-level');
+    levels.forEach(level => {
+        level.classList.add('translate-x-full');
+        level.classList.remove('translate-x-0');
+    });
+    const targetLevel = document.getElementById(levelId);
+    targetLevel.classList.remove('translate-x-full');
+    targetLevel.classList.add('translate-x-0');
+
+    // Update header title
+    const title = document.getElementById('mobile-menu-title');
+    const backBtn = document.getElementById('mobile-menu-back');
+
+    if (levelId === 'nav-level-1') {
+        title.textContent = 'Menu';
+        backBtn.classList.add('hidden');
+        currentCategory = '';
+    } else if (levelId.startsWith('nav-level-2')) {
+        const category = levelId.split('-')[3];
+        currentCategory = category === 'kids' ? 'children' : category;
+        title.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        backBtn.classList.remove('hidden');
+    } else if (levelId === 'nav-level-3-clothing') {
+        title.textContent = 'Clothing';
+        backBtn.classList.remove('hidden');
+        updateLevel3Links();
+    }
+}
+
+function updateLevel3Links() {
+    const baseUrl = '/shop?category=' + currentCategory + '&sub=clothing';
+    document.getElementById('view-all-clothing').href = baseUrl;
+    document.getElementById('polo-link').href = baseUrl + '&type=polo';
+    document.getElementById('tshirts-link').href = baseUrl + '&type=t-shirts';
+    document.getElementById('jeans-link').href = baseUrl + '&type=jeans';
+    document.getElementById('jackets-link').href = baseUrl + '&type=jackets';
+    document.getElementById('hoodies-link').href = baseUrl + '&type=hoodies';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Hamburger menu toggle
+    const menuBtn = document.getElementById('mobile-menu-toggle');
+    if (menuBtn) {
+        menuBtn.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Close menu
+    const closeBtn = document.getElementById('mobile-menu-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            document.getElementById('mobile-menu-overlay').classList.add('hidden');
+        });
+    }
+
+    // Back button
+    const backBtn = document.getElementById('mobile-menu-back');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            const currentLevel = document.querySelector('.nav-level.translate-x-0');
+            if (currentLevel.id.startsWith('nav-level-3')) {
+                showLevel(`nav-level-2-${currentCategory === 'children' ? 'kids' : currentCategory}`);
+            } else if (currentLevel.id.startsWith('nav-level-2')) {
+                showLevel('nav-level-1');
+            }
+        });
+    }
+
+    // Level 1 navigation
+    document.querySelectorAll('#nav-level-1 a[href*="category="]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(this.href.split('?')[1]);
+            const category = urlParams.get('category');
+            if (category === 'women' || category === 'men' || category === 'children') {
+                showLevel(`nav-level-2-${category === 'children' ? 'kids' : category}`);
+            } else {
+                window.location.href = this.href;
+            }
+        });
+    });
+
+    // Level 2 navigation
+    document.querySelectorAll('[data-category][data-sub]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const category = this.dataset.category;
+            const sub = this.dataset.sub;
+            if (sub === 'clothing') {
+                showLevel('nav-level-3-clothing');
+            }
+        });
+    });
+});
 </script>
 
 </body>
