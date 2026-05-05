@@ -157,6 +157,19 @@
                 </div>
             </div>
 
+            <div class="mt-4 block lg:hidden">
+                <div class="overflow-x-auto pb-2">
+                    <div class="inline-flex gap-2">
+                        @foreach($categories as $category)
+                            <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                               class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ request('category') === $category->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
             @if($products->isEmpty())
                 <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600">No products matched your filters. Try a different search.</div>
             @else

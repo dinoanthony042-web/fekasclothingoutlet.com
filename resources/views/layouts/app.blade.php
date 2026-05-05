@@ -127,12 +127,20 @@
 
                 @auth
                 <div class="relative group">
-                    <button class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
+                    <button class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition inline-flex items-center gap-2" type="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Open profile menu</span>
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </button>
+                    <div class="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-2xl border border-[#e6d9f5] bg-white shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
+                        <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">Dashboard</a>
+                        <form method="POST" action="{{ route('logout') }}" class="border-t border-[#f2ebff]">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-3 text-sm text-[#5b1e7e] hover:bg-[#f5f0ff]">Logout</button>
+                        </form>
+                    </div>
                 </div>
                 @else
                 <a href="{{ route('login') }}" class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
@@ -165,15 +173,26 @@
     {{-- MOBILE MENU --}}
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-[#e6d9f5]">
         <div class="px-4 py-6 space-y-4">
-            <a href="{{ route('shop.index') }}" class="block">Shop</a>
-            <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="block">New In</a>
-            <a href="#" class="block">Sale</a>
+            <a href="{{ route('shop.index') }}" class="block text-sm font-semibold text-[#1b1b18]">Shop</a>
+            <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="block text-sm font-semibold text-[#1b1b18]">New In</a>
+            <a href="#" class="block text-sm font-semibold text-[#1b1b18]">Sale</a>
 
             <div class="border-t pt-4">
+                <p class="text-xs uppercase tracking-[0.2em] text-[#6b4b8a] mb-3">Categories</p>
+                @foreach($categories ?? collect() as $category)
+                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="block py-2 text-sm text-[#5b1e7e] hover:text-[#e91e8c] transition">{{ $category->name }}</a>
+                @endforeach
+            </div>
+
+            <div class="border-t pt-4 space-y-2">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="block">My Account</a>
+                    <a href="{{ route('dashboard') }}" class="block text-sm font-semibold text-[#1b1e7e]">My Account</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left text-sm font-semibold text-[#5b1e7e] hover:text-[#e91e8c]">Logout</button>
+                    </form>
                 @else
-                    <a href="{{ route('login') }}" class="block">Sign In</a>
+                    <a href="{{ route('login') }}" class="block text-sm font-semibold text-[#1b1e7e]">Sign In</a>
                 @endauth
             </div>
         </div>

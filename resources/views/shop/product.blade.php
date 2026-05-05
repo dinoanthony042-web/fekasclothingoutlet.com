@@ -31,9 +31,9 @@
                         <label class="block text-sm font-semibold text-[#4f433d]">Size</label>
                         <div class="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
                             @foreach($product->sizes as $size)
-                                <label class="cursor-pointer rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-4 py-3 text-center text-sm text-[#1b1b18] transition hover:border-black peer-checked:border-[#1b1b18] peer-checked:bg-[#1b1b18] peer-checked:text-white">
+                                <label class="cursor-pointer rounded-3xl border-2 border-[#e6d9f5] bg-[#faf5ff] transition hover:border-[#5b1e7e]">
                                     <input type="radio" name="size" value="{{ $size }}" class="sr-only peer" @checked(old('size') === $size) required>
-                                    {{ $size }}
+                                    <span class="inline-flex min-w-[3rem] items-center justify-center rounded-3xl px-4 py-3 text-center text-sm text-[#5b1e7e] font-medium transition peer-checked:border-[#5b1e7e] peer-checked:bg-[#5b1e7e] peer-checked:text-white peer-checked:ring-2 peer-checked:ring-[#5b1e7e]/50">{{ $size }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -45,9 +45,9 @@
                         <label class="block text-sm font-semibold text-[#4f433d]">Color</label>
                         <div class="mt-3 flex flex-wrap gap-3">
                             @foreach($product->colors as $color)
-                                <label class="cursor-pointer rounded-full border border-[#e4dad1] bg-[#f9f4f0] px-4 py-3 text-sm text-[#1b1b18] transition hover:border-black peer-checked:border-[#1b1b18] peer-checked:bg-[#1b1b18] peer-checked:text-white">
+                                <label class="cursor-pointer rounded-full border-2 border-[#e6d9f5] bg-[#faf5ff] transition hover:border-[#5b1e7e]">
                                     <input type="radio" name="color" value="{{ $color }}" class="sr-only peer" @checked(old('color') === $color) required>
-                                    {{ $color }}
+                                    <span class="inline-flex min-w-[4rem] items-center justify-center rounded-full px-4 py-3 text-sm text-[#5b1e7e] font-medium transition peer-checked:border-[#5b1e7e] peer-checked:bg-[#5b1e7e] peer-checked:text-white peer-checked:ring-2 peer-checked:ring-[#5b1e7e]/50">{{ $color }}</span>
                                 </label>
                             @endforeach
                         </div>
