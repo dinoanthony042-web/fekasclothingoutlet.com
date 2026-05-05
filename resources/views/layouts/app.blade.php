@@ -9,7 +9,7 @@
 
     <title>@yield('title', 'Feka Clothing Outlet') | Fekas Clothing Outlet</title>
 
-    <link rel="icon" href="{{ asset('storage/fekasdark.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('images/fekasdark.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
 
@@ -56,7 +56,7 @@
 
             {{-- LOGO (BIGGER BUT RESPONSIVE) --}}
             <a href="{{ route('home') }}" class="flex items-center flex-shrink-0">
-                <img src="{{ asset('storage/fekasdark.png') }}"
+                <img src="{{ asset('images/fekasdark.png') }}"
                      alt="Feka"
                      class="h-12 md:h-16 w-auto">
             </a>
