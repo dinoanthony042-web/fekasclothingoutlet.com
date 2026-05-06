@@ -106,14 +106,31 @@
     -webkit-overflow-scrolling: touch;
 }
 
-/* Hide scrollbar for category navbar */
+/* Hide scrollbar for category navbar - All Browsers */
+.scrollbar-hide {
+    -ms-overflow-style: none;     /* IE and Edge */
+    scrollbar-width: none;        /* Firefox */
+}
+
+/* Chrome, Safari, Opera */
 .scrollbar-hide::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar-track {
+    background: transparent;
     display: none;
 }
 
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.scrollbar-hide::-webkit-scrollbar-thumb {
+    background: transparent;
+    display: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar-thumb:hover {
+    background: transparent;
 }
 
 /* Category Link Styles */
