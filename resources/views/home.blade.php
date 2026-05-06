@@ -48,7 +48,7 @@
                     <div class="hero-carousel relative h-[720px] w-full">
                         {{-- Women Slide --}}
                         <div class="hero-slide active absolute inset-0 opacity-100 transition-opacity duration-500">
-                            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
+                            <img src="{{ asset('images/woman.jpg') }}"
                                  class="h-full w-full object-cover" alt="Women Fashion" />
                         </div>
 
@@ -60,7 +60,7 @@
 
                         {{-- Children Slide --}}
                         <div class="hero-slide absolute inset-0 opacity-0 transition-opacity duration-500">
-                            <img src="https://img.freepik.com/premium-photo/photography-black-american-kids-girl-happy-lifestyle_1288657-160883.jpg"
+                            <img src="{{ asset('images/kid.jpg') }}"
                                  class="h-full w-full object-cover" alt="Children Fashion" />
                         </div>
                     </div>
@@ -125,7 +125,7 @@
             <a href="{{ route('shop.index', ['category' => 'women']) }}"
                class="group rounded-[2rem] bg-white border border-[#e6d9f5] p-6 text-center transition hover:-translate-y-1 hover:shadow-2xl hover:border-[#e91e8c] focus:outline-none focus:ring-2 focus:ring-[#5b1e7e]">
                 <div class="mx-auto h-20 w-20 rounded-full bg-gradient-to-br from-[#faf5ff] to-[#fff5f9] flex items-center justify-center group-hover:scale-110 transition overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&h=200&q=80" class="h-full w-full object-cover rounded-full" alt="Women">
+                    <img src="{{ asset('images/woman.jpg') }}" class="h-full w-full object-cover rounded-full" alt="Women">
                 </div>
                 <h3 class="mt-4 text-lg font-semibold text-[#5b1e7e]">
                     Women
@@ -153,7 +153,7 @@
             <a href="{{ route('shop.index', ['category' => 'children']) }}"
                class="group rounded-[2rem] bg-white border border-[#e6d9f5] p-6 text-center transition hover:-translate-y-1 hover:shadow-2xl hover:border-[#e91e8c] focus:outline-none focus:ring-2 focus:ring-[#5b1e7e]">
                 <div class="mx-auto h-20 w-20 rounded-full bg-gradient-to-br from-[#faf5ff] to-[#fff5f9] flex items-center justify-center group-hover:scale-110 transition overflow-hidden">
-                    <img src="https://img.freepik.com/premium-photo/photography-black-american-kids-girl-happy-lifestyle_1288657-160883.jpg" class="h-full w-full object-cover rounded-full" alt="Children">
+                    <img src="{{ asset('images/kid.jpg') }}" class="h-full w-full object-cover rounded-full" alt="Children">
                 </div>
                 <h3 class="mt-4 text-lg font-semibold text-[#5b1e7e]">
                     Children
