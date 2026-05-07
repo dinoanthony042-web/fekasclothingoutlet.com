@@ -2,24 +2,34 @@
 deployment:
   tasks:
     # Set paths
-    - export APPPATH=/home/username/fekasclothingoutlet.com
-    - export PUBLICPATH=/home/username/public_html
+    - export APPPATH=/home/fekavpnn/fekasclothingoutlet.com
+    - export PUBLICPATH=/home/fekavpnn/public_html
 
-    # Copy Laravel core files (except public)
-    - /bin/cp -R app $APPPATH
-    - /bin/cp -R bootstrap $APPPATH
-    - /bin/cp -R config $APPPATH
-    - /bin/cp -R database $APPPATH
-    - /bin/cp -R resources $APPPATH
-    - /bin/cp -R routes $APPPATH
-    - /bin/cp -R vendor $APPPATH
+    # Ensure storage folder exists
+    - mkdir -p $PUBLICPATH/storage
 
-    # Copy public files
+    # Copy public assets
     - /bin/cp -R public/* $PUBLICPATH
 
-    # Run Laravel optimizations
+    # Copy uploaded files
+    - /bin/cp -R storage/app/public/* $PUBLICPATH/storage/
+
+    # Go to Laravel app
     - cd $APPPATH
-    - php artisan migrate --force
+
+    # Install dependencies
+    - composer install --no-dev --optimize-autoloader
+
+    # Clear old cache
+    - php artisan optimize:clear
+
+    # Cache optimization
     - php artisan config:cache
     - php artisan route:cache
     - php artisan view:cache
+
+    # Database migrations
+    - php artisan migrate --force
+
+    # Fix permissions
+    - chmod -R 755 storage bootstrap/cache
