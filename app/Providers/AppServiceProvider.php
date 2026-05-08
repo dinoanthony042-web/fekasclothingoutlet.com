@@ -28,7 +28,19 @@ class AppServiceProvider extends ServiceProvider
             $cartCount = auth()->check() ? Cart::where('user_id', auth()->id())->sum('quantity') : 0;
             $wishlistCount = auth()->check() ? Wishlist::where('user_id', auth()->id())->count() : 0;
 
-            $view->with(compact('categories', 'cartCount', 'wishlistCount'));
+            $activeCategorySlug = null;
+            if (request()->has('category')) {
+                $activeCategorySlug = request('category');
+            } elseif (request()->has('subcategory')) {
+                $subcategory = Category::where('slug', request('subcategory'))->first();
+                if ($subcategory && $subcategory->parent) {
+                    $activeCategorySlug = $subcategory->parent->slug;
+                } else {
+                    $activeCategorySlug = request('subcategory');
+                }
+            }
+
+            $view->with(compact('categories', 'cartCount', 'wishlistCount', 'activeCategorySlug'));
         });
     }
 }

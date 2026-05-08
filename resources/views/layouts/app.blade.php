@@ -149,21 +149,17 @@
     {{-- HORIZONTAL SCROLLING CATEGORY NAVBAR --}}
     <nav class="sticky top-[60px] md:top-[80px] z-40 border-b border-[#e6d9f5] bg-white/95 backdrop-blur overflow-x-auto scrollbar-hide">
         <div class="flex gap-2 px-4 py-3 min-w-min">
-            <a href="{{ route('shop.index') }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] bg-[#f7f0ff] text-[#5b1e7e] font-medium text-sm whitespace-nowrap hover:border-[#5b1e7e] hover:shadow-sm transition">
+            <a href="{{ route('shop.index') }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] {{ empty($activeCategorySlug) ? 'bg-[#f7f0ff] text-[#5b1e7e]' : 'bg-white text-[#5b1e7e]' }} font-medium text-sm whitespace-nowrap hover:border-[#5b1e7e] hover:shadow-sm transition">
                 🛍️ Shop All
             </a>
             
-            <a href="{{ route('shop.index', ['category' => 'women']) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] bg-white text-[#5b1e7e] font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
-                👗 Women
-            </a>
-            
-            <a href="{{ route('shop.index', ['category' => 'men']) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] bg-white text-[#5b1e7e] font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
-                👔 Men
-            </a>
-            
-            <a href="{{ route('shop.index', ['category' => 'children']) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] bg-white text-[#5b1e7e] font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
-                👶 Kids
-            </a>
+            @foreach($categories as $category)
+                @if($category->parent_id === null)
+                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border {{ $activeCategorySlug === $category->slug ? 'border-[#5b1e7e] bg-[#f7f0ff] text-[#5b1e7e]' : 'border-[#e6d9f5] bg-white text-[#5b1e7e]' }} font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
+                        {{ $category->name }}
+                    </a>
+                @endif
+            @endforeach
             
             <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] bg-white text-[#5b1e7e] font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
                 ✨ New In
