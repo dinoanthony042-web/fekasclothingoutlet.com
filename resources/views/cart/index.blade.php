@@ -387,49 +387,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
+                const payload = await response.json().catch(() => null);
                 if (response.status === 404) {
-                    // Cart item not found, remove it from the DOM
                     const cartItem = document.querySelector(`[data-cart-id="${cartId}"]`);
                     if (cartItem) {
                         cartItem.remove();
-                        // Update cart totals and count
                         updateCartTotals();
                     }
-                    return;
+                    return null;
                 }
-                throw new Error(`HTTP ${response.status}`);
+
+                const message = payload?.message || `HTTP ${response.status}`;
+                throw new Error(message);
             }
             return response.json();
         })
         .then(data => {
-            if (data.success) {
-                // Update quantity display
-                const quantityDisplays = document.querySelectorAll(`[data-cart-id="${cartId}"] .quantity-display`);
-                quantityDisplays.forEach(display => {
-                    display.textContent = data.quantity;
-                });
-
-                // Update item total
-                const itemTotalElement = document.querySelector(`.item-total[data-cart-id="${cartId}"]`);
-                if (itemTotalElement) {
-                    itemTotalElement.textContent = `₦${data.item_total.toFixed(2)}`;
-                }
-
-                // Update cart totals
-                const cartSubtotalElement = document.querySelector('.cart-subtotal');
-                const cartTotalElement = document.querySelector('.cart-total');
-                if (cartSubtotalElement) {
-                    cartSubtotalElement.textContent = `₦${data.cart_total.toFixed(2)}`;
-                }
-                if (cartTotalElement) {
-                    cartTotalElement.textContent = `₦${data.cart_total.toFixed(2)}`;
-                }
-
-                // Update cart count in header
-                updateCartCount(data.cart_count);
+            if (!data) {
+                return;
             }
+
+            if (!data.success) {
+                alert(data.message || 'Unable to update the cart.');
+                return;
+            }
+
+            // Update quantity display
+            const quantityDisplays = document.querySelectorAll(`[data-cart-id="${cartId}"] .quantity-display`);
+            quantityDisplays.forEach(display => {
+                display.textContent = data.quantity;
+            });
+
+            // Update item total
+            const itemTotalElement = document.querySelector(`.item-total[data-cart-id="${cartId}"]`);
+            if (itemTotalElement) {
+                itemTotalElement.textContent = `₦${data.item_total.toFixed(2)}`;
+            }
+
+            // Update cart totals
+            const cartSubtotalElement = document.querySelector('.cart-subtotal');
+            const cartTotalElement = document.querySelector('.cart-total');
+            if (cartSubtotalElement) {
+                cartSubtotalElement.textContent = `₦${data.cart_total.toFixed(2)}`;
+            }
+            if (cartTotalElement) {
+                cartTotalElement.textContent = `₦${data.cart_total.toFixed(2)}`;
+            }
+
+            // Update cart count in header
+            updateCartCount(data.cart_count);
         })
         .catch(error => {
             console.error('Error updating cart:', error);

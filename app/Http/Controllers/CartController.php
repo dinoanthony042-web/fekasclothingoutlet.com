@@ -33,6 +33,7 @@ class CartController extends Controller
         ]);
 
         $product = Product::findOrFail($data['product_id']);
+        $quantityToAdd = $data['quantity'] ?? 1;
 
         // If user is authenticated, save to database
         if (Auth::check()) {
@@ -42,33 +43,50 @@ class CartController extends Controller
                 ->where('color', $data['color'] ?? null)
                 ->first();
 
+            $existingQuantity = $cartItem ? $cartItem->quantity : 0;
+            $newQuantity = $existingQuantity + $quantityToAdd;
+
+            if ($newQuantity > $product->stock) {
+                $message = $product->stock > 0
+                    ? "You can only add {$product->stock} of this item to your cart."
+                    : 'This product is out of stock.';
+
+                if ($request->expectsJson()) {
+                    return response()->json([ 'success' => false, 'message' => $message ], 422);
+                }
+
+                return redirect()->back()->with('error', $message);
+            }
+
             if ($cartItem) {
-                $cartItem->quantity += $data['quantity'] ?? 1;
+                $cartItem->quantity = $newQuantity;
             } else {
                 $cartItem = new Cart([
                     'user_id' => Auth::id(),
                     'product_id' => $product->id,
                     'size' => $data['size'] ?? null,
                     'color' => $data['color'] ?? null,
-                    'quantity' => $data['quantity'] ?? 1,
+                    'quantity' => $quantityToAdd,
                 ]);
             }
 
             $cartItem->save();
-
             $cartCount = Auth::user()->carts()->sum('quantity');
         } else {
             // For guests, cart is managed via localStorage in JavaScript
             $cartCount = $request->input('cart_count', 1);
         }
 
-        // Always return JSON
-        return response()->json([
-            'success' => true,
-            'message' => 'Product added to cart successfully.',
-            'cart_count' => $cartCount,
-            'is_guest' => !Auth::check()
-        ], 200);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to cart successfully.',
+                'cart_count' => $cartCount,
+                'is_guest' => !Auth::check()
+            ], 200);
+        }
+
+        return redirect()->back()->with('success', 'Product added to cart successfully.');
     }
 
     public function update(Request $request, Cart $cart)
@@ -78,6 +96,18 @@ class CartController extends Controller
         $data = $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
+
+        if ($data['quantity'] > $cart->product->stock) {
+            $message = $cart->product->stock > 0
+                ? "Only {$cart->product->stock} items are available in stock."
+                : 'This product is out of stock.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+
+            return back()->with('error', $message);
+        }
 
         $cart->update($data);
 
@@ -101,6 +131,14 @@ class CartController extends Controller
     public function increment(Request $request, Cart $cart)
     {
         abort_unless($cart->user_id === Auth::id(), 403);
+
+        if ($cart->quantity >= $cart->product->stock) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have reached the available stock for this product.',
+                'quantity' => $cart->quantity,
+            ], 422);
+        }
 
         $cart->increment('quantity');
 
@@ -142,10 +180,23 @@ class CartController extends Controller
     {
         // If authenticated user, use database cart
         if (Auth::check()) {
-            // If no cart provided, try to find by product_id for AJAX requests
-            if (!$cart && $request->expectsJson()) {
+            // If no cart provided, try to find by product_id or matching variant
+            if (!$cart) {
                 $productId = $request->input('product_id');
-                $cart = Auth::user()->carts()->where('product_id', $productId)->first();
+                $size = $request->input('size');
+                $color = $request->input('color');
+
+                $query = Auth::user()->carts()->where('product_id', $productId);
+
+                if ($size !== null) {
+                    $query->where('size', $size);
+                }
+
+                if ($color !== null) {
+                    $query->where('color', $color);
+                }
+
+                $cart = $query->first();
             }
 
             if (!$cart) {

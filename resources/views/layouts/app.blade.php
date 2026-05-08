@@ -102,16 +102,17 @@
             <div class="flex items-center gap-1 flex-shrink-0">
 
                 @auth
-                <div class="relative group">
-                    <button class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition inline-flex items-center gap-2" type="button" aria-haspopup="true" aria-expanded="false">
+                <div class="relative" id="profile-menu-wrapper">
+                    <button id="profile-menu-button" class="relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition inline-flex items-center gap-2" type="button" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">Open profile menu</span>
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </button>
-                    <div class="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-2xl border border-[#e6d9f5] bg-white shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
+                    <div id="profile-menu" class="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-2xl border border-[#e6d9f5] bg-white shadow-xl opacity-0 invisible transition-all duration-200 z-50">
                         <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">Dashboard</a>
+                        <a href="{{ route('orders.index') }}" class="block px-4 py-3 text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">My Orders</a>
                         <form method="POST" action="{{ route('logout') }}" class="border-t border-[#f2ebff]">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-3 text-sm text-[#5b1e7e] hover:bg-[#f5f0ff]">Logout</button>
@@ -191,6 +192,49 @@ document.querySelectorAll('.overflow-x-auto').forEach(container => {
     // Optional: Add smooth scroll behavior
     container.style.scrollBehavior = 'smooth';
 });
+
+(function() {
+    const button = document.getElementById('profile-menu-button');
+    const menu = document.getElementById('profile-menu');
+    const wrapper = document.getElementById('profile-menu-wrapper');
+
+    if (!button || !menu || !wrapper) {
+        return;
+    }
+
+    function closeMenu() {
+        menu.classList.add('opacity-0', 'invisible');
+        menu.classList.remove('opacity-100', 'visible');
+        button.setAttribute('aria-expanded', 'false');
+    }
+
+    function openMenu() {
+        menu.classList.remove('opacity-0', 'invisible');
+        menu.classList.add('opacity-100', 'visible');
+        button.setAttribute('aria-expanded', 'true');
+    }
+
+    button.addEventListener('click', function(event) {
+        event.stopPropagation();
+        if (menu.classList.contains('visible')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!wrapper.contains(event.target)) {
+            closeMenu();
+        }
+    });
+
+    wrapper.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeMenu();
+        }
+    });
+})();
 </script>
 
 </body>

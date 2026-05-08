@@ -31,7 +31,7 @@
     <div class="space-y-6">
         <h2 class="text-2xl font-semibold text-[#1b1b18]">Recent orders</h2>
         @forelse($orders as $order)
-            <div class="rounded-[2rem] border border-[#E7DDD4] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)]">
+            <a href="{{ route('orders.show', $order) }}" class="block rounded-[2rem] border border-[#E7DDD4] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)] transition hover:border-[#5b1e7e]">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Order #{{ $order->id }}</p>
@@ -50,7 +50,7 @@
                         <p class="text-sm text-[#5e534c]">{{ count($order->items) }} items</p>
                     </div>
                 </div>
-            </div>
+            </a>
         @empty
             <div class="rounded-[2rem] border border-[#E7DDD4] bg-[#F9F4F0] p-10 text-sm text-[#5e534c]">No orders yet. Your first purchase is just a few clicks away.</div>
         @endforelse
