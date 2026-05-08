@@ -20,7 +20,14 @@
                     <img src="{{ $item->product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $item->product->name }}" class="h-64 w-full rounded-[1.5rem] object-cover" />
                     <div class="mt-5 space-y-3">
                         <a href="{{ route('product.show', $item->product) }}" class="text-xl font-semibold text-[#1b1b18] hover:text-[#7b6c65]">{{ $item->product->name }}</a>
-                        <p class="text-sm text-[#6e625d]">₦{{ number_format($item->product->price, 2) }}</p>
+                        @if($item->product->isOnSale())
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-[#8c7d74] line-through">₦{{ number_format($item->product->price, 2) }}</span>
+                                <span class="text-sm font-bold text-[#e91e8c]">₦{{ number_format($item->product->discounted_price, 2) }}</span>
+                            </div>
+                        @else
+                            <p class="text-sm text-[#6e625d]">₦{{ number_format($item->product->price, 2) }}</p>
+                        @endif
                         <div class="flex flex-wrap gap-3">
                             <form action="{{ route('cart.store') }}" method="post" class="inline add-to-cart-form">
                                 @csrf

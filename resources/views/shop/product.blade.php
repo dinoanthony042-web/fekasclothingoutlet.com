@@ -17,8 +17,18 @@
             <h1 class="mt-4 text-4xl font-semibold text-[#1b1b18]">{{ $product->name }}</h1>
             <p class="mt-4 max-w-2xl text-base leading-8 text-[#5e534c]">{{ $product->description }}</p>
 
-            <div class="mt-8 flex items-center gap-6" data-product-container>
-                <span class="text-3xl font-semibold text-[#1b1b18]">₦{{ number_format($product->price, 2) }}</span>
+            <div class="mt-8 flex flex-wrap items-center gap-6" data-product-container>
+                <div class="flex items-center gap-3">
+                    @if($product->isOnSale())
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl text-[#8c7d74] line-through">₦{{ number_format($product->price, 2) }}</span>
+                            <span class="text-4xl font-semibold text-[#e91e8c]">₦{{ number_format($product->discounted_price, 2) }}</span>
+                        </div>
+                        <span class="rounded-full bg-[#FFE6F0] px-4 py-2 text-sm font-bold uppercase tracking-[0.18em] text-[#e91e8c]">On Sale</span>
+                    @else
+                        <span class="text-4xl font-semibold text-[#1b1b18]">₦{{ number_format($product->price, 2) }}</span>
+                    @endif
+                </div>
                 <span class="rounded-full bg-[#F1ECE8] px-4 py-2 text-sm uppercase tracking-[0.18em] text-[#766459]">{{ $product->stock }} in stock</span>
             </div>
 

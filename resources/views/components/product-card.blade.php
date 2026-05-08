@@ -23,8 +23,16 @@
         <div class="flex-grow mb-3">
             <p class="text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($product->description, 100) }}</p>
         </div>
-        <div class="flex items-center justify-between mt-3">
-            <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price, 2) }}</span>
+        <div class="flex items-center justify-between mt-3 gap-3">
+            @if($product->isOnSale())
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-slate-500 line-through">₦{{ number_format($product->price, 2) }}</span>
+                    <span class="text-lg font-bold text-red-600">₦{{ number_format($product->discounted_price, 2) }}</span>
+                </div>
+                <span class="text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Sale</span>
+            @else
+                <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price, 2) }}</span>
+            @endif
         </div>
         @if($isInCart && auth()->check())
             <form method="post" action="{{ route('cart.destroy') }}" class="mt-3 remove-from-cart-form">
