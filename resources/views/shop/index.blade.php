@@ -184,12 +184,29 @@
             <div class="mt-4 block lg:hidden">
                 <div class="overflow-x-auto pb-2">
                     <div class="inline-flex gap-2">
-                        @foreach($categories as $category)
-                            <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                               class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ $activeCategorySlug === $category->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
-                                {{ $category->name }}
+                        @if($activeCategorySlug && isset($subcategories) && $subcategories->isNotEmpty())
+                            <!-- Back to all categories -->
+                            <a href="{{ route('shop.index') }}"
+                               class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+                                ← All Categories
                             </a>
-                        @endforeach
+                            
+                            <!-- Show subcategories -->
+                            @foreach($subcategories as $subcategory)
+                                <a href="{{ route('shop.index', ['subcategory' => $subcategory->slug]) }}"
+                                   class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ request('subcategory') === $subcategory->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
+                                    {{ $subcategory->name }}
+                                </a>
+                            @endforeach
+                        @else
+                            <!-- Show main categories -->
+                            @foreach($categories as $category)
+                                <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                                   class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ $activeCategorySlug === $category->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
+                                    {{ $category->name }}
+                                </a>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
