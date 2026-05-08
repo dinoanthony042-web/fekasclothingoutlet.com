@@ -186,11 +186,14 @@
                     <div class="inline-flex gap-2">
                         @if($activeCategorySlug && isset($subcategories) && $subcategories->isNotEmpty())
                             <!-- Back to all categories -->
-                           
+                            <a href="{{ route('shop.index') }}"
+                               class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+                                ← All Categories
+                            </a>
                             
                             <!-- Show subcategories -->
                             @foreach($subcategories as $subcategory)
-                                <a href="{{ route('shop.index', ['subcategory' => $subcategory->slug]) }}"
+                                <a href="{{ route('shop.index', ['category' => $activeCategorySlug, 'subcategory' => $subcategory->slug]) }}"
                                    class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ request('subcategory') === $subcategory->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
                                     {{ $subcategory->name }}
                                 </a>

@@ -35,8 +35,16 @@ class ShopController extends Controller
             }
         }
 
+        $selectedSubcategory = null;
+
         if (!$selectedParent && $request->subcategory) {
-            $selectedSubcategory = Category::with('parent')->where('slug', $request->subcategory)->first();
+            $subcategoryQuery = Category::with('parent')->where('slug', $request->subcategory);
+            if ($selectedCategory && $selectedCategory->parent_id === null) {
+                $subcategoryQuery->where('parent_id', $selectedCategory->id);
+            }
+
+            $selectedSubcategory = $subcategoryQuery->first();
+
             if ($selectedSubcategory && $selectedSubcategory->parent) {
                 $selectedParent = $selectedSubcategory->parent;
                 $subcategories = $selectedParent->children;
@@ -56,7 +64,14 @@ class ShopController extends Controller
                 $query->where('name', 'like', '%' . $request->q . '%')
                     ->orWhere('description', 'like', '%' . $request->q . '%');
             }))
-            ->when($request->subcategory, fn ($query) => $query->whereHas('category', fn ($query) => $query->where('slug', $request->subcategory)))
+            ->when($request->subcategory, function ($query) use ($request, $selectedParent) {
+                $query->whereHas('category', function ($query) use ($request, $selectedParent) {
+                    $query->where('slug', $request->subcategory);
+                    if ($selectedParent) {
+                        $query->where('parent_id', $selectedParent->id);
+                    }
+                });
+            })
             ->when(!$request->subcategory && $request->category, function ($query) use ($request, $selectedCategory) {
                 $query->whereHas('category', function ($query) use ($request, $selectedCategory) {
                     if ($selectedCategory && $selectedCategory->parent_id === null) {
