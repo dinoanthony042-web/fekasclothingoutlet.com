@@ -96,7 +96,7 @@ class ProductController extends Controller
             'colors' => 'nullable|array',
             'styles' => 'nullable|array',
             'age_range' => 'nullable|string',
-            'image_uploads' => 'required|array|min:2|max:5',
+            'image_uploads' => 'nullable|array|min:2|max:5',
             'image_uploads.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'stock' => 'required|integer|min:0',
             'is_featured' => 'boolean',
@@ -105,7 +105,9 @@ class ProductController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
-        $validated['images'] = $this->buildImageList($request);
+        $validated['images'] = $request->hasFile('image_uploads')
+            ? $this->buildImageList($request)
+            : $product->images;
 
         $product->update($validated);
 

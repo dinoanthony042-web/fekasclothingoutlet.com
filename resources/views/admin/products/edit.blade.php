@@ -171,7 +171,7 @@
 
                 <!-- Upload Images -->
                 <div class="md:col-span-2">
-                    <label for="image_uploads" class="block text-sm font-medium text-gray-700">Replace Product Images (2–5 images)</label>
+                    <label for="image_uploads" class="block text-sm font-medium text-gray-700">Product Images (optional)</label>
                     <input type="file" name="image_uploads[]" id="image_uploads" multiple accept="image/*"
                            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     @error('image_uploads')
@@ -180,7 +180,16 @@
                     @error('image_uploads.*')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-2 text-sm text-gray-500">Upload 2 to 5 product images to replace the current ones. The first image will be the main product image.</p>
+                    <p class="mt-2 text-sm text-gray-500">Leave empty to keep existing images. Upload 2 to 5 new images only if you want to replace them.</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <p class="text-sm font-medium text-gray-700">Existing Images</p>
+                    <div class="mt-3 grid grid-cols-2 gap-3">
+                        @foreach($product->images ?? [] as $image)
+                            <img src="{{ $image }}" alt="Product image" class="h-32 w-full rounded-lg object-cover border border-gray-200">
+                        @endforeach
+                    </div>
                 </div>
 
                 <!-- Product Flags -->
