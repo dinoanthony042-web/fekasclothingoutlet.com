@@ -15,9 +15,7 @@
 
             {{-- TEXT --}}
             <div class="space-y-8">
-                <p class="text-xs tracking-[0.4em] uppercase text-[#6b4b8a]">
-                    New Season 2026
-                </p>
+               
 
                 <h1 class="text-5xl lg:text-6xl font-semibold tracking-[-0.04em] leading-tight bg-gradient-to-r from-[#5b1e7e] to-[#e91e8c] bg-clip-text text-transparent">
                     Modern luxury for everyone.

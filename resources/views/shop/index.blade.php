@@ -20,10 +20,22 @@
                         <select name="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
                             <option value="">All</option>
                             @foreach($categories as $category)
-                            <option value="{{ $category->slug }}" @selected(request('category') === $category->slug)>{{ $category->name }}</option>
+                            <option value="{{ $category->slug }}" @selected($activeCategorySlug === $category->slug)>{{ $category->name }}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    @if(isset($subcategories) && $subcategories->isNotEmpty())
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700">Subcategory</label>
+                        <select name="subcategory" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
+                            <option value="">All subcategories</option>
+                            @foreach($subcategories as $subcategory)
+                            <option value="{{ $subcategory->slug }}" @selected(request('subcategory') === $subcategory->slug)>{{ $subcategory->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
 
                     <div class="grid gap-3 grid-cols-2">
                         <div>
@@ -90,10 +102,22 @@
                         <select name="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
                             <option value="">All</option>
                             @foreach($categories as $category)
-                            <option value="{{ $category->slug }}" @selected(request('category') === $category->slug)>{{ $category->name }}</option>
+                            <option value="{{ $category->slug }}" @selected($activeCategorySlug === $category->slug)>{{ $category->name }}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    @if(isset($subcategories) && $subcategories->isNotEmpty())
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700">Subcategory</label>
+                        <select name="subcategory" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
+                            <option value="">All subcategories</option>
+                            @foreach($subcategories as $subcategory)
+                            <option value="{{ $subcategory->slug }}" @selected(request('subcategory') === $subcategory->slug)>{{ $subcategory->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
 
                     <div class="grid gap-3 sm:grid-cols-2">
                         <div>
@@ -162,7 +186,7 @@
                     <div class="inline-flex gap-2">
                         @foreach($categories as $category)
                             <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                               class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ request('category') === $category->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
+                               class="inline-flex items-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900 {{ $activeCategorySlug === $category->slug ? 'border-purple-600 bg-purple-50 text-purple-700' : '' }}">
                                 {{ $category->name }}
                             </a>
                         @endforeach
@@ -211,6 +235,15 @@
                 filterOverlay.classList.add('hidden');
             });
         }
+
+        document.querySelectorAll('select[name="category"]').forEach(function (select) {
+            select.addEventListener('change', function () {
+                var subcategorySelect = select.form.querySelector('select[name="subcategory"]');
+                if (subcategorySelect) {
+                    subcategorySelect.value = '';
+                }
+            });
+        });
     });
 </script>
 @endsection

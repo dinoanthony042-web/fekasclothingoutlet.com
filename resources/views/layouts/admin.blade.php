@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="description" content="Feka Admin Dashboard - Manage your store">
         <title>@yield('title', 'Admin Dashboard') | Feka Admin</title>
-        <link rel="icon" href="/storage/fekasdark.png" type="image/png">
+        <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -15,7 +15,7 @@
         <header class="bg-white border-b border-gray-200">
             <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4">
                 <div class="flex items-center gap-4">
-                    <img src="/storage/fekasdark.png" alt="Feka" class="h-10 w-auto">
+                    <img src="{{ asset('images/fekasdark.png') }}" alt="Feka" class="h-10 w-auto">
                     <span class="text-lg font-semibold text-gray-900">Admin Panel</span>
                 </div>
 
