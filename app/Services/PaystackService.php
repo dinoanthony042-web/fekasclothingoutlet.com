@@ -8,11 +8,15 @@ use Exception;
 class PaystackService
 {
     protected string $baseUrl = 'https://api.paystack.co';
-    protected string $secretKey;
+    protected ?string $secretKey = null;
 
     public function __construct()
     {
         $this->secretKey = config('paystack.secret_key');
+
+        if (!$this->secretKey) {
+            throw new Exception('Paystack secret key is not configured. Please set PAYSTACK_SECRET in your .env file and clear config cache.');
+        }
     }
 
     /**
