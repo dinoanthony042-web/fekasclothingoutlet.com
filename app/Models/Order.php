@@ -3,18 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
     protected $fillable = [
         'user_id', 'total', 'status', 'shipping_address', 'billing_address', 'payment_method',
-        'payment_status', 'payment_reference', 'transaction_id'
+        'payment_status', 'payment_reference', 'transaction_id', 'order_number'
     ];
 
     protected $casts = [
         'shipping_address' => 'array',
         'billing_address' => 'array',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function (Order $order) {
+            if (empty($order->order_number)) {
+                $order->order_number = 'ORD-' . strtoupper(Str::random(10));
+            }
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'order_number';
+    }
 
     public function user()
     {
