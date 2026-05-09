@@ -7,6 +7,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\WishlistController;
@@ -25,6 +26,9 @@ Route::get('/shop/{product:slug}', [ProductController::class, 'show'])->name('pr
 
 // API
 Route::get('/api/products/{product:id}', [ProductController::class, 'apiShow']);
+
+// Paystack Webhook
+Route::post('/webhooks/paystack', [PaymentController::class, 'webhook'])->withoutMiddleware('web');
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +70,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+    // Payment routes
+    Route::get('/payment/verify', [PaymentController::class, 'verify'])->name('payment.verify');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');

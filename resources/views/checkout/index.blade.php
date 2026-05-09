@@ -51,6 +51,7 @@
             <div>
                 <label class="block text-sm font-semibold text-[#4f433d]">Payment method</label>
                 <select name="payment_method" class="mt-2 w-full rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-4 py-3 text-sm outline-none" required>
+                    <option value="paystack">Paystack</option>
                     <option value="card">Card payment</option>
                     <option value="paypal">PayPal</option>
                 </select>
