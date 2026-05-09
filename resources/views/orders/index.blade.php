@@ -22,7 +22,7 @@
                 <a href="{{ route('orders.show', $order) }}" class="block rounded-[2rem] border border-[#E7DDD4] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)] hover:border-[#5b1e7e] transition">
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Order #{{ $order->id }}</p>
+                            <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Order #{{ $order->order_number }}</p>
                             <p class="mt-2 text-xl font-semibold text-[#1b1b18]">{{ ucfirst($order->status) }}</p>
                         </div>
                         <span class="rounded-full bg-[#F4EEE7] px-4 py-2 text-sm font-semibold text-[#5e534c]">₦{{ number_format($order->total, 2) }}</span>

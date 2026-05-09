@@ -8,7 +8,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <p class="text-sm uppercase tracking-[0.35em] text-[#8c7d74]">Order details</p>
-                <h1 class="mt-2 text-3xl font-semibold text-[#1b1b18]">Order #{{ $order->id }}</h1>
+                <h1 class="mt-2 text-3xl font-semibold text-[#1b1b18]">Order #{{ $order->order_number }}</h1>
             </div>
             <a href="{{ route('dashboard') }}" class="rounded-full border border-[#1b1b18] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#1b1b18] transition hover:bg-[#f7f2ee]">Back to dashboard</a>
         </div>
