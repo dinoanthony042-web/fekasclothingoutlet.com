@@ -31,15 +31,6 @@ class Order extends Model
         return 'order_number';
     }
 
-    public function resolveRouteBinding($value, $field = null)
-    {
-        $field = $field ?? $this->getRouteKeyName();
-
-        return $this->where($field, $value)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
