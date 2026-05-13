@@ -182,31 +182,14 @@ class CartController extends Controller
         if (Auth::check()) {
             $cart = null;
             
-            // If an ID is provided, try to fetch the cart by ID
+            // If an ID is provided, fetch the cart by ID
             if ($id) {
                 $cart = Cart::find($id);
             } else {
-                // Otherwise, try to find by product_id or matching variant
+                // Otherwise, find by product_id (remove first matching item)
                 $productId = $request->input('product_id');
-                $size = $request->input('size');
-                $color = $request->input('color');
-
                 if ($productId) {
-                    $query = Auth::user()->carts()->where('product_id', $productId);
-
-                    if ($request->filled('size')) {
-                        $query->where('size', $size);
-                    } else {
-                        $query->whereNull('size');
-                    }
-
-                    if ($request->filled('color')) {
-                        $query->where('color', $color);
-                    } else {
-                        $query->whereNull('color');
-                    }
-
-                    $cart = $query->first();
+                    $cart = Auth::user()->carts()->where('product_id', $productId)->first();
                 }
             }
 
@@ -214,7 +197,7 @@ class CartController extends Controller
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => 'Item not found in cart.'], 404);
                 }
-                abort(404);
+                return redirect()->route('cart.index')->with('error', 'Item not found in cart.');
             }
 
             abort_unless($cart->user_id === Auth::id(), 403);

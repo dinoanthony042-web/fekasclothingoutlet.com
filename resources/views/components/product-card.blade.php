@@ -8,6 +8,11 @@
         <a href="{{ route('product.show', $product) }}" class="block overflow-hidden">
             <img src="{{ $product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $product->name }}" class="h-64 w-full object-cover" />
         </a>
+        @if($product->stock === 0)
+            <div class="absolute inset-0 flex items-center justify-center bg-black/50">
+                <span class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white">Out of Stock</span>
+            </div>
+        @endif
         @auth
             <div class="wishlist-container">
                 <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="{{ $isInWishlist ? 'true' : 'false' }}" aria-label="Add to wishlist">
@@ -49,6 +54,8 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition remove-from-cart-btn">Remove from Cart</button>
             </form>
+        @elseif($product->stock === 0)
+            <button type="button" disabled class="w-full bg-gray-400 text-white py-2 rounded-lg text-sm font-semibold cursor-not-allowed opacity-60 mt-3">Out of Stock</button>
         @else
             <form method="post" action="{{ route('cart.store') }}" class="mt-3 add-to-cart-form">
                 @csrf

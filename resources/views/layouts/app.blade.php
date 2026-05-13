@@ -133,6 +133,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                     </svg>
+                    @auth
+                        @php
+                            $wishlistCount = auth()->user()->wishlists()->count();
+                        @endphp
+                        @if($wishlistCount > 0)
+                            <span class="wishlist-count absolute -top-1 -right-1 rounded-full bg-[#e91e8c] px-1.5 py-0.5 text-xs font-semibold text-white min-w-[18px] text-center">{{ $wishlistCount }}</span>
+                        @endif
+                    @endauth
                 </a>
 
                 <a href="{{ route('cart.index') }}" class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
