@@ -47,6 +47,12 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
+        \Log::info('Checkout attempt', [
+            'user_id' => $user->id,
+            'cart_items_count' => $cartItems->count(),
+            'payment_method' => $data['payment_method']
+        ]);
+
         return DB::transaction(function () use ($user, $cartItems, $data) {
             $total = 0;
             foreach ($cartItems as $item) {
@@ -85,6 +91,12 @@ class CheckoutController extends Controller
                     'country' => $data['shipping_country'],
                 ],
                 'payment_method' => $data['payment_method'],
+            ]);
+
+            \Log::info('Order created', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'total' => $total
             ]);
 
             foreach ($cartItems as $item) {

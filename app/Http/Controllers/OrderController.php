@@ -19,7 +19,10 @@ class OrderController extends Controller
 
     public function show(Order $order): View
     {
-        abort_unless($order->user_id === Auth::id(), 403);
+        // Check if order belongs to authenticated user
+        if ($order->user_id !== Auth::id()) {
+            return redirect()->route('orders.index')->with('error', 'You do not have permission to view this order.');
+        }
 
         $order->load('items.product');
 
