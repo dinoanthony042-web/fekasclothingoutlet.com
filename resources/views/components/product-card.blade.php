@@ -14,11 +14,22 @@
             </div>
         @endif
         @auth
-            <div class="wishlist-container">
-                <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="{{ $isInWishlist ? 'true' : 'false' }}" aria-label="Add to wishlist">
-                    <span class="wishlist-icon {{ $isInWishlist ? 'text-red-500' : 'text-gray-400' }}">♥</span>
-                </button>
-            </div>
+            @if($isInWishlist)
+                <form method="POST" action="{{ route('wishlist.destroy', $product) }}" class="wishlist-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="true" aria-label="Remove from wishlist">
+                        <span class="wishlist-icon text-red-500">♥</span>
+                    </button>
+                </form>
+            @else
+                <form method="POST" action="{{ route('wishlist.store', $product) }}" class="wishlist-form">
+                    @csrf
+                    <button type="submit" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="false" aria-label="Add to wishlist">
+                        <span class="wishlist-icon text-gray-400">♥</span>
+                    </button>
+                </form>
+            @endif
         @else
             <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="false" aria-label="Add to wishlist">
                 <span class="wishlist-icon text-gray-400">♥</span>

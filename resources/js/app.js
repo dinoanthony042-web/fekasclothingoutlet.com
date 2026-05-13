@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const removeForm = document.createElement('form');
         removeForm.method = 'post';
-        removeForm.action = `/cart/${productId}`;
+        removeForm.action = '/cart';
         removeForm.classList.add('mt-3', 'remove-from-cart-form');
         removeForm.innerHTML = `
             <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
