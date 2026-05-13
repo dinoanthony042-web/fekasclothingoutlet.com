@@ -188,12 +188,16 @@ class CartController extends Controller
 
                 $query = Auth::user()->carts()->where('product_id', $productId);
 
-                if ($size !== null) {
+                if ($request->filled('size')) {
                     $query->where('size', $size);
+                } else {
+                    $query->whereNull('size');
                 }
 
-                if ($color !== null) {
+                if ($request->filled('color')) {
                     $query->where('color', $color);
+                } else {
+                    $query->whereNull('color');
                 }
 
                 $cart = $query->first();

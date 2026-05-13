@@ -25,15 +25,21 @@ class PaystackService
     public function initializeTransaction(array $data): array
     {
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->secretKey,
-                'Content-Type' => 'application/json',
-            ])->post("{$this->baseUrl}/transaction/initialize", [
+            $payload = [
                 'email' => $data['email'],
                 'amount' => $data['amount'] * 100, // Paystack expects amount in kobo
                 'reference' => $data['reference'],
                 'metadata' => $data['metadata'] ?? [],
-            ]);
+            ];
+
+            if (!empty($data['callback_url'])) {
+                $payload['callback_url'] = $data['callback_url'];
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->secretKey,
+                'Content-Type' => 'application/json',
+            ])->post("{$this->baseUrl}/transaction/initialize", $payload);
 
             if ($response->successful()) {
                 return [
@@ -94,6 +100,7 @@ class PaystackService
             'email' => $data['email'],
             'amount' => $data['amount'],
             'reference' => $reference,
+            'callback_url' => $data['callback_url'] ?? route('payment.verify'),
             'metadata' => [
                 'order_id' => $data['order_id'],
                 'customer_name' => $data['customer_name'],

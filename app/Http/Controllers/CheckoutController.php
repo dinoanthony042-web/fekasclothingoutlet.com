@@ -113,7 +113,7 @@ class CheckoutController extends Controller
                 'status' => 'confirmed'
             ]);
 
-            return redirect()->route('orders.show', $order)->with('success', 'Your order has been placed successfully.');
+            return redirect()->route('orders.index')->with('success', 'Your order has been placed successfully.');
         });
     }
 
@@ -128,6 +128,7 @@ class CheckoutController extends Controller
             'amount' => $order->total,
             'customer_name' => $order->shipping_address['name'],
             'customer_phone' => $order->shipping_address['phone'],
+            'callback_url' => route('payment.verify'),
         ]);
 
         if (!$paymentData['status']) {

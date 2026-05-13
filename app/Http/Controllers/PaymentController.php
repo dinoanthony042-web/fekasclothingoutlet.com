@@ -56,7 +56,7 @@ class PaymentController extends Controller
                     'status' => 'confirmed',
                 ]);
 
-                return redirect()->route('orders.show', $order)->with('success', 'Payment completed successfully! Your order is being processed.');
+                return redirect()->route('orders.index')->with('success', 'Payment completed successfully! Your orders are being processed.');
             });
         } else {
             // Payment failed

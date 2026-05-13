@@ -8,9 +8,18 @@
         <a href="{{ route('product.show', $product) }}" class="block overflow-hidden">
             <img src="{{ $product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $product->name }}" class="h-64 w-full object-cover" />
         </a>
-        <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white" data-product-id="{{ $product->id }}" data-in-wishlist="{{ $isInWishlist ? 'true' : 'false' }}">
-            <span class="wishlist-icon {{ $isInWishlist ? 'text-red-500' : 'text-gray-400' }}">♥</span>
-        </button>
+        @auth
+            <form method="POST" action="{{ route('wishlist.store', $product) }}" class="wishlist-form">
+                @csrf
+                <button type="submit" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white" data-product-id="{{ $product->id }}" data-in-wishlist="{{ $isInWishlist ? 'true' : 'false' }}">
+                    <span class="wishlist-icon {{ $isInWishlist ? 'text-red-500' : 'text-gray-400' }}">♥</span>
+                </button>
+            </form>
+        @else
+            <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white" data-product-id="{{ $product->id }}" data-in-wishlist="false">
+                <span class="wishlist-icon text-gray-400">♥</span>
+            </button>
+        @endauth
     </div>
 
     <div class="flex flex-col flex-grow p-4">
