@@ -32,7 +32,7 @@
                 <span class="rounded-full bg-[#F1ECE8] px-4 py-2 text-sm uppercase tracking-[0.18em] text-[#766459]">{{ $product->stock }} in stock</span>
             </div>
 
-            <form action="{{ route('cart.store') }}" method="post" class="mt-8 grid gap-6 add-to-cart-form" data-product-container x-data="productForm()" @submit="validateForm($event)">
+            <form action="{{ route('cart.store') }}" method="post" class="mt-8 grid gap-6 add-to-cart-form" data-product-container x-data="productForm()" @init="init()" @submit="validateForm($event)">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 

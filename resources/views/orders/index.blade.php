@@ -23,7 +23,7 @@
     @else
         <div class="grid gap-6">
             @foreach($orders as $order)
-                <a href="{{ route('orders.show', ['order' => $order->order_number]) }}" class="block rounded-[2rem] border border-[#E7DDD4] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)] hover:border-[#5b1e7e] transition">
+                <a href="{{ route('orders.show', $order) }}" class="block rounded-[2rem] border border-[#E7DDD4] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)] hover:border-[#5b1e7e] transition">
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
                             <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Order #{{ $order->order_number }}</p>

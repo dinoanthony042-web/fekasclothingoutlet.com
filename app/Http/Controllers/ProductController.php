@@ -10,9 +10,9 @@ class ProductController extends Controller
 {
     public function show(Product $product): View
     {
-        $product->load(['category', 'discounts']);
+        $product->load(['category.discounts', 'discounts']);
 
-        $related = Product::with(['category', 'discounts'])
+        $related = Product::with(['category.discounts', 'discounts'])
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(4)
@@ -25,7 +25,7 @@ class ProductController extends Controller
 
     public function apiShow(Product $product): JsonResponse
     {
-        $product->load(['category', 'discounts']);
+        $product->load(['category.discounts', 'discounts']);
 
         return response()->json([
             'id' => $product->id,

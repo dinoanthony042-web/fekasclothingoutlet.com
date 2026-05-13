@@ -59,7 +59,7 @@ class ShopController extends Controller
             $activeCategorySlug = $request->category;
         }
 
-        $products = Product::with(['category', 'discounts'])
+        $products = Product::with(['category.discounts', 'discounts'])
             ->when($request->q, fn ($query) => $query->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->q . '%')
                     ->orWhere('description', 'like', '%' . $request->q . '%');

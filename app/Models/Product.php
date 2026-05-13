@@ -58,7 +58,13 @@ class Product extends Model
 
     public function activeDiscount()
     {
-        return $this->discounts()->active()->first();
+        $discount = $this->discounts()->active()->first();
+
+        if ($discount) {
+            return $discount;
+        }
+
+        return $this->category?->discounts()->active()->first();
     }
 
     public function getDiscountedPriceAttribute()

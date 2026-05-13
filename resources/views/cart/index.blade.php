@@ -33,13 +33,22 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                         <div class="rounded-[2rem] border border-[#e6d9f5] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]" data-cart-id="{{ $item->id }}">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                                 <img src="{{ $item->product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $item->product->name }}" class="h-32 w-32 flex-shrink-0 rounded-[1.5rem] object-cover" />
-                                <div class="flex-1 space-y-3">
+                                    <div class="flex-1 space-y-3">
                                     <div class="flex flex-wrap items-center justify-between gap-3">
                                         <div>
                                             <h2 class="text-xl font-semibold text-[#1b1b18]">{{ $item->product->name }}</h2>
                                             <p class="text-sm text-[#6e625d]">{{ $item->product->category->name }}</p>
                                         </div>
-                                        <span class="text-lg font-semibold text-[#1b1b18] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->price * $item->quantity, 2) }}</span>
+                                        @if($item->product->isOnSale())
+                                            <div class="flex items-center gap-2 flex-wrap justify-end">
+                                                <div>
+                                                    <div class="text-sm text-[#6e625d] line-through">₦{{ number_format($item->product->price * $item->quantity, 2) }}</div>
+                                                    <span class="text-lg font-semibold text-[#e91e8c] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->discounted_price * $item->quantity, 2) }}</span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-lg font-semibold text-[#1b1b18] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->price * $item->quantity, 2) }}</span>
+                                        @endif
                                     </div>
                                     <div class="flex flex-wrap items-center gap-3 text-sm text-[#5e534c]">
                                         @if($item->size)
@@ -78,7 +87,7 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                         <div class="mt-6 space-y-4 text-sm text-[#5a4570]">
                             <div class="flex items-center justify-between">
                                 <span>Subtotal</span>
-                                <span class="font-semibold text-[#5b1e7e] cart-subtotal">₦{{ number_format($cartItems->sum(fn($item) => $item->product->price * $item->quantity), 2) }}</span>
+                                <span class="font-semibold text-[#5b1e7e] cart-subtotal">₦{{ number_format($cartItems->sum(fn($item) => $item->product->isOnSale() ? $item->product->discounted_price * $item->quantity : $item->product->price * $item->quantity), 2) }}</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span>Estimated delivery</span>
@@ -86,7 +95,7 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                             </div>
                             <div class="flex items-center justify-between text-base font-semibold text-[#5b1e7e]">
                                 <span>Total</span>
-                                <span class="cart-total">₦{{ number_format($cartItems->sum(fn($item) => $item->product->price * $item->quantity), 2) }}</span>
+                                <span class="cart-total">₦{{ number_format($cartItems->sum(fn($item) => $item->product->isOnSale() ? $item->product->discounted_price * $item->quantity : $item->product->price * $item->quantity), 2) }}</span>
                             </div>
                         </div>
                         <a href="{{ auth()->check() ? route('checkout.index') : route('login') }}" class="mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:shadow-lg">

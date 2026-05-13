@@ -47,17 +47,18 @@
         <div class="flex-grow mb-3">
             <p class="text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($product->description, 100) }}</p>
         </div>
-        <div class="flex items-center justify-between mt-3 gap-3">
-            @if($product->isOnSale())
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-slate-500 line-through">₦{{ number_format($product->price, 2) }}</span>
-                    <span class="text-lg font-bold text-red-600">₦{{ number_format($product->discounted_price, 2) }}</span>
-                </div>
-                <span class="text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Sale</span>
-            @else
-                <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price, 2) }}</span>
-            @endif
-        </div>
+        <div class="mt-auto pt-3 space-y-3">
+            <div class="space-y-2">
+                @if($product->isOnSale())
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-slate-500 line-through">₦{{ number_format($product->price, 2) }}</span>
+                        <span class="text-lg font-bold text-red-600">₦{{ number_format($product->discounted_price, 2) }}</span>
+                    </div>
+                    <span class="inline-block text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Sale</span>
+                @else
+                    <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price, 2) }}</span>
+                @endif
+            </div>
         @if($isInCart && auth()->check())
             <form method="post" action="{{ route('cart.destroy') }}" class="mt-3 remove-from-cart-form">
                 @csrf
@@ -66,13 +67,14 @@
                 <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition remove-from-cart-btn">Remove from Cart</button>
             </form>
         @elseif($product->stock === 0)
-            <button type="button" disabled class="w-full bg-gray-400 text-white py-2 rounded-lg text-sm font-semibold cursor-not-allowed opacity-60 mt-3">Out of Stock</button>
+            <button type="button" disabled class="w-full bg-gray-400 text-white py-2 rounded-lg text-sm font-semibold cursor-not-allowed opacity-60">Out of Stock</button>
         @else
-            <form method="post" action="{{ route('cart.store') }}" class="mt-3 add-to-cart-form">
+            <form method="post" action="{{ route('cart.store') }}" class="add-to-cart-form">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 transition add-to-cart-btn">Add to Cart</button>
             </form>
         @endif
+        </div>
     </div>
 </article>
