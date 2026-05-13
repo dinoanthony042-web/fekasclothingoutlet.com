@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -17,7 +18,7 @@ class OrderController extends Controller
         return view('orders.index', compact('orders'));
     }
 
-    public function show(Order $order): View
+    public function show(Order $order): View | RedirectResponse
     {
         // Check if order belongs to authenticated user
         if ($order->user_id !== Auth::id()) {

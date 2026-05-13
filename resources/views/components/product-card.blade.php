@@ -9,14 +9,13 @@
             <img src="{{ $product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $product->name }}" class="h-64 w-full object-cover" />
         </a>
         @auth
-            <form method="POST" action="{{ route('wishlist.store', $product) }}" class="wishlist-form">
-                @csrf
-                <button type="submit" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white" data-product-id="{{ $product->id }}" data-in-wishlist="{{ $isInWishlist ? 'true' : 'false' }}">
+            <div class="wishlist-container">
+                <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="{{ $isInWishlist ? 'true' : 'false' }}" aria-label="Add to wishlist">
                     <span class="wishlist-icon {{ $isInWishlist ? 'text-red-500' : 'text-gray-400' }}">♥</span>
                 </button>
-            </form>
+            </div>
         @else
-            <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white" data-product-id="{{ $product->id }}" data-in-wishlist="false">
+            <button type="button" class="wishlist-btn absolute top-3 right-3 rounded-full bg-white/80 p-2 text-lg transition hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500" data-product-id="{{ $product->id }}" data-in-wishlist="false" aria-label="Add to wishlist">
                 <span class="wishlist-icon text-gray-400">♥</span>
             </button>
         @endauth

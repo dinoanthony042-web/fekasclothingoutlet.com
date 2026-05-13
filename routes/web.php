@@ -38,7 +38,7 @@ Route::post('/webhooks/paystack', [PaymentController::class, 'webhook'])->withou
 
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::delete('/cart/{cart?}', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::delete('/cart/{id?}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 /*
 |--------------------------------------------------------------------------

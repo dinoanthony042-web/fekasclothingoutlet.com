@@ -176,31 +176,38 @@ class CartController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Cart $cart = null)
+    public function destroy(Request $request, $id = null)
     {
         // If authenticated user, use database cart
         if (Auth::check()) {
-            // If no cart provided, try to find by product_id or matching variant
-            if (!$cart) {
+            $cart = null;
+            
+            // If an ID is provided, try to fetch the cart by ID
+            if ($id) {
+                $cart = Cart::find($id);
+            } else {
+                // Otherwise, try to find by product_id or matching variant
                 $productId = $request->input('product_id');
                 $size = $request->input('size');
                 $color = $request->input('color');
 
-                $query = Auth::user()->carts()->where('product_id', $productId);
+                if ($productId) {
+                    $query = Auth::user()->carts()->where('product_id', $productId);
 
-                if ($request->filled('size')) {
-                    $query->where('size', $size);
-                } else {
-                    $query->whereNull('size');
+                    if ($request->filled('size')) {
+                        $query->where('size', $size);
+                    } else {
+                        $query->whereNull('size');
+                    }
+
+                    if ($request->filled('color')) {
+                        $query->where('color', $color);
+                    } else {
+                        $query->whereNull('color');
+                    }
+
+                    $cart = $query->first();
                 }
-
-                if ($request->filled('color')) {
-                    $query->where('color', $color);
-                } else {
-                    $query->whereNull('color');
-                }
-
-                $cart = $query->first();
             }
 
             if (!$cart) {
