@@ -123,7 +123,7 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
                             <p class="font-medium text-gray-900">Order #{{ $order->id }}</p>
-                            <p class="text-sm text-gray-600">{{ $order->user->name }}</p>
+                            <p class="text-sm text-gray-600">{{ optional($order->user)->name ?? 'Guest' }}</p>
                         </div>
                         <div class="text-right">
                             <p class="font-medium text-gray-900">₦{{ number_format($order->total, 2) }}</p>
