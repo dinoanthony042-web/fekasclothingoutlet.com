@@ -397,8 +397,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(async response => {
+            const payload = await response.json().catch(() => null);
+
             if (!response.ok) {
-                const payload = await response.json().catch(() => null);
                 if (response.status === 404) {
                     const cartItem = document.querySelector(`[data-cart-id="${cartId}"]`);
                     if (cartItem) {
@@ -409,9 +410,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const message = payload?.message || `HTTP ${response.status}`;
-                throw new Error(message);
+                alert(message);
+                return null;
             }
-            return response.json();
+
+            return payload;
         })
         .then(data => {
             if (!data) {

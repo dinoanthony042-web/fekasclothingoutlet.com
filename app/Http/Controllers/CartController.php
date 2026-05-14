@@ -141,6 +141,7 @@ class CartController extends Controller
         }
 
         $cart->increment('quantity');
+        $cart->refresh();
 
         $cartCount = Auth::user()->carts()->sum('quantity');
         $itemTotal = $cart->product->price * $cart->quantity;
@@ -161,6 +162,7 @@ class CartController extends Controller
 
         if ($cart->quantity > 1) {
             $cart->decrement('quantity');
+            $cart->refresh();
         }
 
         $cartCount = Auth::user()->carts()->sum('quantity');
