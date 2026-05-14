@@ -28,12 +28,12 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($categories as $category)
-                    <tr>
+                    <tr class="bg-white">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">{{ $category->name }}</div>
                             <div class="text-sm text-gray-500">{{ $category->slug }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                             {{ $category->children->count() }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -56,16 +56,14 @@
                         <tr class="bg-gray-50">
                             <td class="px-6 py-3 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                    </svg>
+                                    <span class="inline-flex items-center justify-center w-5 h-5 mr-2 rounded-full bg-slate-200 text-slate-600 text-xs font-semibold">›</span>
                                     <div>
                                         <div class="text-sm font-medium text-gray-700">{{ $subcategory->name }}</div>
                                         <div class="text-sm text-gray-500">{{ $subcategory->slug }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-500">-</td>
+                            <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-500">—</td>
                             <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900">
                                 {{ $subcategory->products->count() }}
                             </td>

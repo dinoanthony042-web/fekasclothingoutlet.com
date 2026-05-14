@@ -16,7 +16,12 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        $categories = Category::whereNull('parent_id')->with('children')->get();
+        $categories = Category::whereNull('parent_id')
+            ->with(['children' => function ($query) {
+                $query->orderBy('name');
+            }])
+            ->orderBy('name')
+            ->get();
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -25,7 +30,7 @@ class CategoryController extends Controller
      */
     public function create(): View
     {
-        $parentCategories = Category::whereNull('parent_id')->get();
+        $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
         return view('admin.categories.create', compact('parentCategories'));
     }
 
@@ -41,6 +46,7 @@ class CategoryController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
+        $validated['parent_id'] = $validated['parent_id'] ?: null;
 
         Category::create($validated);
 
@@ -60,7 +66,10 @@ class CategoryController extends Controller
      */
     public function edit(Category $category): View
     {
-        $parentCategories = Category::whereNull('parent_id')->where('id', '!=', $category->id)->get();
+        $parentCategories = Category::whereNull('parent_id')
+            ->where('id', '!=', $category->id)
+            ->orderBy('name')
+            ->get();
         return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 
@@ -76,6 +85,7 @@ class CategoryController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
+        $validated['parent_id'] = $validated['parent_id'] ?: null;
 
         $category->update($validated);
 
