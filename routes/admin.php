@@ -10,7 +10,10 @@ use App\Http\Controllers\Admin\HeroSliderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
 
     // Product management
     Route::resource('products', ProductController::class)->names([

@@ -33,6 +33,9 @@ class AuthController extends Controller
             $this->mergeGuestCart($user, $guestCartData);
 
             if ($user->isAdmin()) {
+                if (app()->environment('production')) {
+                    return redirect(env('ADMIN_DOMAIN', 'https://admin.fekasclothing.com/dashboard'));
+                }
                 return redirect()->intended(route('admin.dashboard'));
             }
 
