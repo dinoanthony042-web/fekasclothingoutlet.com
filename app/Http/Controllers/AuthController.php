@@ -34,7 +34,7 @@ class AuthController extends Controller
 
             if ($user->isAdmin()) {
                 if (app()->environment('production')) {
-                    return redirect(env('ADMIN_DOMAIN', 'https://admin.fekasclothing.com/dashboard'));
+                    return redirect(env('ADMIN_DOMAIN', 'https://admin.fekasclothingoutlet.com/dashboard'));
                 }
                 return redirect()->intended(route('admin.dashboard'));
             }
