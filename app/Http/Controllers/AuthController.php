@@ -12,9 +12,15 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    public function showLoginForm(): View
+    public function showLoginForm(): View|RedirectResponse
     {
-        return view('auth.login');
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        $loginAction = request()->routeIs('admin.login') ? route('admin.login.store') : route('login.store');
+
+        return view('auth.login', compact('loginAction'));
     }
 
     public function login(Request $request): RedirectResponse
@@ -33,9 +39,6 @@ class AuthController extends Controller
             $this->mergeGuestCart($user, $guestCartData);
 
             if ($user->isAdmin()) {
-                if (app()->environment('production')) {
-                    return redirect(env('ADMIN_DOMAIN', 'https://admin.fekasclothingoutlet.com/dashboard'));
-                }
                 return redirect()->intended(route('admin.dashboard'));
             }
 

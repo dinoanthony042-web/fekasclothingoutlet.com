@@ -93,7 +93,6 @@ Route::middleware('auth')->group(function () {
 if (app()->environment('local')) {
 
     Route::prefix('admin')
-        ->middleware(['auth', 'admin'])
         ->group(function () {
             require __DIR__.'/admin.php';
         });
@@ -101,7 +100,6 @@ if (app()->environment('local')) {
 } else {
 
     Route::domain('admin.' . parse_url(config('app.url'), PHP_URL_HOST))
-        ->middleware(['auth', 'admin'])
         ->group(function () {
             require __DIR__.'/admin.php';
         });
