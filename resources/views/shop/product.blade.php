@@ -24,7 +24,7 @@
                             <span class="text-2xl text-[#8c7d74] line-through">₦{{ number_format($product->price, 2) }}</span>
                             <span class="text-4xl font-semibold text-[#e91e8c]">₦{{ number_format($product->discounted_price, 2) }}</span>
                         </div>
-                        <span class="rounded-full bg-[#FFE6F0] px-4 py-2 text-sm font-bold uppercase tracking-[0.18em] text-[#e91e8c]">On Sale</span>
+                        <span class="rounded-full bg-[#FFE6F0] px-4 py-2 text-sm font-bold  tracking-[0.18em] text-[#e91e8c]">Discount price</span>
                     @else
                         <span class="text-4xl font-semibold text-[#1b1b18]">₦{{ number_format($product->price, 2) }}</span>
                     @endif
@@ -66,7 +66,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-[#4f433d]">Quantity</label>
-                    <input type="number" name="quantity" value="1" min="1" class="mt-3 w-24 rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-4 py-3 text-sm outline-none" />
+                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="mt-3 w-24 rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-4 py-3 text-sm outline-none" @input="validateQuantity()" />
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -80,6 +80,8 @@
                         return {
                             selectedSize: @json(old('size')),
                             selectedColor: @json(old('color')),
+                            quantity: 1,
+                            maxStock: @json($product->stock),
 
                             get isFormValid() {
                                 const hasSizes = @json(count($product->sizes ?? [])) > 0;
@@ -87,24 +89,50 @@
 
                                 if (hasSizes && !this.selectedSize) return false;
                                 if (hasColors && !this.selectedColor) return false;
+                                if (this.quantity < 1 || this.quantity > this.maxStock) return false;
                                 return true;
+                            },
+
+                            validateQuantity() {
+                                const quantityInput = this.$el.querySelector('input[name="quantity"]');
+                                let quantity = parseInt(quantityInput.value);
+
+                                if (quantity > this.maxStock) {
+                                    quantityInput.value = this.maxStock;
+                                    this.quantity = this.maxStock;
+                                } else if (quantity < 1) {
+                                    quantityInput.value = 1;
+                                    this.quantity = 1;
+                                } else {
+                                    this.quantity = quantity;
+                                }
                             },
 
                             validateForm(event) {
                                 if (!this.isFormValid) {
                                     event.preventDefault();
-                                    alert('Please select all required options (size and color) before adding to cart.');
+                                    if (this.quantity > this.maxStock) {
+                                        alert('You cannot add more items than available in stock. Maximum: ' + this.maxStock);
+                                    } else {
+                                        alert('Please select all required options (size and color) before adding to cart.');
+                                    }
                                     return false;
                                 }
                             },
 
                             init() {
+                                // Initialize quantity
+                                const quantityInput = this.$el.querySelector('input[name="quantity"]');
+                                this.quantity = parseInt(quantityInput.value);
+
                                 // Listen for radio button changes
                                 this.$el.addEventListener('change', (e) => {
                                     if (e.target.name === 'size') {
                                         this.selectedSize = e.target.value;
                                     } else if (e.target.name === 'color') {
                                         this.selectedColor = e.target.value;
+                                    } else if (e.target.name === 'quantity') {
+                                        this.validateQuantity();
                                     }
                                 });
                             }

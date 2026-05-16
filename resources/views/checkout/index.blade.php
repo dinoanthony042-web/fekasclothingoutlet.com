@@ -66,12 +66,20 @@
             <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Order summary</p>
             <div class="mt-6 space-y-4 text-sm text-[#5e534c]">
                 @php
-                    $subtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+                    $originalSubtotal = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
+                    $subtotal = $cartItems->sum(fn($item) => $item->product->discounted_price * $item->quantity);
+                    $discountAmount = max(0, $originalSubtotal - $subtotal);
                 @endphp
                 <div class="flex items-center justify-between">
                     <span>Subtotal</span>
-                    <span class="font-semibold text-[#1b1b18]">₦{{ number_format($subtotal, 2) }}</span>
+                    <span class="font-semibold text-[#1b1b18]">₦{{ number_format($originalSubtotal, 2) }}</span>
                 </div>
+                @if($discountAmount > 0)
+                    <div class="flex items-center justify-between text-[#e91e8c]">
+                        <span>Discount</span>
+                        <span>-₦{{ number_format($discountAmount, 2) }}</span>
+                    </div>
+                @endif
                 <div class="flex items-center justify-between">
                     <span>Shipping</span>
                     <span>Free</span>

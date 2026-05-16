@@ -66,7 +66,7 @@ class CheckoutController extends Controller
                     return redirect()->route('cart.index')->with('error', "{$name} only has {$available} item(s) left in stock.");
                 }
 
-                $total += $item->product->price * $item->quantity;
+                $total += $item->product->discounted_price * $item->quantity;
             }
 
             // Create order with pending status
@@ -107,7 +107,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
+                    'price' => $item->product->discounted_price,
                     'size' => $item->size,
                     'color' => $item->color,
                 ]);

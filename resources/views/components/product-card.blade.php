@@ -54,7 +54,7 @@
                         <span class="block text-sm font-medium text-red-600 line-through">₦{{ number_format($product->price, 2) }}</span>
                         <span class="block text-lg font-bold text-slate-900">₦{{ number_format($product->discounted_price, 2) }}</span>
                     </div>
-                    <span class="inline-block text-[10px] font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Sale</span>
+                    <span class="inline-block text-[10px] font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Discount sale</span>
                 @else
                     <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price, 2) }}</span>
                 @endif

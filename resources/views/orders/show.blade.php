@@ -84,13 +84,25 @@
         </div>
 
         <aside class="space-y-6">
+            @php
+                $discountAmount = $order->items->sum(function ($item) {
+                    $originalPrice = $item->product?->price ?? $item->price;
+                    return max(0, ($originalPrice - $item->price) * $item->quantity);
+                });
+            @endphp
             <div class="rounded-[2rem] border border-[#E7DDD4] bg-[#FDF5F1] p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)]">
                 <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Order summary</p>
                 <div class="mt-6 space-y-4 text-sm text-[#5a4570]">
                     <div class="flex items-center justify-between">
                         <span>Subtotal</span>
-                        <span class="font-semibold text-[#5b1e7e]">₦{{ number_format($order->total, 2) }}</span>
+                        <span class="font-semibold text-[#5b1e7e]">₦{{ number_format($order->total + $discountAmount, 2) }}</span>
                     </div>
+                    @if($discountAmount > 0)
+                        <div class="flex items-center justify-between text-[#e91e8c]">
+                            <span>Discount</span>
+                            <span>-₦{{ number_format($discountAmount, 2) }}</span>
+                        </div>
+                    @endif
                     <div class="flex items-center justify-between">
                         <span>Shipping</span>
                         <span>Free</span>

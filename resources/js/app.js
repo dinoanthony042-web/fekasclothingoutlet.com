@@ -34,7 +34,7 @@ class GuestCart {
 
     getTotalQuantity() {
         const cart = this.getCart();
-        return cart.reduce((total, item) => total + item.quantity, 0);
+        return cart.length;
     }
 
     isInCart(productId) {

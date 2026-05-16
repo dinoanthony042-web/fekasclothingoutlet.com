@@ -71,7 +71,7 @@ class CartController extends Controller
             }
 
             $cartItem->save();
-            $cartCount = Auth::user()->carts()->sum('quantity');
+            $cartCount = Auth::user()->carts()->count();
         } else {
             // For guests, cart is managed via localStorage in JavaScript
             $cartCount = $request->input('cart_count', 1);
@@ -112,8 +112,8 @@ class CartController extends Controller
         $cart->update($data);
 
         $cartCount = Auth::user()->carts()->sum('quantity');
-        $itemTotal = $cart->product->price * $cart->quantity;
-        $cartTotal = Auth::user()->carts()->get()->sum(fn($item) => $item->product->price * $item->quantity);
+        $itemTotal = $cart->product->discounted_price * $cart->quantity;
+        $cartTotal = Auth::user()->carts()->get()->sum(fn($item) => $item->product->discounted_price * $item->quantity);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -143,9 +143,9 @@ class CartController extends Controller
         $cart->increment('quantity');
         $cart->refresh();
 
-        $cartCount = Auth::user()->carts()->sum('quantity');
-        $itemTotal = $cart->product->price * $cart->quantity;
-        $cartTotal = Auth::user()->carts()->get()->sum(fn($item) => $item->product->price * $item->quantity);
+        $cartCount = Auth::user()->carts()->count();
+        $itemTotal = $cart->product->discounted_price * $cart->quantity;
+        $cartTotal = Auth::user()->carts()->get()->sum(fn($item) => $item->product->discounted_price * $item->quantity);
 
         return response()->json([
             'success' => true,
@@ -165,9 +165,9 @@ class CartController extends Controller
             $cart->refresh();
         }
 
-        $cartCount = Auth::user()->carts()->sum('quantity');
-        $itemTotal = $cart->product->price * $cart->quantity;
-        $cartTotal = Auth::user()->carts()->get()->sum(fn($item) => $item->product->price * $item->quantity);
+        $cartCount = Auth::user()->carts()->count();
+        $itemTotal = $cart->product->discounted_price * $cart->quantity;
+        $cartTotal = Auth::user()->carts()->get()->sum(fn($item) => $item->product->discounted_price * $item->quantity);
 
         return response()->json([
             'success' => true,

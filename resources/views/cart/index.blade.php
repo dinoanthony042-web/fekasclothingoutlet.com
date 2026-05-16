@@ -129,7 +129,7 @@ function getGuestCart() {
 
 function getTotalQuantity() {
     const cart = getGuestCart();
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    return cart.length;
 }
 
 function renderGuestCart() {
@@ -195,7 +195,7 @@ function renderGuestCart() {
                 return;
             }
 
-            const price = parseFloat(product.price) || 0;
+            const price = parseFloat(product.discounted_price ?? product.price) || 0;
             const itemTotal = price * cartItem.quantity;
             subtotal += itemTotal;
 
