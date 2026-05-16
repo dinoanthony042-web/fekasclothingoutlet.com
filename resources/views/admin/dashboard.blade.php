@@ -122,7 +122,7 @@
                 @forelse($recentOrders as $order)
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-gray-900">Order #{{ $order->id }}</p>
+                            <p class="font-medium text-gray-900">Order #{{ $order->order_number }}</p>
                             <p class="text-sm text-gray-600">{{ optional($order->user)->name ?? 'Guest' }}</p>
                         </div>
                         <div class="text-right">

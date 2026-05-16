@@ -70,8 +70,8 @@
                     @foreach($orders as $order)
                         <tr>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">#{{ $order->id }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">{{ $order->user->name }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">{{ $order->user->email }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $order->user?->name ?? 'Guest' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $order->user?->email ?? 'N/A' }}</td>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">₦{{ number_format($order->total, 2) }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $order->items->count() }}</td>
                             <td class="px-6 py-4 text-sm">

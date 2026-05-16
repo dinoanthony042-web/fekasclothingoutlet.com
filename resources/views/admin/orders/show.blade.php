@@ -51,9 +51,9 @@
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer Information</h3>
                     <div class="space-y-2">
-                        <p><span class="font-medium text-gray-700">Name:</span> {{ $order->user->name }}</p>
-                        <p><span class="font-medium text-gray-700">Email:</span> {{ $order->user->email }}</p>
-                        <p><span class="font-medium text-gray-700">Phone:</span> {{ $order->user->phone ?? 'N/A' }}</p>
+                        <p><span class="font-medium text-gray-700">Name:</span> {{ $order->user?->name ?? 'Guest' }}</p>
+                        <p><span class="font-medium text-gray-700">Email:</span> {{ $order->user?->email ?? 'N/A' }}</p>
+                        <p><span class="font-medium text-gray-700">Phone:</span> {{ $order->user?->phone ?? 'N/A' }}</p>
                     </div>
                 </div>
 
