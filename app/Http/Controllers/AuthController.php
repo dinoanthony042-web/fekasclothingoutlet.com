@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cart;
+use App\Services\BrevoMailer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,13 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    protected BrevoMailer $brevoMailer;
+
+    public function __construct(BrevoMailer $brevoMailer)
+    {
+        $this->brevoMailer = $brevoMailer;
+    }
+
     public function showLoginForm(): View|RedirectResponse
     {
         if (auth()->check() && auth()->user()->isAdmin()) {
@@ -73,6 +81,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+        $this->brevoMailer->sendRegistrationSuccess($user);
 
         return redirect()->route('home');
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Services\BrevoMailer;
 use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -12,10 +13,12 @@ use Illuminate\Support\Facades\DB;
 class PaymentController extends Controller
 {
     protected PaystackService $paystackService;
+    protected BrevoMailer $brevoMailer;
 
-    public function __construct(PaystackService $paystackService)
+    public function __construct(PaystackService $paystackService, BrevoMailer $brevoMailer)
     {
         $this->paystackService = $paystackService;
+        $this->brevoMailer = $brevoMailer;
     }
 
     /**
@@ -48,6 +51,8 @@ class PaymentController extends Controller
                     return redirect()->route('orders.index')->with('error', 'Order not found.');
                 }
 
+                $shouldSendConfirmation = $order->payment_status !== 'completed';
+
                 // Update order with payment details
                 $order->update([
                     'payment_status' => 'completed',
@@ -55,6 +60,10 @@ class PaymentController extends Controller
                     'transaction_id' => $paymentData['reference'],
                     'status' => 'confirmed',
                 ]);
+
+                if ($shouldSendConfirmation) {
+                    $this->brevoMailer->sendOrderConfirmation($order);
+                }
 
                 return redirect()->route('orders.index')->with('success', 'Payment completed successfully! Your orders are being processed.');
             });
@@ -105,12 +114,14 @@ class PaymentController extends Controller
         $reference = $data['reference'];
         $order = Order::where('payment_reference', $reference)->first();
 
-        if ($order) {
+        if ($order && $order->payment_status !== 'completed') {
             $order->update([
                 'payment_status' => 'completed',
                 'transaction_id' => $data['reference'],
                 'status' => 'confirmed',
             ]);
+
+            $this->brevoMailer->sendOrderConfirmation($order);
         }
     }
 }

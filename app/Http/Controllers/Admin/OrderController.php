@@ -5,12 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\BrevoMailer;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
 class OrderController extends Controller
 {
+    protected BrevoMailer $brevoMailer;
+
+    public function __construct(BrevoMailer $brevoMailer)
+    {
+        $this->brevoMailer = $brevoMailer;
+    }
+
     /**
      * Display a listing of orders.
      */
@@ -67,7 +75,12 @@ class OrderController extends Controller
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
         ]);
 
+        $previousStatus = $order->status;
         $order->update($validated);
+
+        if ($previousStatus !== $order->status) {
+            $this->brevoMailer->sendOrderStatusUpdated($order);
+        }
 
         return redirect()->route('admin.orders.show', $order)->with('success', 'Order status updated successfully.');
     }

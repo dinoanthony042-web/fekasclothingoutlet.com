@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\BrevoMailer;
 use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,12 @@ use Illuminate\View\View;
 class CheckoutController extends Controller
 {
     protected PaystackService $paystackService;
+    protected BrevoMailer $brevoMailer;
 
-    public function __construct(PaystackService $paystackService)
+    public function __construct(PaystackService $paystackService, BrevoMailer $brevoMailer)
     {
         $this->paystackService = $paystackService;
+        $this->brevoMailer = $brevoMailer;
     }
 
     public function index(): View
@@ -124,6 +127,8 @@ class CheckoutController extends Controller
                 'payment_status' => 'completed',
                 'status' => 'confirmed'
             ]);
+
+            $this->brevoMailer->sendOrderConfirmation($order);
 
             return redirect()->route('orders.index')->with('success', 'Your order has been placed successfully.');
         });
