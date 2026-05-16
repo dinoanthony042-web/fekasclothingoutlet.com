@@ -44,17 +44,17 @@
         <a href="{{ route('product.show', $product) }}" class="block text-base font-semibold text-slate-900 hover:text-slate-700 mb-2 min-h-[3rem] flex items-center">
             {{ $product->name }}
         </a>
-        <div class="flex-grow mb-3">
-            <p class="text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($product->description, 100) }}</p>
+        <div class="mb-2">
+            <p class="text-sm leading-5 text-slate-600">{{ \Illuminate\Support\Str::limit($product->description, 70) }}</p>
         </div>
-        <div class="mt-auto pt-3 space-y-3">
-            <div class="space-y-2">
+        <div class="mt-auto pt-2 space-y-2">
+            <div class="space-y-1">
                 @if($product->isOnSale())
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-slate-500 line-through">₦{{ number_format($product->price, 2) }}</span>
-                        <span class="text-lg font-bold text-red-600">₦{{ number_format($product->discounted_price, 2) }}</span>
+                    <div>
+                        <span class="block text-sm font-medium text-red-600 line-through">₦{{ number_format($product->price, 2) }}</span>
+                        <span class="block text-lg font-bold text-slate-900">₦{{ number_format($product->discounted_price, 2) }}</span>
                     </div>
-                    <span class="inline-block text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Sale</span>
+                    <span class="inline-block text-[10px] font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full">Sale</span>
                 @else
                     <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price, 2) }}</span>
                 @endif
