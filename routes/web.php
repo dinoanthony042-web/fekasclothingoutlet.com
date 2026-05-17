@@ -52,8 +52,11 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+    Route::get('/register/success', [AuthController::class, 'registrationSuccess'])->name('register.success');
 });
 
+// Email verification link (signed)
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 /*
 |--------------------------------------------------------------------------
 | Authenticated User

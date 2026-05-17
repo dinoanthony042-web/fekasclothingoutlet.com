@@ -186,6 +186,12 @@
 @endunless
 
 <main class="mx-auto max-w-7xl px-4 py-10">
+    @if(session('success'))
+        <div class="mb-6 rounded-md bg-green-50 border border-green-100 p-4 text-green-800">
+            {{ session('success') }}
+        </div>
+    @endif
+
     @yield('content')
 </main>
 

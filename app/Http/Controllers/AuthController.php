@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
 {
@@ -80,10 +81,42 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        Auth::login($user);
-        $this->brevoMailer->sendRegistrationSuccess($user);
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
 
-        return redirect()->route('home');
+        $this->brevoMailer->sendVerificationEmail($user, $verificationUrl);
+
+        session()->flash('registered_email', $user->email);
+
+        return redirect()->route('register.success');
+    }
+
+    public function registrationSuccess(): View
+    {
+        return view('auth.register-success');
+    }
+
+    public function verifyEmail(Request $request, $id, $hash): RedirectResponse
+    {
+        if (! $request->hasValidSignature()) {
+            abort(403, 'Invalid or expired verification link.');
+        }
+
+        $user = User::findOrFail($id);
+
+        if (! hash_equals(sha1($user->email), $hash)) {
+            abort(403, 'Invalid verification data.');
+        }
+
+        if (is_null($user->email_verified_at)) {
+            $user->email_verified_at = now();
+            $user->save();
+        }
+
+        return redirect()->route('login')->with('success', 'Your email has been verified. Please sign in to continue.');
     }
 
     public function logout(Request $request): RedirectResponse

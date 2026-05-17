@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head>
     <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7fb;color:#333;">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -12,19 +12,22 @@
                         <tr>
                             <td style="padding:20px 24px;border-bottom:1px solid #f1f1f6;display:flex;align-items:center;gap:12px;">
                                 <img src="{{ asset('images/fekasdark.png') }}" alt="{{ config('app.name') }}" style="height:40px;display:block;">
-                                <h2 style="margin:0;font-size:18px;color:#1f2937;">Welcome, {{ $user->name }}!</h2>
+                                <h2 style="margin:0;font-size:18px;color:#1f2937;">Verify your email</h2>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:28px 24px;">
-                                <p style="margin:0 0 12px 0;color:#555;">Your account has been created successfully. You can now sign in and start shopping on {{ config('app.name') }}.</p>
-                                <p style="margin:0 0 18px 0;color:#555;"><strong>Email:</strong> {{ $user->email }}</p>
+                                <p style="margin:0 0 16px 0;font-size:15px;color:#333;">Hi {{ $user->name }},</p>
+                                <p style="margin:0 0 20px 0;color:#555;line-height:1.5;">Thanks for creating an account at {{ config('app.name') }}. To activate your account, please confirm your email address by clicking the button below.</p>
 
-                                <p style="text-align:center;margin:22px 0;">
-                                    <a href="{{ route('login') }}" style="display:inline-block;padding:12px 22px;background:#5b1e7e;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Sign in to your account</a>
+                                <p style="text-align:center;margin:28px 0;">
+                                    <a href="{{ $verificationUrl }}" style="display:inline-block;padding:12px 22px;background:#5b1e7e;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">Verify my email</a>
                                 </p>
 
-                                <p style="margin-top:18px;color:#777;font-size:13px;">If you have any questions, reply to this email or visit our <a href="/contact" style="color:#5b1e7e;">support page</a>.</p>
+                                <p style="color:#666;font-size:13px;">If the button doesn't work, copy and paste the link below into your browser:</p>
+                                <p style="word-break:break-all;color:#1f2937;font-size:13px;">{{ $verificationUrl }}</p>
+
+                                <p style="margin-top:22px;color:#777;font-size:13px;">If you didn't create an account, you can ignore this email.</p>
                             </td>
                         </tr>
                         <tr>

@@ -66,6 +66,16 @@ class BrevoMailer
         );
     }
 
+    public function sendVerificationEmail(User $user, string $verificationUrl): bool
+    {
+        return $this->send(
+            $user->email,
+            $user->name,
+            'Please verify your email address',
+            View::make('emails.verify-email', compact('user', 'verificationUrl'))->render()
+        );
+    }
+
     public function sendOrderConfirmation(Order $order): bool
     {
         return $this->send(
