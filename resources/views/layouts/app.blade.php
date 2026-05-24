@@ -26,24 +26,24 @@
 {{-- HEADER --}}
 <header class="sticky top-0 z-50 border-b border-[#e6d9f5] bg-white/95 backdrop-blur">
 
-<div class="mx-auto max-w-7xl px-3">
+<div class="mx-auto max-w-7xl px-2 sm:px-3">
 
-        <div class="flex items-center justify-between py-3 md:py-4 gap-2">
+        <div class="flex items-center justify-between py-2 sm:py-3 md:py-4 gap-1 sm:gap-2">
 
             {{-- LOGO (BIGGER BUT RESPONSIVE) --}}
             <a href="{{ route('home') }}" class="flex items-center flex-shrink-0">
                 <img src="{{ asset('images/fekasdark.png') }}"
                      alt="Feka"
-                     class="h-10 md:h-16 w-auto">
+                     class="h-8 sm:h-10 md:h-16 w-auto">
             </a>
 
-            {{-- NAVIGATION (CATEGORIES KEPT) --}}
-            <nav class="hidden md:flex items-center space-x-8">
+            {{-- NAVIGATION (HIDDEN ON MOBILE) --}}
+            <nav class="hidden lg:flex items-center space-x-4 xl:space-x-8">
                 <div class="relative group">
                     <a href="{{ route('shop.index') }}"
-                       class="text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition flex items-center gap-1">
+                       class="text-xs sm:text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition flex items-center gap-1">
                         Shop
-                        <svg class="w-4 h-4 transition group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 transition group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -51,14 +51,14 @@
 
                     {{-- MEGA MENU --}}
                     <div class="absolute top-full left-0 w-screen max-w-6xl bg-white border border-[#e6d9f5] rounded-b-2xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                        <div class="grid grid-cols-5 gap-8 p-8">
+                        <div class="grid grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 p-6 lg:p-8">
                             @foreach($categories ?? collect() as $category)
                                 <div>
                                     <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                                       class="block text-sm font-semibold text-[#5b1e7e] hover:text-[#e91e8c] mb-3">
+                                       class="block text-xs lg:text-sm font-semibold text-[#5b1e7e] hover:text-[#e91e8c] mb-2 lg:mb-3">
                                         {{ $category->name }}
                                     </a>
-                                    <p class="text-xs text-[#6b4b8a] leading-5">
+                                    <p class="text-xs text-[#6b4b8a] leading-5 line-clamp-2">
                                         {{ $category->description }}
                                     </p>
                                 </div>
@@ -68,29 +68,29 @@
                 </div>
 
                 <a href="{{ route('shop.index', ['sort' => 'newest']) }}"
-                   class="text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition">
+                   class="text-xs sm:text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition">
                     New In
                 </a>
 
-                <a href="#" class="text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition">
+                <a href="#" class="text-xs sm:text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition">
                     Sale
                 </a>
             </nav>
 
-            {{-- SEARCH BAR (RESTORED FULLY) --}}
-            <div class="flex-1 max-w-full md:max-w-2xl mx-1 md:mx-6">
+            {{-- SEARCH BAR (RESPONSIVE) --}}
+            <div class="flex-1 max-w-full sm:max-w-xs md:max-w-lg lg:max-w-2xl mx-1 sm:mx-2 md:mx-4 lg:mx-6">
                 <form action="{{ route('shop.index') }}" method="get" class="relative w-full">
                     <input
                         type="search"
                         name="q"
                         value="{{ request('q') }}"
-                        placeholder="Search dresses, tops, shoes, bags..."
-                        class="w-full rounded-full border-2 border-[#e6d9f5] bg-white px-4 md:px-6 py-2 md:py-3 pr-10 md:pr-14 text-sm md:text-base outline-none focus:border-[#5b1e7e] focus:ring-4 focus:ring-[#5b1e7e]/10 transition placeholder:text-[#a088c0]"
+                        placeholder="Search..."
+                        class="w-full rounded-full border-2 border-[#e6d9f5] bg-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 pr-8 sm:pr-10 md:pr-14 text-xs sm:text-sm md:text-base outline-none focus:border-[#5b1e7e] focus:ring-4 focus:ring-[#5b1e7e]/10 transition placeholder:text-[#a088c0]"
                     />
 
                     <button type="submit"
-                        class="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-[#5b1e7e] hover:text-[#e91e8c] transition">
-                        <svg class="w-5 md:w-6 h-5 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="absolute right-2 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 text-[#5b1e7e] hover:text-[#e91e8c] transition">
+                        <svg class="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
@@ -98,38 +98,38 @@
                 </form>
             </div>
 
-            {{-- RIGHT ICONS (UNCHANGED EXACTLY) --}}
-            <div class="flex items-center gap-1 flex-shrink-0">
+            {{-- RIGHT ICONS (RESPONSIVE) --}}
+            <div class="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
 
                 @auth
                 <div class="relative" id="profile-menu-wrapper">
-                    <button id="profile-menu-button" class="relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition inline-flex items-center gap-2" type="button" aria-haspopup="true" aria-expanded="false">
+                    <button id="profile-menu-button" class="relative p-2 sm:p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition inline-flex items-center gap-2" type="button" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">Open profile menu</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </button>
-                    <div id="profile-menu" class="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-2xl border border-[#e6d9f5] bg-white shadow-xl opacity-0 invisible transition-all duration-200 z-50">
-                        <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">Dashboard</a>
-                        <a href="{{ route('orders.index') }}" class="block px-4 py-3 text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">My Orders</a>
+                    <div id="profile-menu" class="absolute right-0 top-full mt-2 w-40 sm:w-44 overflow-hidden rounded-2xl border border-[#e6d9f5] bg-white shadow-xl opacity-0 invisible transition-all duration-200 z-50">
+                        <a href="{{ route('dashboard') }}" class="block px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">Dashboard</a>
+                        <a href="{{ route('orders.index') }}" class="block px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-[#1b1b18] hover:bg-[#f5f0ff]">My Orders</a>
                         <form method="POST" action="{{ route('logout') }}" class="border-t border-[#f2ebff]">
                             @csrf
-                            <button type="submit" class="w-full text-left px-4 py-3 text-sm text-[#5b1e7e] hover:bg-[#f5f0ff]">Logout</button>
+                            <button type="submit" class="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-[#5b1e7e] hover:bg-[#f5f0ff]">Logout</button>
                         </form>
                     </div>
                 </div>
                 @else
-                <a href="{{ route('login') }}" class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('login') }}" class="group relative p-2 sm:p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
+                    <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                 </a>
                 @endauth
 
-                <a href="{{ route('wishlist.index') }}" class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('wishlist.index') }}" class="group relative p-2 sm:p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
+                    <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                     </svg>
@@ -143,8 +143,8 @@
                     @endauth
                 </a>
 
-                <a href="{{ route('cart.index') }}" class="group relative p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('cart.index') }}" class="group relative p-2 sm:p-3 text-[#6f6b67] hover:text-[#5b1e7e] transition">
+                    <svg class="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
@@ -156,25 +156,25 @@
     </div>
 
     {{-- HORIZONTAL SCROLLING CATEGORY NAVBAR --}}
-    <nav class="sticky top-[60px] md:top-[80px] z-40 border-b border-[#e6d9f5] bg-white/95 backdrop-blur overflow-x-auto scrollbar-hide">
-        <div class="flex gap-2 px-4 py-3 min-w-min">
-            <a href="{{ route('shop.index') }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] {{ empty($activeCategorySlug) ? 'bg-[#f7f0ff] text-[#5b1e7e]' : 'bg-white text-[#5b1e7e]' }} font-medium text-sm whitespace-nowrap hover:border-[#5b1e7e] hover:shadow-sm transition">
+    <nav class="sticky top-[50px] sm:top-[60px] md:top-[70px] lg:top-[80px] z-40 border-b border-[#e6d9f5] bg-white/95 backdrop-blur overflow-x-auto scrollbar-hide">
+        <div class="flex gap-2 px-2 sm:px-4 py-2 sm:py-3 min-w-min">
+            <a href="{{ route('shop.index') }}" class="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#e6d9f5] {{ empty($activeCategorySlug) ? 'bg-[#f7f0ff] text-[#5b1e7e]' : 'bg-white text-[#5b1e7e]' }} font-medium text-xs sm:text-sm whitespace-nowrap hover:border-[#5b1e7e] hover:shadow-sm transition">
                 🛍️ Shop All
             </a>
             
             @foreach($categories as $category)
                 @if($category->parent_id === null)
-                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border {{ $activeCategorySlug === $category->slug ? 'border-[#5b1e7e] bg-[#f7f0ff] text-[#5b1e7e]' : 'border-[#e6d9f5] bg-white text-[#5b1e7e]' }} font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
+                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border {{ $activeCategorySlug === $category->slug ? 'border-[#5b1e7e] bg-[#f7f0ff] text-[#5b1e7e]' : 'border-[#e6d9f5] bg-white text-[#5b1e7e]' }} font-medium text-xs sm:text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
                         {{ $category->name }}
                     </a>
                 @endif
             @endforeach
             
-            <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#e6d9f5] bg-white text-[#5b1e7e] font-medium text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
+            <a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#e6d9f5] bg-white text-[#5b1e7e] font-medium text-xs sm:text-sm whitespace-nowrap hover:bg-[#f0e6ff] transition">
                 ✨ New In
             </a>
             
-            <a href="#" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#ffe6f0] bg-white text-[#e91e8c] font-medium text-sm whitespace-nowrap hover:bg-[#ffe6f0] transition">
+            <a href="#" class="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#ffe6f0] bg-white text-[#e91e8c] font-medium text-xs sm:text-sm whitespace-nowrap hover:bg-[#ffe6f0] transition">
                 🔥 Sale
             </a>
         </div>
@@ -185,9 +185,9 @@
 
 @endunless
 
-<main class="mx-auto max-w-7xl px-4 py-10">
+<main class="mx-auto max-w-7xl px-2 sm:px-4 py-6 sm:py-8 md:py-10">
     @if(session('success'))
-        <div class="mb-6 rounded-md bg-green-50 border border-green-100 p-4 text-green-800">
+        <div class="mb-4 sm:mb-6 rounded-md bg-green-50 border border-green-100 p-3 sm:p-4 text-xs sm:text-sm text-green-800">
             {{ session('success') }}
         </div>
     @endif

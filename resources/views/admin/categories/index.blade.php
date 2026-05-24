@@ -3,10 +3,10 @@
 @section('title', 'Categories')
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Categories</h1>
-        <a href="{{ route('admin.categories.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+<div class="space-y-4 sm:space-y-6">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Categories</h1>
+        <a href="{{ route('admin.categories.create') }}" class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition w-full sm:w-auto justify-center sm:justify-start">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
@@ -14,83 +14,23 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Desktop Table View (Hidden on mobile) -->
+    <div class="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subcategories</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subcategories</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($categories as $category)
-                    <tr class="bg-white">
-                        <td class="px-6 py-4 whitespace-nowrap">
+                    <tr class="bg-white hover:bg-gray-50 transition">
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">{{ $category->name }}</div>
-                            <div class="text-sm text-gray-500">{{ $category->slug }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                            {{ $category->children->count() }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $category->products->count() }}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">
-                            {{ Str::limit($category->description, 50) }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ route('admin.categories.edit', $category) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                            <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this category?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    @if($category->children->count() > 0)
-                        @foreach($category->children as $subcategory)
-                        <tr class="bg-gray-50">
-                            <td class="px-6 py-3 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <span class="inline-flex items-center justify-center w-5 h-5 mr-2 rounded-full bg-slate-200 text-slate-600 text-xs font-semibold">›</span>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700">{{ $subcategory->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $subcategory->slug }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-500">—</td>
-                            <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900">
-                                {{ $subcategory->products->count() }}
-                            </td>
-                            <td class="px-6 py-3 text-sm text-gray-700">
-                                {{ Str::limit($subcategory->description, 50) }}
-                            </td>
-                            <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('admin.categories.edit', $subcategory) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                <form method="POST" action="{{ route('admin.categories.destroy', $subcategory) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this subcategory?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    @endif
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                            No categories found. <a href="{{ route('admin.categories.create') }}" class="text-blue-600 hover:text-blue-800">Create one now</a>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-@endsection
+                            <div class="text-xs text-gray-500">{{ $category->slug }}</div>
+                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900\">\n                            {{ $category->children->count() }}\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900\">\n                            {{ $category->products->count() }}\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 text-sm text-gray-900\">\n                            {{ Str::limit($category->description, 50) }}\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2\">\n                            <a href=\"{{ route('admin.categories.edit', $category) }}\" class=\"text-indigo-600 hover:text-indigo-900\">Edit</a>\n                            <form method=\"POST\" action=\"{{ route('admin.categories.destroy', $category) }}\" class=\"inline\" onsubmit=\"return confirm('Are you sure you want to delete this category?')\">\n                                @csrf\n                                @method('DELETE')\n                                <button type=\"submit\" class=\"text-red-600 hover:text-red-900\">Delete</button>\n                            </form>\n                        </td>\n                    </tr>\n                    @if($category->children->count() > 0)\n                        @foreach($category->children as $subcategory)\n                        <tr class=\"bg-gray-50 hover:bg-gray-100 transition\">\n                            <td class=\"px-4 sm:px-6 py-3 whitespace-nowrap\">\n                                <div class=\"flex items-center\">\n                                    <span class=\"inline-flex items-center justify-center w-5 h-5 mr-2 rounded-full bg-slate-200 text-slate-600 text-xs font-semibold\">›</span>\n                                    <div>\n                                        <div class=\"text-sm font-medium text-gray-700\">{{ $subcategory->name }}</div>\n                                        <div class=\"text-xs text-gray-500\">{{ $subcategory->slug }}</div>\n                                    </div>\n                                </div>\n                            </td>\n                            <td class=\"px-4 sm:px-6 py-3 whitespace-nowrap text-sm text-gray-500\">—</td>\n                            <td class=\"px-4 sm:px-6 py-3 whitespace-nowrap text-sm text-gray-900\">\n                                {{ $subcategory->products->count() }}\n                            </td>\n                            <td class=\"px-4 sm:px-6 py-3 text-sm text-gray-700\">\n                                {{ Str::limit($subcategory->description, 50) }}\n                            </td>\n                            <td class=\"px-4 sm:px-6 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2\">\n                                <a href=\"{{ route('admin.categories.edit', $subcategory) }}\" class=\"text-indigo-600 hover:text-indigo-900\">Edit</a>\n                                <form method=\"POST\" action=\"{{ route('admin.categories.destroy', $subcategory) }}\" class=\"inline\" onsubmit=\"return confirm('Are you sure you want to delete this subcategory?')\">\n                                    @csrf\n                                    @method('DELETE')\n                                    <button type=\"submit\" class=\"text-red-600 hover:text-red-900\">Delete</button>\n                                </form>\n                            </td>\n                        </tr>\n                        @endforeach\n                    @endif\n                    @empty\n                    <tr>\n                        <td colspan=\"5\" class=\"px-4 sm:px-6 py-4 text-center text-gray-500\">\n                            No categories found. <a href=\"{{ route('admin.categories.create') }}\" class=\"text-blue-600 hover:text-blue-800\">Create one now</a>\n                        </td>\n                    </tr>\n                    @endforelse\n                </tbody>\n            </table>\n        </div>\n    </div>\n\n    <!-- Mobile Card View (Hidden on desktop) -->\n    <div class=\"md:hidden space-y-3\">\n        @forelse($categories as $category)\n        <div class=\"bg-white rounded-lg border border-gray-200 p-4 space-y-3\">\n            <div class=\"flex justify-between items-start\">\n                <div class=\"flex-1\">\n                    <h3 class=\"font-semibold text-gray-900 text-sm\">{{ $category->name }}</h3>\n                    <p class=\"text-xs text-gray-500\">{{ $category->slug }}</p>\n                </div>\n                <div class=\"flex gap-2 ml-2\">\n                    <a href=\"{{ route('admin.categories.edit', $category) }}\" class=\"px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition\">Edit</a>\n                    <form method=\"POST\" action=\"{{ route('admin.categories.destroy', $category) }}\" class=\"inline\" onsubmit=\"return confirm('Delete?')\">\n                        @csrf\n                        @method('DELETE')\n                        <button type=\"submit\" class=\"px-2 py-1 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100 transition\">Delete</button>\n                    </form>\n                </div>\n            </div>\n            <div class=\"grid grid-cols-2 gap-2 text-xs border-t pt-3\">\n                <div>\n                    <span class=\"text-gray-500\">Subcategories</span>\n                    <p class=\"font-semibold text-gray-900\">{{ $category->children->count() }}</p>\n                </div>\n                <div>\n                    <span class=\"text-gray-500\">Products</span>\n                    <p class=\"font-semibold text-gray-900\">{{ $category->products->count() }}</p>\n                </div>\n            </div>\n            <div class=\"text-xs text-gray-600\">\n                <p class=\"font-medium text-gray-700 mb-1\">Description:</p>\n                <p>{{ Str::limit($category->description, 80) }}</p>\n            </div>\n        </div>\n        @if($category->children->count() > 0)\n            <div class=\"ml-2 space-y-2\">\n                @foreach($category->children as $subcategory)\n                <div class=\"bg-gray-50 rounded-lg border border-gray-100 p-3 space-y-2\">\n                    <div class=\"flex justify-between items-start\">\n                        <div class=\"flex-1\">\n                            <h4 class=\"font-semibold text-gray-800 text-xs flex items-center gap-2\">\n                                <span class=\"text-xs\">›</span>{{ $subcategory->name }}\n                            </h4>\n                            <p class=\"text-xs text-gray-500\">{{ $subcategory->slug }}</p>\n                        </div>\n                        <div class=\"flex gap-1 ml-2\">\n                            <a href=\"{{ route('admin.categories.edit', $subcategory) }}\" class=\"px-1.5 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition\">Edit</a>\n                            <form method=\"POST\" action=\"{{ route('admin.categories.destroy', $subcategory) }}\" class=\"inline\" onsubmit=\"return confirm('Delete?')\">\n                                @csrf\n                                @method('DELETE')\n                                <button type=\"submit\" class=\"px-1.5 py-1 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100 transition\">Del</button>\n                            </form>\n                        </div>\n                    </div>\n                    <div class=\"text-xs text-gray-600\">\n                        <span class=\"text-gray-500\">Products:</span>\n                        <span class=\"font-semibold\">{{ $subcategory->products->count() }}</span>\n                    </div>\n                </div>\n                @endforeach\n            </div>\n        @endif\n        @empty\n        <div class=\"text-center text-gray-500 text-sm py-8\">\n            <p>No categories found.</p>\n            <a href=\"{{ route('admin.categories.create') }}\" class=\"text-blue-600 hover:text-blue-800 font-medium\">Create one now</a>\n        </div>\n        @endforelse\n    </div>\n</div>\n@endsection

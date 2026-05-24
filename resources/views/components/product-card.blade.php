@@ -6,7 +6,7 @@
 <article class="flex flex-col h-full overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:border-slate-300" data-product-id="{{ $product->id }}" data-product-container>
     <div class="relative">
         <a href="{{ route('product.show', $product) }}" class="block overflow-hidden">
-            <img src="{{ $product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $product->name }}" class="h-64 w-full object-cover" />
+            <img src="{{ $product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $product->name }}" class="h-48 sm:h-56 md:h-64 w-full object-cover" />
         </a>
         @if($product->stock === 0)
             <div class="absolute inset-0 flex items-center justify-center bg-black/50">

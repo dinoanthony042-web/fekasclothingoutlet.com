@@ -42,7 +42,7 @@
     </div>
 
     <!-- Thumbnails -->
-    <div class="flex gap-3 overflow-x-auto overflow-y-hidden pb-2 snap-x snap-mandatory">
+    <div class="flex gap-2 sm:gap-3 overflow-x-auto overflow-y-hidden pb-2 snap-x snap-mandatory mt-4">
         <template x-for="(image, index) in images" :key="index">
             <button
                 @click="currentIndex = index"
@@ -56,7 +56,7 @@
                 <img
                     :src="image"
                     :alt="'Thumbnail ' + (index + 1)"
-                    class="h-24 w-24 object-cover transition-transform duration-300 group-hover:scale-110"
+                    class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-cover transition-transform duration-300 group-hover:scale-110"
                 />
 
                 <!-- Active Indicator Overlay -->

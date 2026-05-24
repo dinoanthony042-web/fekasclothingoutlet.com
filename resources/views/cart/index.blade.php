@@ -9,48 +9,48 @@ console.log('=== CART PAGE LOAD DEBUG ===');
 console.log('localStorage.getItem("guest_cart"):', localStorage.getItem('guest_cart'));
 console.log('All localStorage keys:', Object.keys(localStorage));
 </script>
-<div class="space-y-8">
-    <div class="rounded-[2rem] border border-[#e6d9f5] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
-        <div class="flex flex-wrap items-start justify-between gap-4">
+<div class="space-y-6 sm:space-y-8">
+    <div class="rounded-lg sm:rounded-[2rem] border border-[#e6d9f5] bg-white p-4 sm:p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
             <div>
-                <p class="text-sm uppercase tracking-[0.35em] text-[#6b4b8a]">Your cart</p>
-                <h1 class="mt-2 text-3xl font-semibold bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] bg-clip-text text-transparent">Ready to checkout?</h1>
+                <p class="text-xs sm:text-sm uppercase tracking-[0.35em] text-[#6b4b8a]">Your cart</p>
+                <h1 class="mt-2 text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-[#5b1e7e] to-[#8b2e9e] bg-clip-text text-transparent">Ready to checkout?</h1>
             </div>
-            <a href="{{ route('shop.index') }}" class="rounded-full border border-[#5b1e7e] px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-[#5b1e7e] transition hover:bg-[#faf5ff]">Continue shopping</a>
+            <a href="{{ route('shop.index') }}" class="rounded-full border border-[#5b1e7e] px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#5b1e7e] transition hover:bg-[#faf5ff] w-full sm:w-auto text-center sm:text-left">Continue shopping</a>
         </div>
     </div>
 
     <div id="cart-container">
         @if(auth()->check())
             @if($cartItems->isEmpty())
-            <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-10 text-center text-sm text-[#6b4b8a]">
+            <div class="rounded-lg sm:rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-6 sm:p-10 text-center text-sm text-[#6b4b8a]">
                 Your cart is empty. Explore our latest collection and add your favorites.
             </div>
         @else
-            <div class="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
-                <div class="space-y-6" id="cart-items-list">
+            <div class="grid gap-6 sm:gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+                <div class="space-y-4 sm:space-y-6" id="cart-items-list">
                     @foreach($cartItems as $item)
-                        <div class="rounded-[2rem] border border-[#e6d9f5] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]" data-cart-id="{{ $item->id }}">
-                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                <img src="{{ $item->product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $item->product->name }}" class="h-32 w-32 flex-shrink-0 rounded-[1.5rem] object-cover" />
-                                    <div class="flex-1 space-y-3">
-                                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="rounded-lg sm:rounded-[2rem] border border-[#e6d9f5] bg-white p-4 sm:p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]" data-cart-id="{{ $item->id }}">
+                            <div class="flex flex-col gap-3 sm:gap-4">
+                                <img src="{{ $item->product->images[0] ?? 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $item->product->name }}" class="h-24 sm:h-32 w-24 sm:w-32 flex-shrink-0 rounded-lg sm:rounded-[1.5rem] object-cover" />
+                                    <div class="flex-1 space-y-2 sm:space-y-3">
+                                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                         <div>
-                                            <h2 class="text-xl font-semibold text-[#1b1b18]">{{ $item->product->name }}</h2>
-                                            <p class="text-sm text-[#6e625d]">{{ $item->product->category->name }}</p>
+                                            <h2 class="text-base sm:text-xl font-semibold text-[#1b1b18]">{{ $item->product->name }}</h2>
+                                            <p class="text-xs sm:text-sm text-[#6e625d]">{{ $item->product->category->name }}</p>
                                         </div>
                                         @if($item->product->isOnSale())
-                                            <div class="flex items-center gap-2 flex-wrap justify-end">
+                                            <div class="flex items-center gap-2">
                                                 <div>
-                                                    <div class="text-sm text-[#6e625d] line-through">₦{{ number_format($item->product->price * $item->quantity, 2) }}</div>
-                                                    <span class="text-lg font-semibold text-[#e91e8c] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->discounted_price * $item->quantity, 2) }}</span>
+                                                    <div class="text-xs sm:text-sm text-[#6e625d] line-through">₦{{ number_format($item->product->price * $item->quantity, 2) }}</div>
+                                                    <span class="text-base sm:text-lg font-semibold text-[#e91e8c] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->discounted_price * $item->quantity, 2) }}</span>
                                                 </div>
                                             </div>
                                         @else
-                                            <span class="text-lg font-semibold text-[#1b1b18] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->price * $item->quantity, 2) }}</span>
+                                            <span class="text-base sm:text-lg font-semibold text-[#1b1b18] item-total" data-cart-id="{{ $item->id }}">₦{{ number_format($item->product->price * $item->quantity, 2) }}</span>
                                         @endif
                                     </div>
-                                    <div class="flex flex-wrap items-center gap-3 text-sm text-[#5e534c]">
+                                    <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-[#5e534c]">
                                         @if($item->size)
                                             <span>Size: {{ $item->size }}</span>
                                         @endif
@@ -59,12 +59,12 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                                         @endif
                                         <span>Qty: <span class="quantity-display">{{ $item->quantity }}</span></span>
                                     </div>
-                                    <div class="flex flex-wrap items-center gap-3">
+                                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                                         <div class="flex items-center gap-2">
                                             <button type="button" class="decrement-btn w-8 h-8 rounded-full border border-[#e6d9f5] bg-[#faf5ff] flex items-center justify-center text-[#5b1e7e] hover:border-[#5b1e7e] transition" data-cart-id="{{ $item->id }}">
                                                 <span class="text-lg leading-none">−</span>
                                             </button>
-                                            <span class="quantity-display w-8 text-center text-sm font-medium">{{ $item->quantity }}</span>
+                                            <span class="quantity-display w-8 text-center text-xs sm:text-sm font-medium">{{ $item->quantity }}</span>
                                             <button type="button" class="increment-btn w-8 h-8 rounded-full border border-[#e6d9f5] bg-[#faf5ff] flex items-center justify-center text-[#5b1e7e] hover:border-[#5b1e7e] transition" data-cart-id="{{ $item->id }}">
                                                     <span class="text-lg leading-none">+</span>
                                             </button>
@@ -72,7 +72,7 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                                         <form action="{{ route('cart.destroy', $item) }}" method="post">
                                             @csrf
                                             @method('delete')
-                                            <button type="submit" class="rounded-full border border-[#e6d9f5] bg-[#faf5ff] px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#5b1e7e] hover:border-[#5b1e7e]">Remove</button>
+                                            <button type="submit" class="rounded-full border border-[#e6d9f5] bg-[#faf5ff] px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#5b1e7e] hover:border-[#5b1e7e]">Remove</button>
                                         </form>
                                     </div>
                                 </div>
@@ -81,10 +81,10 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                     @endforeach
                 </div>
 
-                <aside class="space-y-6">
-                    <div class="rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
-                        <p class="text-sm uppercase tracking-[0.25em] text-[#6b4b8a]">Order summary</p>
-                        <div class="mt-6 space-y-4 text-sm text-[#5a4570]">
+                <aside class="space-y-4 sm:space-y-6">
+                    <div class="rounded-lg sm:rounded-[2rem] border border-[#e6d9f5] bg-[#faf5ff] p-4 sm:p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
+                        <p class="text-xs sm:text-sm uppercase tracking-[0.25em] text-[#6b4b8a]">Order summary</p>
+                        <div class="mt-4 sm:mt-6 space-y-2 sm:space-y-4 text-xs sm:text-sm text-[#5a4570]">
                             <div class="flex items-center justify-between">
                                 <span>Subtotal</span>
                                 <span class="font-semibold text-[#5b1e7e] cart-subtotal">₦{{ number_format($cartItems->sum(fn($item) => $item->product->isOnSale() ? $item->product->discounted_price * $item->quantity : $item->product->price * $item->quantity), 2) }}</span>
@@ -93,7 +93,7 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                                 <span>Estimated delivery</span>
                                 <span>Free</span>
                             </div>
-                            <div class="flex items-center justify-between text-base font-semibold text-[#5b1e7e]">
+                            <div class="flex items-center justify-between text-sm sm:text-base font-semibold text-[#5b1e7e]">
                                 <span>Total</span>
                                 <span class="cart-total">₦{{ number_format($cartItems->sum(fn($item) => $item->product->isOnSale() ? $item->product->discounted_price * $item->quantity : $item->product->price * $item->quantity), 2) }}</span>
                             </div>
