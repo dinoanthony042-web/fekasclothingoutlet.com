@@ -1,5 +1,143 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
 <div class="space-y-4 sm:space-y-6">
-    <div class=\"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0\">\n        <h1 class=\"text-xl sm:text-3xl font-bold text-gray-900\">Orders & Sales</h1>\n        <a href=\"{{ route('admin.reports.sales') }}\" class=\"bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm w-full sm:w-auto text-center\">\n            View Sales Report\n        </a>\n    </div>\n\n    <!-- Filters -->\n    <div class=\"bg-white rounded-lg shadow p-3 sm:p-6\">\n        <form method=\"GET\" action=\"{{ route('admin.orders.index') }}\" class=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4\">\n            <div>\n                <label class=\"block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2\">Search</label>\n                <input type=\"text\" name=\"search\" value=\"{{ request('search') }}\" placeholder=\"Order ID or Name\" \n                    class=\"w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500\">\n            </div>\n            <div>\n                <label class=\"block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2\">Status</label>\n                <select name=\"status\" class=\"w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500\">\n                    <option value=\"\">All Statuses</option>\n                    <option value=\"pending\" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>\n                    <option value=\"processing\" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>\n                    <option value=\"shipped\" {{ request('status') === 'shipped' ? 'selected' : '' }}>Shipped</option>\n                    <option value=\"delivered\" {{ request('status') === 'delivered' ? 'selected' : '' }}>Delivered</option>\n                    <option value=\"cancelled\" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>\n                </select>\n            </div>\n            <div>\n                <label class=\"block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2\">From Date</label>\n                <input type=\"date\" name=\"from_date\" value=\"{{ request('from_date') }}\" \n                    class=\"w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500\">\n            </div>\n            <div>\n                <label class=\"block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2\">To Date</label>\n                <input type=\"date\" name=\"to_date\" value=\"{{ request('to_date') }}\" \n                    class=\"w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500\">\n            </div>\n            <div>\n                <button type=\"submit\" class=\"w-full bg-blue-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm font-medium\">\n                    Filter\n                </button>\n            </div>\n            <div>\n                <a href=\"{{ route('admin.orders.index') }}\" class=\"block w-full bg-gray-300 text-gray-700 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-gray-400 text-center text-xs sm:text-sm font-medium transition\">\n                    Reset\n                </a>\n            </div>\n        </form>\n    </div>\n\n    @if($orders->count() > 0)\n        <!-- Desktop Table View (Hidden on mobile) -->\n        <div class=\"hidden lg:block bg-white rounded-lg shadow overflow-hidden\">\n            <div class=\"overflow-x-auto\">\n                <table class=\"min-w-full divide-y divide-gray-200\">\n                    <thead class=\"bg-gray-50\">\n                        <tr>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Order ID</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Customer</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell\">Email</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Total</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell\">Items</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Status</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell\">Date</th>\n                            <th class=\"px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider\">Actions</th>\n                        </tr>\n                    </thead>\n                    <tbody class=\"bg-white divide-y divide-gray-200\">\n                        @foreach($orders as $order)\n                            <tr class=\"hover:bg-gray-50 transition\">\n                                <td class=\"px-3 sm:px-6 py-3 text-sm font-medium text-gray-900\">#{{ $order->id }}</td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm text-gray-700\">{{ $order->user?->name ?? 'Guest' }}</td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm text-gray-700 hidden md:table-cell text-xs\">{{ $order->user?->email ?? 'N/A' }}</td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm font-medium text-gray-900\">₦{{ number_format($order->total, 0) }}</td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm text-gray-700 hidden sm:table-cell\">{{ $order->items->count() }}</td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm\">\n                                    <span class=\"px-2 sm:px-3 py-1 rounded-full text-xs font-medium {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}{{ $order->status === 'shipped' ? 'bg-blue-100 text-blue-800' : '' }}{{ $order->status === 'processing' ? 'bg-yellow-100 text-yellow-800' : '' }}{{ $order->status === 'pending' ? 'bg-orange-100 text-orange-800' : '' }}{{ $order->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}\">\n                                        {{ ucfirst($order->status) }}\n                                    </span>\n                                </td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm text-gray-700 hidden md:table-cell\">{{ $order->created_at->format('M d, Y') }}</td>\n                                <td class=\"px-3 sm:px-6 py-3 text-sm space-x-2\">\n                                    <a href=\"{{ route('admin.orders.show', $order) }}\" class=\"text-blue-600 hover:text-blue-900\">View</a>\n                                </td>\n                            </tr>\n                        @endforeach\n                    </tbody>\n                </table>\n            </div>\n        </div>\n\n        <!-- Mobile/Tablet Card View (Hidden on large screens) -->\n        <div class=\"lg:hidden space-y-3\">\n            @foreach($orders as $order)\n            <div class=\"bg-white rounded-lg border border-gray-200 p-3 sm:p-4 space-y-3\">\n                <div class=\"flex justify-between items-start\">\n                    <div class=\"flex-1\">\n                        <div class=\"font-semibold text-gray-900 text-sm\">Order #{{ $order->id }}</div>\n                        <p class=\"text-xs text-gray-500\">{{ $order->created_at->format('M d, Y') }}</p>\n                    </div>\n                    <span class=\"px-2 py-1 rounded-full text-xs font-medium {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}{{ $order->status === 'shipped' ? 'bg-blue-100 text-blue-800' : '' }}{{ $order->status === 'processing' ? 'bg-yellow-100 text-yellow-800' : '' }}{{ $order->status === 'pending' ? 'bg-orange-100 text-orange-800' : '' }}{{ $order->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}\">\n                        {{ ucfirst($order->status) }}\n                    </span>\n                </div>\n                <div class=\"grid grid-cols-2 gap-3 text-sm border-t pt-3\">\n                    <div>\n                        <span class=\"text-gray-500 text-xs\">Customer</span>\n                        <p class=\"font-semibold text-gray-900\">{{ $order->user?->name ?? 'Guest' }}</p>\n                    </div>\n                    <div>\n                        <span class=\"text-gray-500 text-xs\">Total</span>\n                        <p class=\"font-semibold text-gray-900\">₦{{ number_format($order->total, 0) }}</p>\n                    </div>\n                </div>\n                <div class=\"text-xs text-gray-600\">\n                    <p class=\"text-gray-500 mb-1\">Email: {{ $order->user?->email ?? 'N/A' }}</p>\n                    <p class=\"text-gray-500\">Items: {{ $order->items->count() }}</p>\n                </div>\n                <a href=\"{{ route('admin.orders.show', $order) }}\" class=\"block w-full text-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium\">\n                    View Details\n                </a>\n            </div>\n            @endforeach\n        </div>\n\n        <!-- Pagination -->\n        <div class=\"mt-6\">\n            {{ $orders->links() }}\n        </div>\n    @else\n        <div class=\"bg-white rounded-lg shadow p-6 sm:p-8 text-center\">\n            <p class=\"text-gray-500 text-base sm:text-lg\">No orders found.</p>\n        </div>\n    @endif\n</div>\n@endsection
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+        <div>
+            <h1 class="text-xl sm:text-3xl font-bold text-gray-900">Orders & Sales</h1>
+            <p class="mt-1 text-sm text-gray-500">Manage orders, filter status, and review recent sales.</p>
+        </div>
+        <a href="{{ route('admin.reports.sales') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm w-full sm:w-auto text-center">
+            View Sales Report
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Search</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Order ID or Name"
+                    class="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </div>
+
+            <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select name="status" class="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
+                    <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                    <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">From Date</label>
+                <input type="date" name="from_date" value="{{ request('from_date') }}"
+                    class="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </div>
+
+            <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">To Date</label>
+                <input type="date" name="to_date" value="{{ request('to_date') }}"
+                    class="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </div>
+
+            <div class="sm:col-span-1 lg:col-span-2 flex flex-col sm:flex-row gap-3">
+                <button type="submit" class="w-full sm:w-auto bg-blue-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
+                    Filter
+                </button>
+                <a href="{{ route('admin.orders.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-gray-200 text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-300 transition">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @if($orders->count() > 0)
+        <div class="hidden lg:block bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Email</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Items</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($orders as $order)
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-4 py-3 text-sm font-medium text-gray-900">#{{ $order->id }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $order->user?->name ?? 'Guest' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 hidden md:table-cell">{{ $order->user?->email ?? 'N/A' }}</td>
+                            <td class="px-4 py-3 text-sm font-semibold text-gray-900">₦{{ number_format($order->total, 0) }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 hidden sm:table-cell">{{ $order->items->count() }}</td>
+                            <td class="px-4 py-3 text-sm">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}{{ $order->status === 'shipped' ? 'bg-blue-100 text-blue-800' : '' }}{{ $order->status === 'processing' ? 'bg-yellow-100 text-yellow-800' : '' }}{{ $order->status === 'pending' ? 'bg-orange-100 text-orange-800' : '' }}{{ $order->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-700 hidden md:table-cell">{{ $order->created_at->format('M d, Y') }}</td>
+                            <td class="px-4 py-3 text-sm space-x-2">
+                                <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-900">View</a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="lg:hidden space-y-3">
+            @foreach($orders as $order)
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div>
+                        <div class="font-semibold text-gray-900 text-sm">Order #{{ $order->id }}</div>
+                        <p class="mt-1 text-xs sm:text-sm text-gray-500">{{ $order->created_at->format('M d, Y') }}</p>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}{{ $order->status === 'shipped' ? 'bg-blue-100 text-blue-800' : '' }}{{ $order->status === 'processing' ? 'bg-yellow-100 text-yellow-800' : '' }}{{ $order->status === 'pending' ? 'bg-orange-100 text-orange-800' : '' }}{{ $order->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-4 text-sm">
+                    <div>
+                        <p class="text-gray-500 text-xs">Customer</p>
+                        <p class="font-semibold text-gray-900">{{ $order->user?->name ?? 'Guest' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs">Total</p>
+                        <p class="font-semibold text-gray-900">₦{{ number_format($order->total, 0) }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-3 text-xs text-gray-600 space-y-1">
+                    <p>Email: {{ $order->user?->email ?? 'N/A' }}</p>
+                    <p>Items: {{ $order->items->count() }}</p>
+                </div>
+
+                <a href="{{ route('admin.orders.show', $order) }}" class="block w-full text-center bg-blue-600 text-white rounded-xl px-4 py-2 mt-4 text-sm font-medium hover:bg-blue-700 transition">
+                    View Details
+                </a>
+            </div>
+            @endforeach
+        </div>
+
+        <div class="mt-6">
+            {{ $orders->links() }}
+        </div>
+    @else
+        <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 text-center">
+            <p class="text-gray-500 text-base sm:text-lg">No orders found.</p>
+        </div>
+    @endif
+</div>
+@endsection

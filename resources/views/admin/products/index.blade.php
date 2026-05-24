@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Products')
 
@@ -7,15 +7,14 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Products</h1>
         <a href="{{ route('admin.products.create') }}" class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition w-full sm:w-auto justify-center sm:justify-start">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
             Add Product
         </a>
     </div>
 
-    <!-- Desktop Table View (Hidden on mobile) -->
-    <div class="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -37,7 +36,117 @@
                                     <img class="h-10 w-10 rounded-lg object-cover" src="{{ $product->images[0] }}" alt="{{ $product->name }}">
                                 @else
                                     <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
-                                    </div>\n                                @endif\n                                <div>\n                                    <div class=\"text-sm font-medium text-gray-900\">{{ $product->name }}</div>\n                                    <div class=\"text-xs text-gray-500 line-clamp-1\">{{ Str::limit($product->description, 40) }}</div>\n                                </div>\n                            </div>\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900\">\n                            {{ $product->category->name ?? 'N/A' }}\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900\">\n                            ₦{{ number_format($product->price, 2) }}\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900\">\n                            <span class=\"inline-flex items-center justify-center h-8 w-8 rounded-full text-xs font-semibold {{ $product->stock > 10 ? 'bg-green-100 text-green-800' : ($product->stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}\">\n                                {{ $product->stock }}\n                            </span>\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap\">\n                            <span class=\"inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_featured ? 'bg-purple-100 text-purple-800' : ($product->is_new ? 'bg-green-100 text-green-800' : ($product->is_best_seller ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')) }}\">\n                                {{ $product->is_featured ? 'Featured' : ($product->is_new ? 'New' : ($product->is_best_seller ? 'Best Seller' : 'Regular')) }}\n                            </span>\n                        </td>\n                        <td class=\"px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2\">\n                            <a href=\"{{ route('admin.products.edit', $product) }}\" class=\"text-indigo-600 hover:text-indigo-900\">Edit</a>\n                            <form method=\"POST\" action=\"{{ route('admin.products.destroy', $product) }}\" class=\"inline\" onsubmit=\"return confirm('Delete this product?')\">\n                                @csrf\n                                @method('DELETE')\n                                <button type=\"submit\" class=\"text-red-600 hover:text-red-900\">Delete</button>\n                            </form>\n                        </td>\n                    </tr>\n                    @empty\n                    <tr>\n                        <td colspan=\"6\" class=\"px-4 sm:px-6 py-4 text-center text-gray-500\">\n                            No products found. <a href=\"{{ route('admin.products.create') }}\" class=\"text-blue-600 hover:text-blue-800\">Create one now</a>\n                        </td>\n                    </tr>\n                    @endforelse\n                </tbody>\n            </table>\n        </div>\n\n        @if($products->hasPages())\n        <div class=\"bg-white px-3 sm:px-4 py-3 border-t border-gray-200\">\n            {{ $products->links() }}\n        </div>\n        @endif\n    </div>\n\n    <!-- Mobile Card View (Hidden on desktop) -->\n    <div class=\"md:hidden space-y-3\">\n        @forelse($products as $product)\n        <div class=\"bg-white rounded-lg border border-gray-200 p-3 space-y-3\">\n            <div class=\"flex gap-3\">\n                @if($product->images && count($product->images) > 0)\n                    <img class=\"h-16 w-16 rounded-lg object-cover flex-shrink-0\" src=\"{{ $product->images[0] }}\" alt=\"{{ $product->name }}\">\n                @else\n                    <div class=\"h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0\">\n                        <svg class=\"h-8 w-8 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">\n                            <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\"></path>\n                        </svg>\n                    </div>\n                @endif\n                <div class=\"flex-1\">\n                    <h3 class=\"font-semibold text-gray-900 text-sm\">{{ $product->name }}</h3>\n                    <p class=\"text-xs text-gray-600 line-clamp-1\">{{ $product->description }}</p>\n                    <div class=\"flex gap-2 mt-2 flex-wrap\">\n                        <span class=\"inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_featured ? 'bg-purple-100 text-purple-800' : ($product->is_new ? 'bg-green-100 text-green-800' : ($product->is_best_seller ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')) }}\">\n                            {{ $product->is_featured ? 'Featured' : ($product->is_new ? 'New' : ($product->is_best_seller ? 'Best Seller' : 'Regular')) }}\n                        </span>\n                        <span class=\"inline-flex items-center justify-center h-6 px-2 text-xs font-semibold rounded-full {{ $product->stock > 10 ? 'bg-green-100 text-green-800' : ($product->stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}\">\n                            Stock: {{ $product->stock }}\n                        </span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"grid grid-cols-2 gap-2 text-xs border-t pt-2\">\n                <div>\n                    <span class=\"text-gray-500\">Category</span>\n                    <p class=\"font-semibold text-gray-900\">{{ $product->category->name ?? 'N/A' }}</p>\n                </div>\n                <div>\n                    <span class=\"text-gray-500\">Price</span>\n                    <p class=\"font-semibold text-gray-900\">₦{{ number_format($product->price, 0) }}</p>\n                </div>\n            </div>\n            <div class=\"flex gap-2 pt-2 border-t\">\n                <a href=\"{{ route('admin.products.edit', $product) }}\" class=\"flex-1 px-2 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition text-center font-medium\">Edit</a>\n                <form method=\"POST\" action=\"{{ route('admin.products.destroy', $product) }}\" class=\"flex-1\" onsubmit=\"return confirm('Delete?')\">\n                    @csrf\n                    @method('DELETE')\n                    <button type=\"submit\" class=\"w-full px-2 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition font-medium\">Delete</button>\n                </form>\n            </div>\n        </div>\n        @empty\n        <div class=\"text-center text-gray-500 text-sm py-8 bg-white rounded-lg border border-gray-200\">\n            <p>No products found.</p>\n            <a href=\"{{ route('admin.products.create') }}\" class=\"text-blue-600 hover:text-blue-800 font-medium\">Create one now</a>\n        </div>\n        @endforelse\n\n        @if($products->hasPages())\n        <div class=\"bg-white px-3 py-3 border border-gray-200 rounded-lg\">\n            {{ $products->links() }}\n        </div>\n        @endif\n    </div>\n</div>\n@endsection
+                                    </div>
+                                @endif
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
+                                    <div class="text-xs text-gray-500 line-clamp-1">{{ Str::limit($product->description, 40) }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ $product->category->name ?? 'N/A' }}
+                        </td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ₦{{ number_format($product->price, 2) }}
+                        </td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full text-xs font-semibold {{ $product->stock > 10 ? 'bg-green-100 text-green-800' : ($product->stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                {{ $product->stock }}
+                            </span>
+                        </td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_featured ? 'bg-purple-100 text-purple-800' : ($product->is_new ? 'bg-green-100 text-green-800' : ($product->is_best_seller ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')) }}">
+                                {{ $product->is_featured ? 'Featured' : ($product->is_new ? 'New' : ($product->is_best_seller ? 'Best Seller' : 'Regular')) }}
+                            </span>
+                        </td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                            <a href="{{ route('admin.products.edit', $product) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                            <form method="POST" action="{{ route('admin.products.destroy', $product) }}" class="inline" onsubmit="return confirm('Delete this product?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-4 sm:px-6 py-4 text-center text-gray-500">
+                            No products found. <a href="{{ route('admin.products.create') }}" class="text-blue-600 hover:text-blue-800">Create one now</a>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($products->hasPages())
+        <div class="bg-white px-3 sm:px-4 py-3 border-t border-gray-200">
+            {{ $products->links() }}
+        </div>
+        @endif
+    </div>
+
+    <div class="md:hidden space-y-3">
+        @forelse($products as $product)
+        <div class="bg-white rounded-2xl border border-gray-200 p-3 space-y-3">
+            <div class="flex gap-3">
+                @if($product->images && count($product->images) > 0)
+                    <img class="h-16 w-16 rounded-lg object-cover flex-shrink-0" src="{{ $product->images[0] }}" alt="{{ $product->name }}">
+                @else
+                    <div class="h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
+                        <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                @endif
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-900 text-sm">{{ $product->name }}</h3>
+                    <p class="text-xs text-gray-600 line-clamp-1">{{ $product->description }}</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_featured ? 'bg-purple-100 text-purple-800' : ($product->is_new ? 'bg-green-100 text-green-800' : ($product->is_best_seller ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')) }}">
+                            {{ $product->is_featured ? 'Featured' : ($product->is_new ? 'New' : ($product->is_best_seller ? 'Best Seller' : 'Regular')) }}
+                        </span>
+                        <span class="inline-flex items-center justify-center h-6 px-2 text-xs font-semibold rounded-full {{ $product->stock > 10 ? 'bg-green-100 text-green-800' : ($product->stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                            Stock: {{ $product->stock }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs border-t pt-2">
+                <div>
+                    <span class="text-gray-500">Category</span>
+                    <p class="font-semibold text-gray-900">{{ $product->category->name ?? 'N/A' }}</p>
+                </div>
+                <div>
+                    <span class="text-gray-500">Price</span>
+                    <p class="font-semibold text-gray-900">₦{{ number_format($product->price, 0) }}</p>
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2 border-t">
+                <a href="{{ route('admin.products.edit', $product) }}" class="flex-1 px-2 py-1.5 text-xs bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-center font-medium">Edit</a>
+                <form method="POST" action="{{ route('admin.products.destroy', $product) }}" class="flex-1" onsubmit="return confirm('Delete?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full px-2 py-1.5 text-xs bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium">Delete</button>
+                </form>
+            </div>
+        </div>
+        @empty
+        <div class="text-center text-gray-500 text-sm py-8 bg-white rounded-2xl border border-gray-200">
+            <p>No products found.</p>
+            <a href="{{ route('admin.products.create') }}" class="text-blue-600 hover:text-blue-800 font-medium">Create one now</a>
+        </div>
+        @endforelse
+
+        @if($products->hasPages())
+        <div class="bg-white px-3 py-3 border border-gray-200 rounded-2xl">
+            {{ $products->links() }}
+        </div>
+        @endif
+    </div>
+</div>
+@endsection
