@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -97,6 +99,64 @@ class AuthController extends Controller
     public function registrationSuccess(): View
     {
         return view('auth.register-success');
+    }
+
+    public function showForgotForm(): View
+    {
+        return view('auth.passwords.email');
+    }
+
+    public function sendResetLink(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+
+        if (! $user) {
+            return back()->with('status', "We can't find a user with that email address.");
+        }
+
+        $token = Password::broker()->createToken($user);
+
+        $resetUrl = url(route('password.reset', ['token' => $token, 'email' => $user->email], false));
+
+        $this->brevoMailer->send(
+            $user->email,
+            $user->name,
+            'Reset your password',
+            view('emails.password-reset', compact('user', 'resetUrl'))->render()
+        );
+
+        return back()->with('status', 'We sent a password reset link to your email address.');
+    }
+
+    public function showResetForm(Request $request, $token = null): View
+    {
+        $email = $request->query('email');
+        return view('auth.passwords.reset', compact('token', 'email'));
+    }
+
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $credentials = $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $status = Password::broker()->reset($credentials, function ($user, $password) {
+            $user->password = Hash::make($password);
+            $user->setRememberToken(Str::random(60));
+            $user->save();
+        });
+
+        if ($status == Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('success', 'Your password has been reset. Please login.');
+        }
+
+        return back()->withErrors(['email' => __($status)]);
     }
 
     public function verifyEmail(Request $request, $id, $hash): RedirectResponse

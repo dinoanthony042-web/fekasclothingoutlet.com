@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="description" content="Feka Clothing is a premium womenswear destination for modern dresses, bags, accessories and curated luxury essentials.">
+    <meta name="description" content="Feka Clothing is a premium  destination for modern dresses, bags, accessories and curated luxury essentials.">
 
-    <title>@yield('title', 'Feka Clothing Outlet') | Fekas Clothing Outlet</title>
+    <title>@yield('title', 'Fekas Clothing Outlet') | Fekas Clothing Outlet</title>
 
     <link rel="icon" href="{{ asset('images/fekasdark.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.bunny.net">
