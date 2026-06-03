@@ -4,29 +4,29 @@
 
 @section('content')
 <div class="grid gap-10 lg:grid-cols-[1.3fr_0.9fr]">
-    <div class="space-y-8">
+    <div class="space-y-8 max-w-full">
         <!-- Product Gallery Component -->
         <x-product-gallery :product="$product" />
 
         <div class="rounded-[2rem] border border-[#E7DDD4] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
             <div class="flex flex-wrap items-center gap-4 text-sm uppercase tracking-[0.25em] text-[#7d6d66]">
-                <span>{{ $product->category->name }}</span>
+                <span class="truncate">{{ $product->category->name }}</span>
                 <span class="text-[#d3c4bd]">•</span>
-                <span>{{ implode(', ', $product->styles ?? []) }}</span>
+                <span class="break-words">{{ implode(', ', $product->styles ?? []) }}</span>
             </div>
-            <h1 class="mt-4 text-4xl font-semibold text-[#1b1b18]">{{ $product->name }}</h1>
-            <p class="mt-4 max-w-2xl text-base leading-8 text-[#5e534c]">{{ $product->description }}</p>
+            <h1 class="mt-4 text-3xl sm:text-4xl font-semibold text-[#1b1b18]">{{ $product->name }}</h1>
+            <p class="mt-4 max-w-full text-base leading-8 text-[#5e534c]">{{ $product->description }}</p>
 
-            <div class="mt-8 flex flex-wrap items-center gap-6" data-product-container>
-                <div class="flex items-center gap-3">
+            <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-product-container>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                     @if($product->isOnSale())
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl text-[#8c7d74] line-through">₦{{ number_format($product->price, 2) }}</span>
-                            <span class="text-4xl font-semibold text-[#e91e8c]">₦{{ number_format($product->discounted_price, 2) }}</span>
+                        <div class="flex flex-col gap-2">
+                            <span class="text-xl sm:text-2xl text-[#8c7d74] line-through">₦{{ number_format($product->price, 2) }}</span>
+                            <span class="text-3xl sm:text-4xl font-semibold text-[#e91e8c]">₦{{ number_format($product->discounted_price, 2) }}</span>
                         </div>
-                        <span class="rounded-full bg-[#FFE6F0] px-4 py-2 text-sm font-bold  tracking-[0.18em] text-[#e91e8c]">Discount price</span>
+                        <span class="rounded-full bg-[#FFE6F0] px-4 py-2 text-sm font-bold tracking-[0.18em] text-[#e91e8c]">Discount price</span>
                     @else
-                        <span class="text-4xl font-semibold text-[#1b1b18]">₦{{ number_format($product->price, 2) }}</span>
+                        <span class="text-3xl sm:text-4xl font-semibold text-[#1b1b18]">₦{{ number_format($product->price, 2) }}</span>
                     @endif
                 </div>
                 <span class="rounded-full bg-[#F1ECE8] px-4 py-2 text-sm uppercase tracking-[0.18em] text-[#766459]">{{ $product->stock }} in stock</span>
@@ -70,8 +70,8 @@
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <button type="submit" class="inline-flex items-center justify-center rounded-full bg-[#1b1b18] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#403c39] add-to-cart-btn" :disabled="!isFormValid" :class="{ 'opacity-50 cursor-not-allowed': !isFormValid }">Add to cart</button>
-                    <a href="{{ route('wishlist.index') }}" class="inline-flex items-center justify-center rounded-full border border-[#1b1b18] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#1b1b18] transition hover:bg-[#f5f0ec]">Add to wishlist</a>
+                    <button type="submit" class="inline-flex w-full sm:w-auto items-center justify-center rounded-full bg-[#1b1b18] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#403c39] add-to-cart-btn" :disabled="!isFormValid" :class="{ 'opacity-50 cursor-not-allowed': !isFormValid }">Add to cart</button>
+                    <a href="{{ route('wishlist.index') }}" class="inline-flex w-full sm:w-auto items-center justify-center rounded-full border border-[#1b1b18] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#1b1b18] transition hover:bg-[#f5f0ec]">Add to wishlist</a>
                 </div>
 
                 <!-- Form validation script -->
@@ -169,7 +169,7 @@
         </div>
     </div>
 
-    <aside class="space-y-6">
+    <aside class="space-y-6 max-w-full">
         <div class="rounded-[2rem] border border-[#E7DDD4] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.12)]">
             <p class="text-sm uppercase tracking-[0.25em] text-[#7d6d66]">Product details</p>
             <ul class="mt-6 space-y-4 text-sm leading-7 text-[#5e534c]">

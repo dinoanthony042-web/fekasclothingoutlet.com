@@ -1,8 +1,8 @@
 @props(['product'])
 
-<div class="product-gallery group" x-data="productGallery()" @keydown.left="prevImage()" @keydown.right="nextImage()" @keydown.escape="closeModal()" tabindex="0">
+<div class="product-gallery group w-full max-w-full" x-data="productGallery()" @keydown.left="prevImage()" @keydown.right="nextImage()" @keydown.escape="closeModal()" tabindex="0">
     <!-- Main Image Display -->
-    <div class="relative overflow-hidden rounded-[2rem] bg-[#f7f2ee] shadow-[0_26px_70px_-45px_rgba(0,0,0,0.2)] cursor-pointer"
+    <div class="relative w-full overflow-hidden rounded-[2rem] bg-[#f7f2ee] shadow-[0_26px_70px_-45px_rgba(0,0,0,0.2)] cursor-pointer"
         @touchstart="touchStart = $event.touches[0].clientX"
         @touchend="handleSwipe($event)"
         @click="openModal()">
