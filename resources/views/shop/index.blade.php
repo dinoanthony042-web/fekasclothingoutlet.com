@@ -16,26 +16,30 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700">Category</label>
-                        <select name="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
-                            <option value="">All</option>
-                            @foreach($categories as $category)
-                            <option value="{{ $category->slug }}" @selected($activeCategorySlug === $category->slug)>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-semibold text-slate-700">
+                            @if(isset($subcategories) && $subcategories->isNotEmpty())
+                                Subcategory
+                            @else
+                                Category
+                            @endif
+                        </label>
+                        @if(isset($subcategories) && $subcategories->isNotEmpty())
+                            <input type="hidden" name="category" value="{{ $activeCategorySlug }}" />
+                            <select name="subcategory" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
+                                <option value="">All subcategories</option>
+                                @foreach($subcategories as $subcategory)
+                                <option value="{{ $subcategory->slug }}" @selected(request('subcategory') === $subcategory->slug)>{{ $subcategory->name }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <select name="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
+                                <option value="">All</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->slug }}" @selected($activeCategorySlug === $category->slug)>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
-
-                    @if(isset($subcategories) && $subcategories->isNotEmpty())
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700">Subcategory</label>
-                        <select name="subcategory" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
-                            <option value="">All subcategories</option>
-                            @foreach($subcategories as $subcategory)
-                            <option value="{{ $subcategory->slug }}" @selected(request('subcategory') === $subcategory->slug)>{{ $subcategory->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @endif
 
                     <div class="grid gap-3 grid-cols-2">
                         <div>
@@ -98,26 +102,30 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700">Category</label>
-                        <select name="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
-                            <option value="">All</option>
-                            @foreach($categories as $category)
-                            <option value="{{ $category->slug }}" @selected($activeCategorySlug === $category->slug)>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-semibold text-slate-700">
+                            @if(isset($subcategories) && $subcategories->isNotEmpty())
+                                Subcategory
+                            @else
+                                Category
+                            @endif
+                        </label>
+                        @if(isset($subcategories) && $subcategories->isNotEmpty())
+                            <input type="hidden" name="category" value="{{ $activeCategorySlug }}" />
+                            <select name="subcategory" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
+                                <option value="">All subcategories</option>
+                                @foreach($subcategories as $subcategory)
+                                <option value="{{ $subcategory->slug }}" @selected(request('subcategory') === $subcategory->slug)>{{ $subcategory->name }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <select name="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
+                                <option value="">All</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->slug }}" @selected($activeCategorySlug === $category->slug)>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
-
-                    @if(isset($subcategories) && $subcategories->isNotEmpty())
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700">Subcategory</label>
-                        <select name="subcategory" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
-                            <option value="">All subcategories</option>
-                            @foreach($subcategories as $subcategory)
-                            <option value="{{ $subcategory->slug }}" @selected(request('subcategory') === $subcategory->slug)>{{ $subcategory->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @endif
 
                     <div class="grid gap-3 sm:grid-cols-2">
                         <div>
