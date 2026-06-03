@@ -15,7 +15,7 @@ class AdminController extends Controller
     {
         // Key metrics
         $totalProducts = Product::count();
-        $totalCategories = Category::whereNull('parent_id')->count();
+        $totalCategories = Category::rootCategories()->count();
         $totalOrders = Order::count();
         $totalRevenue = Order::where('status', '!=', 'cancelled')->sum('total');
         $totalUsers = User::where('role', '!=', 'admin')->count();

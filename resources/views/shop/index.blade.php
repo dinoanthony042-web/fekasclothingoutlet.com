@@ -211,14 +211,27 @@
             @if($products->isEmpty())
                 <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600">No products matched your filters. Try a different search.</div>
             @else
-                <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 xl:grid-cols-5">
-                    @foreach($products as $product)
-                        @include('components.product-card', ['product' => $product])
-                    @endforeach
-                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-sm text-slate-600">Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} products</p>
+                        @if($products->hasPages())
+                            <div class="flex justify-center sm:justify-end">
+                                {{ $products->links('pagination::tailwind') }}
+                            </div>
+                        @endif
+                    </div>
 
-                <div class="flex justify-center pt-4">
-                    {{ $products->links() }}
+                    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 xl:grid-cols-5">
+                        @foreach($products as $product)
+                            @include('components.product-card', ['product' => $product])
+                        @endforeach
+                    </div>
+
+                    @if($products->hasPages())
+                        <div class="flex justify-center pt-4">
+                            {{ $products->links('pagination::tailwind') }}
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>

@@ -36,21 +36,32 @@
                 </div>
 
                 <!-- Parent Category -->
+                @php
+                    $isRoot = $category->parent_id === null && in_array(ucfirst(strtolower($category->name)), \App\Models\Category::ROOT_CATEGORY_NAMES, true);
+                @endphp
                 <div>
-                    <label for="parent_id" class="block text-sm font-medium text-gray-700">Parent Category (leave empty for main category)</label>
-                    <select name="parent_id" id="parent_id"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">Main Category</option>
-                        @foreach($parentCategories as $parentCategory)
-                            <option value="{{ $parentCategory->id }}" {{ old('parent_id', $category->parent_id) == $parentCategory->id ? 'selected' : '' }}>
-                                {{ $parentCategory->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('parent_id')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-1 text-sm text-gray-500">If you select a parent category, this will be a subcategory.</p>
+                    <label for="parent_id" class="block text-sm font-medium text-gray-700">Parent Category</label>
+                    @if($isRoot)
+                        <select disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 text-gray-700">
+                            <option selected>Main Category</option>
+                        </select>
+                        <input type="hidden" name="parent_id" value="">
+                        <p class="mt-1 text-sm text-gray-500">This is a main category and cannot be moved under another category.</p>
+                    @else
+                        <select name="parent_id" id="parent_id"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <option value="">Select a main category</option>
+                            @foreach($parentCategories as $parentCategory)
+                                <option value="{{ $parentCategory->id }}" {{ old('parent_id', $category->parent_id) == $parentCategory->id ? 'selected' : '' }}>
+                                    {{ $parentCategory->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('parent_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-sm text-gray-500">Only Men, Women, and Kids are allowed as top-level categories.</p>
+                    @endif
                 </div>
             </div>
 

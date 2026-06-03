@@ -72,7 +72,8 @@
                     New In
                 </a>
 
-                <a href="#" class="text-xs sm:text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition">
+                <a href="{{ route('shop.index', ['sale' => 1]) }}"
+                   class="text-xs sm:text-sm font-medium text-[#1b1b18] hover:text-[#5b1e7e] transition">
                     Sale
                 </a>
             </nav>

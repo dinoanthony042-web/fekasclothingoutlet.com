@@ -27,7 +27,7 @@ class DiscountController extends Controller
     public function create(): View
     {
         $products = Product::all();
-        $categories = Category::whereNull('parent_id')->with('children')->get();
+        $categories = Category::ensureRootCategoriesExist()->load('children');
         return view('admin.discounts.create', compact('products', 'categories'));
     }
 
@@ -79,7 +79,7 @@ class DiscountController extends Controller
     public function edit(Discount $discount): View
     {
         $products = Product::all();
-        $categories = Category::whereNull('parent_id')->with('children')->get();
+        $categories = Category::ensureRootCategoriesExist()->load('children');
         return view('admin.discounts.edit', compact('discount', 'products', 'categories'));
     }
 

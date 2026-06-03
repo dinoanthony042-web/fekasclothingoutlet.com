@@ -16,12 +16,11 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        $categories = Category::whereNull('parent_id')
-            ->with(['children' => function ($query) {
+        $categories = Category::ensureRootCategoriesExist()
+            ->load(['children' => function ($query) {
                 $query->orderBy('name');
-            }])
-            ->orderBy('name')
-            ->get();
+            }]);
+
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -30,7 +29,7 @@ class CategoryController extends Controller
      */
     public function create(): View
     {
-        $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
+        $parentCategories = Category::ensureRootCategoriesExist();
         return view('admin.categories.create', compact('parentCategories'));
     }
 
@@ -45,8 +44,28 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
         $validated['parent_id'] = $validated['parent_id'] ?: null;
+        $validated['name'] = trim($validated['name']);
+        $validated['slug'] = Str::slug($validated['name']);
+
+        if ($validated['parent_id'] === null) {
+            $name = Str::title($validated['name']);
+            if (!in_array($name, Category::rootCategoryNames(), true)) {
+                return back()->withErrors(['name' => 'Main categories are fixed to Men, Women, and Kids.'])->withInput();
+            }
+
+            if (Category::whereNull('parent_id')->where('name', $name)->exists()) {
+                return back()->withErrors(['name' => 'That main category already exists.'])->withInput();
+            }
+
+            $validated['name'] = $name;
+            $validated['slug'] = Str::slug($name);
+        } else {
+            $parent = Category::find($validated['parent_id']);
+            if ($parent && $parent->parent_id !== null) {
+                return back()->withErrors(['parent_id' => 'Subcategories must be created under Men, Women, or Kids.'])->withInput();
+            }
+        }
 
         Category::create($validated);
 
@@ -66,10 +85,9 @@ class CategoryController extends Controller
      */
     public function edit(Category $category): View
     {
-        $parentCategories = Category::whereNull('parent_id')
-            ->where('id', '!=', $category->id)
-            ->orderBy('name')
-            ->get();
+        $parentCategories = Category::ensureRootCategoriesExist()
+            ->where('id', '!=', $category->id);
+
         return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 
@@ -84,8 +102,36 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
         $validated['parent_id'] = $validated['parent_id'] ?: null;
+        $validated['name'] = trim($validated['name']);
+        $validated['slug'] = Str::slug($validated['name']);
+
+        if ($validated['parent_id'] === null) {
+            if (!$category->isRootCategory()) {
+                return back()->withErrors(['parent_id' => 'Only Men, Women, and Kids may be main categories.'])->withInput();
+            }
+
+            $name = Str::title($validated['name']);
+            if (!in_array($name, Category::rootCategoryNames(), true)) {
+                return back()->withErrors(['name' => 'Main categories are fixed to Men, Women, and Kids.'])->withInput();
+            }
+
+            if (Category::whereNull('parent_id')->where('name', $name)->where('id', '!=', $category->id)->exists()) {
+                return back()->withErrors(['name' => 'That main category already exists.'])->withInput();
+            }
+
+            $validated['name'] = $name;
+            $validated['slug'] = Str::slug($name);
+        } else {
+            if ($category->isRootCategory()) {
+                return back()->withErrors(['parent_id' => 'Root categories cannot be moved under another category.'])->withInput();
+            }
+
+            $parent = Category::find($validated['parent_id']);
+            if ($parent && $parent->parent_id !== null) {
+                return back()->withErrors(['parent_id' => 'A subcategory must be attached directly to Men, Women, or Kids.'])->withInput();
+            }
+        }
 
         $category->update($validated);
 

@@ -16,9 +16,19 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $products = Product::with('category')->latest()->paginate(20);
+        $products = Product::with('category')
+            ->when($request->q, function ($query) use ($request) {
+                $query->where(function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->q . '%')
+                        ->orWhere('description', 'like', '%' . $request->q . '%');
+                });
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -27,8 +37,8 @@ class ProductController extends Controller
      */
     public function create(): View
     {
-        $categories = Category::whereNull('parent_id')->with('children')->get();
-        $parentCategories = Category::whereNull('parent_id')->get();
+        $categories = Category::ensureRootCategoriesExist()->load('children');
+        $parentCategories = Category::ensureRootCategoriesExist();
 
         return view('admin.products.create', compact('categories', 'parentCategories'));
     }
@@ -76,8 +86,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product): View
     {
-        $categories = Category::whereNull('parent_id')->with('children')->get();
-        $parentCategories = Category::whereNull('parent_id')->get();
+        $categories = Category::ensureRootCategoriesExist()->load('children');
+        $parentCategories = Category::ensureRootCategoriesExist();
 
         return view('admin.products.edit', compact('product', 'categories', 'parentCategories'));
     }

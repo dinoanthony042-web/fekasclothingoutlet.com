@@ -14,6 +14,20 @@
         </a>
     </div>
 
+    <div class="mt-4 bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+        <form action="{{ route('admin.products.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
+            <label for="q" class="sr-only">Search products</label>
+            <input type="search" id="q" name="q" value="{{ request('q') }}" placeholder="Search products by name or description"
+                   class="w-full sm:flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            <div class="flex gap-2">
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-medium text-white hover:bg-indigo-700 transition">Search</button>
+                @if(request('q'))
+                    <a href="{{ route('admin.products.index') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Clear</a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     <div class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">

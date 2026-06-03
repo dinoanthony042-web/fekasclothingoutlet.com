@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-            $categories = Category::orderBy('name')->get();
+            $categories = Category::ensureRootCategoriesExist();
             $cartCount = auth()->check() ? Cart::where('user_id', auth()->id())->sum('quantity') : 0;
             $wishlistCount = auth()->check() ? Wishlist::where('user_id', auth()->id())->count() : 0;
 

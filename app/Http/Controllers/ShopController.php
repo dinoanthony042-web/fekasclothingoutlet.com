@@ -11,7 +11,10 @@ class ShopController extends Controller
 {
     public function index(Request $request): View
     {
-        $categories = Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
+        $categories = Category::ensureRootCategoriesExist()
+            ->load(['children' => function ($query) {
+                $query->orderBy('name');
+            }]);
         $styles = ['Casual', 'Corporate', 'Party', 'Streetwear', 'Traditional', 'English'];
         $colors = ['Blush', 'Black', 'Ivory', 'Nude', 'Gold'];
         $sizes = ['XS', 'S', 'M', 'L', '36', '37', '38', '39', '40'];
@@ -64,6 +67,12 @@ class ShopController extends Controller
                 $query->where('name', 'like', '%' . $request->q . '%')
                     ->orWhere('description', 'like', '%' . $request->q . '%');
             }))
+            ->when($request->sale, function ($query) {
+                $query->where(function ($query) {
+                    $query->whereHas('discounts', fn ($query) => $query->active())
+                          ->orWhereHas('category.discounts', fn ($query) => $query->active());
+                });
+            })
             ->when($request->subcategory, function ($query) use ($request, $selectedParent) {
                 $query->whereHas('category', function ($query) use ($request, $selectedParent) {
                     $query->where('slug', $request->subcategory);

@@ -36,10 +36,10 @@
 
                 <!-- Parent Category -->
                 <div>
-                    <label for="parent_id" class="block text-sm font-medium text-gray-700">Parent Category (leave empty for main category)</label>
+                    <label for="parent_id" class="block text-sm font-medium text-gray-700">Parent Category</label>
                     <select name="parent_id" id="parent_id"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">Main Category</option>
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                        <option value="">Select a main category</option>
                         @foreach($parentCategories as $category)
                             <option value="{{ $category->id }}" {{ old('parent_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
@@ -49,7 +49,7 @@
                     @error('parent_id')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-sm text-gray-500">If you select a parent category, this will be created as a subcategory.</p>
+                    <p class="mt-1 text-sm text-gray-500">Only Men, Women, and Kids are allowed as top-level categories. This will create a subcategory under one of them.</p>
                 </div>
             </div>
 
