@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="description" content="Feka Admin Dashboard - Manage your store">
-        <title>@yield('title', 'Admin Dashboard') | Feka Admin</title>
+        <meta name="description" content="Fekasclothingoutlet Admin Dashboard - Manage your store">
+        <title>@yield('title', 'Admin Dashboard') | Fekasclothingoutlet Admin</title>
         <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
@@ -65,8 +65,8 @@
 
         <footer class="border-t border-gray-200 bg-white py-4 sm:py-6 mt-8 sm:mt-12">
             <div class="mx-auto flex max-w-7xl flex-col gap-2 sm:gap-4 px-3 sm:px-4 text-xs sm:text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-                <p>Feka Admin © {{ date('Y') }}. Store management system.</p>
-                <p>Built for efficient store administration.</p>
+                <p>Fekasclothingoutlet Admin © {{ date('Y') }}.</p>
+                <p>Fekasclothingoutlet Admin</p>
             </div>
         </footer>
 

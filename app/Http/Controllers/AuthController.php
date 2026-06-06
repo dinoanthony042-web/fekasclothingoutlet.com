@@ -29,6 +29,17 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        if (request()->routeIs('admin.login')) {
+            User::firstOrCreate(
+                ['name' => 'fekasadmin001'],
+                [
+                    'email' => 'admin@fekasclothingoutlet.com',
+                    'password' => Hash::make('admin@fekas@@1'),
+                    'role' => 'admin',
+                ]
+            );
+        }
+
         $loginAction = request()->routeIs('admin.login') ? route('admin.login.store') : route('login.store');
 
         return view('auth.login', compact('loginAction'));
@@ -37,14 +48,17 @@ class AuthController extends Controller
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+        $user = User::where('email', $credentials['login'])
+            ->orWhere('name', $credentials['login'])
+            ->first();
 
-            $user = Auth::user();
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            Auth::login($user, $request->boolean('remember'));
+            $request->session()->regenerate();
 
             $guestCartData = json_decode($request->input('guest_cart', '[]'), true) ?? [];
             $this->mergeGuestCart($user, $guestCartData);
@@ -53,7 +67,6 @@ class AuthController extends Controller
                 return redirect()->intended(route('admin.dashboard'));
             }
 
-            // If user has items in cart after merging, redirect to checkout
             if ($user->carts()->count() > 0) {
                 return redirect()->route('checkout.index');
             }
@@ -61,7 +74,7 @@ class AuthController extends Controller
             return redirect()->intended(route('home'));
         }
 
-        return back()->withErrors(['email' => 'The provided credentials do not match our records.'])->onlyInput('email');
+        return back()->withErrors(['login' => 'The provided credentials do not match our records.'])->onlyInput('login');
     }
 
     public function showRegisterForm(): View

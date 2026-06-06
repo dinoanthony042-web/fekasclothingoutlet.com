@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class AdminUserSeeder extends Seeder
 {
@@ -12,11 +12,21 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::firstOrCreate(
+        User::firstOrCreate(
             ['email' => 'admin@fekas.com'],
             [
                 'name' => 'Admin User',
                 'password' => bcrypt('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'admin@fekas001.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('admin@fekas@@1'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
             ]

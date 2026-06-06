@@ -21,7 +21,7 @@
 @section('content')
 <div class="mx-auto max-w-xl rounded-[2rem] border border-[#e6d9f5] bg-white p-10 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)]">
     <div class="text-center mb-8">
-        <img src="{{ asset('images/fekasdark.png') }}" alt="Feka Clothing" class="mx-auto h-16 w-auto mb-4">
+        <img src="{{ asset('images/fekasdark.png') }}" alt="Feka Clothing" class="mx-auto h-32 w-auto mb-4">
         <p class="text-sm uppercase tracking-[0.35em] text-[#6b4b8a]">Create your account</p>
         <h1 class="mt-3 text-3xl font-semibold text-[#1b1b18]">Welcome to Fekas Clothing Outlet</h1>
     </div>
