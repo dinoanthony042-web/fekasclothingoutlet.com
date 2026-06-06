@@ -208,7 +208,7 @@
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
                     </a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white hover:text-[#5b1e7e] transition" aria-label="Instagram">
+                    <a href="https://instagram.com/fekasclothingoutlet" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white hover:text-[#5b1e7e] transition" aria-label="Instagram">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.205.625c-.713.304-1.32.71-1.903 1.293-.583.583-.989 1.19-1.293 1.903-.295.7-.493 1.57-.553 2.848C.014 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.553 2.848.304.713.71 1.32 1.293 1.903.583.583 1.19.989 1.903 1.293.7.295 1.57.493 2.848.553C8.333 23.986 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.261 2.848-.553.713-.304 1.32-.71 1.903-1.293.583-.583.989-1.19 1.293-1.903.295-.7.493-1.57.553-2.848.058-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.261-2.148-.553-2.848-.304-.713-.71-1.32-1.293-1.903-.583-.583-1.19-.989-1.903-1.293-.7-.295-1.57-.493-2.848-.553C15.667.014 15.26 0 12 0zm0 2.16c3.203 0 3.585.009 4.849.070 1.171.054 1.805.244 2.227.408.56.217.96.477 1.382.896.419.42.679.822.896 1.381.164.422.354 1.056.408 2.227.061 1.264.07 1.646.07 4.849s-.009 3.585-.07 4.849c-.054 1.171-.244 1.805-.408 2.227-.217.56-.477.96-.896 1.382-.42.419-.822.679-1.381.896-.422.164-1.056.354-2.227.408-1.264.061-1.646.07-4.849.07s-3.585-.009-4.849-.07c-1.171-.054-1.805-.244-2.227-.408-.56-.217-.96-.477-1.382-.896-.419-.42-.679-.822-.896-1.381-.164-.422-.354-1.056-.408-2.227-.061-1.264-.07-1.646-.07-4.849s.009-3.585.07-4.849c.054-1.171.244-1.805.408-2.227.217-.56.477-.96.896-1.382.42-.419.822-.679 1.381-.896.422-.164 1.056-.354 2.227-.408 1.264-.061 1.646-.07 4.849-.07zm0 3.678a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998zm5.817-10.427a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
                         </svg>
@@ -227,33 +227,31 @@
                     </a>
                 </div>
             </div>
-            <div>
-                <h3 class="text-sm font-semibold text-white">Quick links</h3>
-                <ul class="mt-3 space-y-2 text-sm text-[#e6d9f5]">
-                    <li><a href="{{ route('shop.index') }}" class="hover:text-white transition">Shop</a></li>
-                    <li><a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="hover:text-white transition">New arrivals</a></li>
-                    <li><a href="{{ route('shop.index', ['sale' => 1]) }}" class="hover:text-white transition">Sale</a></li>
-                    <li><a href="{{ url('/contact') }}" class="hover:text-white transition">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-white">Support</h3>
-                <ul class="mt-3 space-y-2 text-sm text-[#e6d9f5]">
-                    <li><a href="{{ url('/') }}" class="hover:text-white transition">About us</a></li>
-                    <li><a href="{{ url('/') }}" class="hover:text-white transition">Shipping info</a></li>
-                    <li><a href="{{ url('/') }}" class="hover:text-white transition">Returns</a></li>
-                    <li><a href="{{ url('/') }}" class="hover:text-white transition">FAQ</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-white">Contact</h3>
-                <p class="mt-3 text-sm text-[#e6d9f5]">Email: support@fekasclothingoutlet.com</p>
-                <p class="mt-2 text-sm text-[#e6d9f5]">Phone: +234 800 000 0000</p>
-                <p class="mt-4 text-sm text-[#e6d9f5]">Subscribe to our newsletter for exclusive offers and new arrivals.</p>
-                <form class="mt-3 flex gap-2">
-                    <input type="email" placeholder="Your email" class="flex-1 px-3 py-2 rounded-lg bg-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm" />
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-white text-[#5b1e7e] font-semibold hover:bg-[#e6d9f5] transition text-sm">Subscribe</button>
-                </form>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:col-span-3">
+                <div>
+                    <h3 class="text-sm font-semibold text-white">Quick links</h3>
+                    <ul class="mt-3 space-y-2 text-sm text-[#e6d9f5]">
+                        <li><a href="{{ route('shop.index') }}" class="hover:text-white transition">Shop</a></li>
+                        <li><a href="{{ route('shop.index', ['sort' => 'newest']) }}" class="hover:text-white transition">New arrivals</a></li>
+                        <li><a href="{{ route('shop.index', ['sale' => 1]) }}" class="hover:text-white transition">Sale</a></li>
+                        <li><a href="{{ url('/contact') }}" class="hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-white">Support</h3>
+                    <ul class="mt-3 space-y-2 text-sm text-[#e6d9f5]">
+                        <li><a href="{{ url('/') }}" class="hover:text-white transition">About us</a></li>
+                        <li><a href="{{ url('/') }}" class="hover:text-white transition">Shipping info</a></li>
+                        <li><a href="{{ url('/') }}" class="hover:text-white transition">Returns</a></li>
+                        <li><a href="{{ url('/') }}" class="hover:text-white transition">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="text-sm font-semibold text-white">Contact</h3>
+                    <p class="mt-3 text-sm text-[#e6d9f5]">Email: support@fekasclothingoutlet.com</p>
+                    <p class="mt-2 text-sm text-[#e6d9f5]">Phone: +234 803 488 8050</p>
+                 
+                </div>
             </div>
         </div>
         <div class="mt-10 border-t border-white/20 pt-6 text-center text-sm text-[#e6d9f5]">
