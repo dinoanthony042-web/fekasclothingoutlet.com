@@ -38,12 +38,27 @@
 
                 @if($product->sizes)
                     <div>
-                        <label class="block text-sm font-semibold text-[#4f433d]">Size</label>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-sm font-semibold text-[#4f433d]">Size</label>
+                            <x-size-reference-guide />
+                        </div>
                         <div class="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+                            @php
+                                $sizeMappings = config('sizes.mappings');
+                            @endphp
                             @foreach($product->sizes as $size)
-                                <label class="cursor-pointer rounded-3xl border-2 border-[#e6d9f5] bg-[#faf5ff] transition hover:border-[#5b1e7e]">
+                                @php
+                                    $mapping = $sizeMappings[$size] ?? null;
+                                    $title = $mapping ? "Size {$size} - UK {$mapping['uk']} - Turkish {$mapping['turkish']}" : "Size {$size}";
+                                @endphp
+                                <label class="cursor-pointer rounded-3xl border-2 border-[#e6d9f5] bg-[#faf5ff] transition hover:border-[#5b1e7e] group relative" title="{{ $title }}">
                                     <input type="radio" name="size" value="{{ $size }}" class="sr-only peer" @checked(old('size') === $size) required>
                                     <span class="inline-flex min-w-[3rem] items-center justify-center rounded-3xl px-4 py-3 text-center text-sm text-[#5b1e7e] font-medium transition peer-checked:border-[#5b1e7e] peer-checked:bg-[#5b1e7e] peer-checked:text-white peer-checked:ring-2 peer-checked:ring-[#5b1e7e]/50">{{ $size }}</span>
+                                    @if($mapping)
+                                        <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-[#1b1b18] text-white text-xs px-3 py-2 rounded whitespace-nowrap z-10">
+                                            UK: {{ $mapping['uk'] }} | TR: {{ $mapping['turkish'] }}
+                                        </div>
+                                    @endif
                                 </label>
                             @endforeach
                         </div>
@@ -176,7 +191,25 @@
                 <li><strong class="text-[#1b1b18]">Category:</strong> {{ $product->category->name }}</li>
                 <li><strong class="text-[#1b1b18]">Styles:</strong> {{ implode(', ', $product->styles ?? []) }}</li>
                 <li><strong class="text-[#1b1b18]">Colors:</strong> {{ implode(', ', $product->colors ?? []) }}</li>
-                <li><strong class="text-[#1b1b18]">Sizes:</strong> {{ implode(', ', $product->sizes ?? []) }}</li>
+                <li>
+                    <strong class="text-[#1b1b18]">Sizes:</strong>
+                    <div class="mt-2 space-y-1">
+                        @php
+                            $sizeMappings = config('sizes.mappings');
+                        @endphp
+                        @foreach($product->sizes as $size)
+                            @php
+                                $mapping = $sizeMappings[$size] ?? null;
+                            @endphp
+                            <div class="text-sm text-[#5e534c]">
+                                {{ $size }}
+                                @if($mapping)
+                                    <span class="text-xs text-[#8c7d74]">(UK {{ $mapping['uk'] }} • TR {{ $mapping['turkish'] }})</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </li>
             </ul>
         </div>
 

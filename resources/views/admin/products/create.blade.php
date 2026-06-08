@@ -108,21 +108,30 @@
                 </div>
 
                 <!-- Sizes -->
-                <div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Sizes</label>
-                    <div class="mt-2 grid grid-cols-4 gap-2">
+                    <p class="mt-1 text-sm text-gray-500">Select available sizes. Shown with UK and Turkish equivalents for customer reference.</p>
+                    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
                         @php
-                            $sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+                            $sizeOptions = config('sizes.all_options');
+                            $sizeMappings = config('sizes.mappings');
                             $oldSizes = old('sizes', []);
                         @endphp
                         @foreach($sizeOptions as $size)
-                            <div class="flex items-center">
+                            <div class="flex items-start">
                                 <input type="checkbox" name="sizes[]" value="{{ $size }}" id="size-{{ strtolower($size) }}"
                                        {{ in_array($size, $oldSizes) ? 'checked' : '' }}
-                                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <label for="size-{{ strtolower($size) }}" class="ml-2 block text-sm text-gray-900">
-                                    {{ $size }}
-                                </label>
+                                       class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <div class="ml-2">
+                                    <label for="size-{{ strtolower($size) }}" class="block text-sm font-medium text-gray-900 cursor-pointer">
+                                        {{ $size }}
+                                    </label>
+                                    @if(isset($sizeMappings[$size]))
+                                        <p class="text-xs text-gray-500">
+                                            UK: {{ $sizeMappings[$size]['uk'] }} | TR: {{ $sizeMappings[$size]['turkish'] }}
+                                        </p>
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
                     </div>
