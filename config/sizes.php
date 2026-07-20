@@ -47,6 +47,22 @@ return [
     ],
 
     /**
+     * Raw size chart (from provided table)
+     * Each entry maps Turkish, USA, UK and Africa sizes to a common label
+     */
+    'chart' => [
+        ['label' => 'XS',  'turkey' => 36, 'usa' => 4,  'uk' => 6,  'africa' => 26],
+        ['label' => 'S',   'turkey' => 38, 'usa' => 6,  'uk' => 8,  'africa' => 28],
+        ['label' => 'M',   'turkey' => 40, 'usa' => 8,  'uk' => 10, 'africa' => 30],
+        ['label' => 'L',   'turkey' => 42, 'usa' => 10, 'uk' => 12, 'africa' => 32],
+        ['label' => 'XL',  'turkey' => 44, 'usa' => 12, 'uk' => 14, 'africa' => 34],
+        ['label' => 'XXL', 'turkey' => 46, 'usa' => 14, 'uk' => 16, 'africa' => 36],
+        ['label' => 'XXXL','turkey' => 48, 'usa' => 16, 'uk' => 18, 'africa' => 38],
+        ['label' => '4XL', 'turkey' => 50, 'usa' => 18, 'uk' => 20, 'africa' => 40],
+        ['label' => '5XL', 'turkey' => 52, 'usa' => 20, 'uk' => 22, 'africa' => 42],
+    ],
+
+    /**
      * Shoe Size Mappings
      * Stored as EU sizes (which most shoes use)
      */
@@ -106,7 +122,7 @@ return [
     /**
      * All available size options for selection in admin
      */
-    'all_options' => ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    'all_options' => ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'],
     'shoe_options' => ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'],
 
     /**
