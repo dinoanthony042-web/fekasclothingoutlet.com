@@ -190,6 +190,10 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-2 text-sm text-gray-500">Leave empty to keep existing images. Upload 2 to 5 new images only if you want to replace them.</p>
+
+                    <!-- Preview & Progress -->
+                    <div id="image-preview" class="mt-4 grid grid-cols-3 gap-3"></div>
+                    <div id="upload-status" class="mt-4"></div>
                 </div>
 
                 <div class="md:col-span-2">
@@ -253,6 +257,115 @@ document.addEventListener('DOMContentLoaded', function() {
 
     categorySelect.addEventListener('change', toggleAgeRange);
     toggleAgeRange(); // Initial check
+});
+
+// Image preview + AJAX upload with progress (edit form)
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[action^="{{ route('admin.products.update', $product) }}"]');
+    const fileInput = document.getElementById('image_uploads');
+    const preview = document.getElementById('image-preview');
+    const statusContainer = document.getElementById('upload-status');
+
+    function clearPreview() {
+        preview.innerHTML = '';
+        statusContainer.innerHTML = '';
+    }
+
+    fileInput.addEventListener('change', function() {
+        clearPreview();
+        Array.from(fileInput.files).forEach((file, idx) => {
+            const reader = new FileReader();
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative';
+
+            const img = document.createElement('img');
+            img.className = 'h-32 w-full rounded-lg object-cover border border-gray-200';
+            img.alt = file.name;
+
+            const progress = document.createElement('div');
+            progress.className = 'w-full mt-2 bg-gray-100 rounded-full overflow-hidden';
+            progress.innerHTML = '<div class="bg-indigo-600 h-2" style="width:0%"></div>';
+
+            reader.onload = (e) => {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(progress);
+            preview.appendChild(wrapper);
+        });
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const files = fileInput.files;
+        if (files.length > 0 && files.length < 2) {
+            alert('If replacing images, upload at least 2 images.');
+            return;
+        }
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading...';
+
+        const xhr = new XMLHttpRequest();
+        const fd = new FormData(form);
+
+        xhr.open('POST', form.action, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.upload.addEventListener('progress', function(event) {
+            if (!event.lengthComputable) return;
+            const pct = Math.round((event.loaded / event.total) * 100);
+            statusContainer.textContent = `Overall upload: ${pct}%`;
+            const bars = preview.querySelectorAll('.bg-indigo-600');
+            bars.forEach(bar => bar.style.width = pct + '%');
+        });
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Product';
+                let body = xhr.responseText || '';
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const data = JSON.parse(body || '{}');
+                        if (data.success) {
+                            window.location.href = data.redirect || '{{ route('admin.products.index') }}';
+                            return;
+                        }
+                        alert(data.message || 'Upload completed, but server returned an unexpected response.');
+                    } catch (err) {
+                        console.error(err);
+                        alert('Upload completed. Reloading...');
+                        window.location.reload();
+                    }
+                } else {
+                    try {
+                        const data = JSON.parse(body || '{}');
+                        if (data.errors) {
+                            const messages = [];
+                            for (const key in data.errors) {
+                                messages.push(...data.errors[key]);
+                            }
+                            alert('Upload failed:\n' + messages.join('\n'));
+                        } else if (data.message) {
+                            alert('Upload failed: ' + data.message);
+                        } else {
+                            alert('Upload failed. Server returned status ' + xhr.status + '. See console for details.');
+                            console.error('Upload failed', xhr.status, body);
+                        }
+                    } catch (err) {
+                        console.error('Upload failed, non-JSON response', xhr.status, body);
+                        alert('Upload failed. See console for details.');
+                    }
+                }
+            }
+        };
+
+        xhr.send(fd);
+    });
 });
 </script>
 @endsection

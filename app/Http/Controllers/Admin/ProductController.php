@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -46,7 +47,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -68,9 +69,28 @@ class ProductController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
         $validated['images'] = $this->buildImageList($request);
 
-        Product::create($validated);
+        try {
+            $product = Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'product_id' => $product->id,
+                    'redirect' => route('admin.products.index')
+                ]);
+            }
+
+            return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        } catch (\Throwable $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->back()->withInput()->with('error', 'Failed to create product: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -95,7 +115,7 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, Product $product): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -119,9 +139,28 @@ class ProductController extends Controller
             ? $this->buildImageList($request)
             : $product->images;
 
-        $product->update($validated);
+        try {
+            $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'product_id' => $product->id,
+                    'redirect' => route('admin.products.index')
+                ]);
+            }
+
+            return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        } catch (\Throwable $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->back()->withInput()->with('error', 'Failed to update product: ' . $e->getMessage());
+        }
     }
 
     protected function buildImageList(Request $request): array
