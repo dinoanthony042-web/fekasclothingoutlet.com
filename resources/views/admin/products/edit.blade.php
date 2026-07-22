@@ -105,7 +105,37 @@
                         @php
                             $sizeOptions = config('sizes.all_options');
                             $sizeMappings = config('sizes.mappings');
+                            $shoeMappings = config('sizes.shoe_mappings', []);
                             $oldSizes = old('sizes', $product->sizes ?? []);
+                            $selectedCategoryId = old('category_id', $product->category_id);
+                            $selectedCategoryName = null;
+                            $selectedParentName = null;
+
+                            if ($selectedCategoryId) {
+                                foreach ($categories as $category) {
+                                    if ((string) $category->id === (string) $selectedCategoryId) {
+                                        $selectedCategoryName = $category->name;
+                                        $selectedParentName = $category->name;
+                                        break;
+                                    }
+
+                                    foreach ($category->children as $subcategory) {
+                                        if ((string) $subcategory->id === (string) $selectedCategoryId) {
+                                            $selectedCategoryName = $subcategory->name;
+                                            $selectedParentName = $category->name;
+                                            break 2;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if ($selectedCategoryName === 'Shoes' && in_array($selectedParentName, ['Men', 'Women'], true)) {
+                                $sizeOptions = config('sizes.adult_shoe_options');
+                                $sizeMappings = $shoeMappings;
+                            } elseif ($selectedCategoryName === 'Shoes' && $selectedParentName === 'Kids') {
+                                $sizeOptions = config('sizes.kids_shoe_options');
+                                $sizeMappings = $shoeMappings;
+                            }
                         @endphp
                         @foreach($sizeOptions as $size)
                             <div class="flex items-start">

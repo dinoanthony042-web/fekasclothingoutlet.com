@@ -123,7 +123,9 @@ return [
      * All available size options for selection in admin
      */
     'all_options' => ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'],
-    'shoe_options' => ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'],
+    'adult_shoe_options' => ['38', '39', '40', '41', '42', '43', '44'],
+    'kids_shoe_options' => ['38', '39', '40', '41', '42', '43', '44'],
+    'shoe_options' => ['38', '39', '40', '41', '42', '43', '44'],
 
     /**
      * Get mapping for a specific size

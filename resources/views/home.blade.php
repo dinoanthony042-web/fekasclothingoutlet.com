@@ -31,7 +31,7 @@
                         Shop collection
                     </a>
 
-                    <a href="{{ route('shop.index', ['category' => 'dresses']) }}"
+                    <a href="{{ route('shop.index') }}"
                        class="rounded-full border-2 border-[#e91e8c] bg-white px-9 py-4 text-sm uppercase tracking-[0.2em] text-[#e91e8c] transition hover:bg-[#ffe6f5] hover:border-[#c91670]">
                         Explore dresses
                     </a>

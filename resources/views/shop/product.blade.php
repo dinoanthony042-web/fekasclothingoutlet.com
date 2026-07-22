@@ -36,7 +36,10 @@
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                @if($product->sizes)
+                @php
+                    $productSizes = is_array($product->sizes) ? $product->sizes : (($product->sizes ?? []) ? (array) $product->sizes : []);
+                @endphp
+                @if(!empty($productSizes))
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <label class="block text-sm font-semibold text-[#4f433d]">Size</label>
@@ -45,10 +48,11 @@
                         <div class="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
                             @php
                                 $sizeMappings = config('sizes.mappings');
+                                $shoeMappings = config('sizes.shoe_mappings', []);
                             @endphp
-                            @foreach($product->sizes as $size)
+                            @foreach($productSizes as $size)
                                 @php
-                                    $mapping = $sizeMappings[$size] ?? null;
+                                    $mapping = $sizeMappings[$size] ?? $shoeMappings[$size] ?? null;
                                     $title = $mapping ? "Size {$size} - UK {$mapping['uk']} - Turkish {$mapping['turkish']}" : "Size {$size}";
                                 @endphp
                                 <label class="cursor-pointer rounded-3xl border-2 border-[#e6d9f5] bg-[#faf5ff] transition hover:border-[#5b1e7e] group relative" title="{{ $title }}">
@@ -196,10 +200,12 @@
                     <div class="mt-2 space-y-1">
                         @php
                             $sizeMappings = config('sizes.mappings');
+                            $shoeMappings = config('sizes.shoe_mappings', []);
+                            $productSizes = is_array($product->sizes) ? $product->sizes : (($product->sizes ?? []) ? (array) $product->sizes : []);
                         @endphp
-                        @foreach($product->sizes as $size)
+                        @foreach($productSizes as $size)
                             @php
-                                $mapping = $sizeMappings[$size] ?? null;
+                                $mapping = $sizeMappings[$size] ?? $shoeMappings[$size] ?? null;
                             @endphp
                             <div class="text-sm text-[#5e534c]">
                                 {{ $size }}

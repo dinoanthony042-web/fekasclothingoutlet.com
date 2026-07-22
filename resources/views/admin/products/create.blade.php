@@ -111,11 +111,41 @@
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Sizes</label>
                     <p class="mt-1 text-sm text-gray-500">Select available sizes. Shown with UK and Turkish equivalents for customer reference.</p>
-                    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div id="size-options" class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
                         @php
                             $sizeOptions = config('sizes.all_options');
                             $sizeMappings = config('sizes.mappings');
+                            $shoeMappings = config('sizes.shoe_mappings', []);
                             $oldSizes = old('sizes', []);
+                            $selectedCategoryId = old('category_id');
+                            $selectedCategoryName = null;
+                            $selectedParentName = null;
+
+                            if ($selectedCategoryId) {
+                                foreach ($categories as $category) {
+                                    if ((string) $category->id === (string) $selectedCategoryId) {
+                                        $selectedCategoryName = $category->name;
+                                        $selectedParentName = $category->name;
+                                        break;
+                                    }
+
+                                    foreach ($category->children as $subcategory) {
+                                        if ((string) $subcategory->id === (string) $selectedCategoryId) {
+                                            $selectedCategoryName = $subcategory->name;
+                                            $selectedParentName = $category->name;
+                                            break 2;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if ($selectedCategoryName === 'Shoes' && in_array($selectedParentName, ['Men', 'Women'], true)) {
+                                $sizeOptions = config('sizes.adult_shoe_options');
+                                $sizeMappings = $shoeMappings;
+                            } elseif ($selectedCategoryName === 'Shoes' && $selectedParentName === 'Kids') {
+                                $sizeOptions = config('sizes.kids_shoe_options');
+                                $sizeMappings = $shoeMappings;
+                            }
                         @endphp
                         @foreach($sizeOptions as $size)
                             <div class="flex items-start">
@@ -246,10 +276,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category_id');
     const ageRangeContainer = document.getElementById('age_range_container');
+    const sizeContainer = document.getElementById('size-options');
 
-    function toggleAgeRange() {
+    function getSelectedCategoryInfo() {
         const selectedOption = categorySelect.options[categorySelect.selectedIndex];
         const parentName = selectedOption ? selectedOption.getAttribute('data-parent') : '';
+        const categoryName = selectedOption ? selectedOption.textContent.trim() : '';
+        return { parentName, categoryName };
+    }
+
+    function toggleAgeRange() {
+        const { parentName } = getSelectedCategoryInfo();
         if (parentName === 'Children') {
             ageRangeContainer.classList.remove('hidden');
         } else {
@@ -257,8 +294,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    categorySelect.addEventListener('change', toggleAgeRange);
-    toggleAgeRange(); // Initial check
+    function updateSizeOptions() {
+        const { parentName, categoryName } = getSelectedCategoryInfo();
+        const isShoeCategory = categoryName === 'Shoes' || parentName === 'Shoes';
+        const isAdultShoes = isShoeCategory && ['Men', 'Women'].includes(parentName);
+        const isKidsShoes = isShoeCategory && parentName === 'Kids';
+
+        if (!sizeContainer) {
+            return;
+        }
+
+        const sizeValues = isAdultShoes
+            ? ['38', '39', '40', '41', '42', '43', '44']
+            : isKidsShoes
+                ? ['38', '39', '40', '41', '42', '43', '44']
+                : ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'];
+
+        sizeContainer.innerHTML = sizeValues.map((size) => {
+            const id = `size-${size.toLowerCase()}`;
+            return `
+                <div class="flex items-start">
+                    <input type="checkbox" name="sizes[]" value="${size}" id="${id}" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <div class="ml-2">
+                        <label for="${id}" class="block text-sm font-medium text-gray-900 cursor-pointer">${size}</label>
+                        <p class="text-xs text-gray-500">${size.startsWith('3') || size.startsWith('4') ? 'UK: ' + size + ' | TR: ' + size : ''}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    categorySelect.addEventListener('change', function() {
+        toggleAgeRange();
+        updateSizeOptions();
+    });
+
+    toggleAgeRange();
+    updateSizeOptions();
 });
 
 // Image preview + AJAX upload with progress

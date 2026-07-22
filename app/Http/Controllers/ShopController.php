@@ -17,7 +17,7 @@ class ShopController extends Controller
             }]);
         $styles = ['Casual', 'Corporate', 'Party', 'Streetwear', 'Traditional', 'English'];
         $colors = ['Blush', 'Black', 'Ivory', 'Nude', 'Gold'];
-        $sizes = ['XS', 'S', 'M', 'L', '36', '37', '38', '39', '40'];
+        $sizes = array_values(array_unique(array_merge(config('sizes.all_options', []), config('sizes.shoe_options', []))));
 
         $selectedCategory = null;
         $selectedParent = null;
