@@ -48,8 +48,9 @@
                 <!-- Stock -->
                 <div>
                     <label for="stock" class="block text-sm font-medium text-gray-700">Stock Quantity</label>
-                    <input type="number" name="stock" id="stock" min="0" value="{{ old('stock', $product->stock) }}" required
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <input type="number" name="stock" id="stock" min="0" value="{{ old('stock', $product->stock) }}" readonly aria-readonly="true"
+                           class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <p class="mt-1 text-sm text-gray-500">Total stock is auto-calculated from individual size quantities.</p>
                     @error('stock')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -138,19 +139,30 @@
                             }
                         @endphp
                         @foreach($sizeOptions as $size)
-                            <div class="flex items-start">
-                                <input type="checkbox" name="sizes[]" value="{{ $size }}" id="size-{{ strtolower($size) }}"
-                                       {{ in_array($size, $oldSizes) ? 'checked' : '' }}
-                                       class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <div class="ml-2">
-                                    <label for="size-{{ strtolower($size) }}" class="block text-sm font-medium text-gray-900 cursor-pointer">
-                                        {{ $size }}
-                                    </label>
-                                    @if(isset($sizeMappings[$size]))
-                                        <p class="text-xs text-gray-500">
-                                            UK: {{ $sizeMappings[$size]['uk'] }} | TR: {{ $sizeMappings[$size]['turkish'] }}
-                                        </p>
-                                    @endif
+                            <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start">
+                                        <input type="checkbox" name="sizes[]" value="{{ $size }}" id="size-{{ strtolower($size) }}"
+                                               {{ in_array($size, $oldSizes) ? 'checked' : '' }}
+                                               class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        <div class="ml-2">
+                                            <label for="size-{{ strtolower($size) }}" class="block text-sm font-medium text-gray-900 cursor-pointer">
+                                                {{ $size }}
+                                            </label>
+                                            @if(isset($sizeMappings[$size]))
+                                                <p class="text-xs text-gray-500">
+                                                    UK: {{ $sizeMappings[$size]['uk'] }} | TR: {{ $sizeMappings[$size]['turkish'] }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="w-24">
+                                        <label for="size_stock_{{ $size }}" class="sr-only">Stock for {{ $size }}</label>
+                                        <input type="number" name="size_stock[{{ $size }}]" id="size_stock_{{ $size }}" min="0"
+                                               value="{{ old('size_stock.'.$size, $product->size_stock[$size] ?? 0) }}"
+                                               class="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                               placeholder="Qty">
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -286,6 +298,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     categorySelect.addEventListener('change', toggleAgeRange);
+
+    function updateTotalStock() {
+        const stockInput = document.getElementById('stock');
+        if (!stockInput) {
+            return;
+        }
+        let total = 0;
+        document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
+            const match = input.name.match(/^size_stock\[(.+)\]$/);
+            const size = match ? match[1] : null;
+            const checkbox = size ? document.querySelector(`input[name="sizes[]"][value="${size}"]`) : null;
+            const quantity = parseInt(input.value, 10) || 0;
+            if (checkbox && checkbox.checked) {
+                total += quantity;
+            }
+        });
+        stockInput.value = total;
+    }
+
+    function attachSizeStockListeners() {
+        document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
+            input.addEventListener('input', updateTotalStock);
+        });
+        document.querySelectorAll('input[name="sizes[]"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', updateTotalStock);
+        });
+    }
+
+    attachSizeStockListeners();
+    updateTotalStock();
     toggleAgeRange(); // Initial check
 });
 

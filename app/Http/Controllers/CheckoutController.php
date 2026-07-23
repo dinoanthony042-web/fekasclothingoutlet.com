@@ -59,11 +59,10 @@ class CheckoutController extends Controller
         return DB::transaction(function () use ($user, $cartItems, $data) {
             $total = 0;
             foreach ($cartItems as $item) {
-                if (!$item->product || $item->product->stock < $item->quantity) {
-                    $available = $item->product?->stock ?? 0;
+                $available = $item->product?->stockForSize($item->size) ?? 0;
+                if (!$item->product || $available < $item->quantity) {
                     $name = $item->product?->name ?? 'This product';
-
-                    return redirect()->route('cart.index')->with('error', "{$name} only has {$available} item(s) left in stock.");
+                    return redirect()->route('cart.index')->with('error', "{$name} only has {$available} item(s) left in stock for the selected size.");
                 }
 
                 $total += $item->product->discounted_price * $item->quantity;
@@ -112,7 +111,7 @@ class CheckoutController extends Controller
                     'color' => $item->color,
                 ]);
 
-                $item->product->decrement('stock', $item->quantity);
+                $item->product->decrementStock($item->quantity, $item->size);
             }
 
             $user->carts()->delete();

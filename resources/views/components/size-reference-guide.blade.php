@@ -6,8 +6,8 @@
 <div x-data="{ open: false }" class="inline-block">
     <button type="button" @click="open = true" class="text-sm font-semibold text-[#5b1e7e] hover:text-[#1b1b18]">📏 Size Guide</button>
 
-    <div x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-        <div @click.away="open = false" class="max-w-3xl w-full rounded-2xl bg-white p-6 shadow-lg">
+    <div x-show="open" x-cloak @click="open = false" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div @click.stop class="max-w-3xl w-full rounded-2xl bg-white p-6 shadow-lg">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold">Size Guide</h3>
                 <button @click="open = false" class="text-sm text-gray-600">Close</button>

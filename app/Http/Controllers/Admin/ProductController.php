@@ -55,6 +55,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'sizes' => 'nullable|array',
+            'size_stock' => 'nullable|array',
+            'size_stock.*' => 'nullable|integer|min:0',
             'colors' => 'nullable|array',
             'styles' => 'nullable|array',
             'age_range' => 'nullable|string',
@@ -65,6 +67,15 @@ class ProductController extends Controller
             'is_new' => 'boolean',
             'is_best_seller' => 'boolean',
         ]);
+
+        $validated['size_stock'] = collect($validated['size_stock'] ?? [])
+            ->only($validated['sizes'] ?? [])
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
+
+        if (!empty($validated['size_stock'])) {
+            $validated['stock'] = array_sum($validated['size_stock']);
+        }
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['images'] = $this->buildImageList($request);
@@ -123,6 +134,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'sizes' => 'nullable|array',
+            'size_stock' => 'nullable|array',
+            'size_stock.*' => 'nullable|integer|min:0',
             'colors' => 'nullable|array',
             'styles' => 'nullable|array',
             'age_range' => 'nullable|string',
@@ -133,6 +146,15 @@ class ProductController extends Controller
             'is_new' => 'boolean',
             'is_best_seller' => 'boolean',
         ]);
+
+        $validated['size_stock'] = collect($validated['size_stock'] ?? [])
+            ->only($validated['sizes'] ?? [])
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
+
+        if (!empty($validated['size_stock'])) {
+            $validated['stock'] = array_sum($validated['size_stock']);
+        }
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['images'] = $request->hasFile('image_uploads')

@@ -54,15 +54,18 @@
                                 @php
                                     $mapping = $sizeMappings[$size] ?? $shoeMappings[$size] ?? null;
                                     $title = $mapping ? "Size {$size} - UK {$mapping['uk']} - Turkish {$mapping['turkish']}" : "Size {$size}";
+                                    $available = $product->size_stock[$size] ?? $product->stock;
+                                    $isDisabled = $available <= 0;
                                 @endphp
-                                <label class="cursor-pointer rounded-3xl border-2 border-[#e6d9f5] bg-[#faf5ff] transition hover:border-[#5b1e7e] group relative" title="{{ $title }}">
-                                    <input type="radio" name="size" value="{{ $size }}" class="sr-only peer" @checked(old('size') === $size) required>
-                                    <span class="inline-flex min-w-[3rem] items-center justify-center rounded-3xl px-4 py-3 text-center text-sm text-[#5b1e7e] font-medium transition peer-checked:border-[#5b1e7e] peer-checked:bg-[#5b1e7e] peer-checked:text-white peer-checked:ring-2 peer-checked:ring-[#5b1e7e]/50">{{ $size }}</span>
+                                <label class="flex min-h-[6rem] min-w-[6rem] flex-col items-center justify-between gap-2 rounded-3xl border-2 p-3 text-center transition group relative {{ $isDisabled ? 'cursor-not-allowed border-gray-300 bg-gray-100 opacity-60' : 'cursor-pointer border-[#e6d9f5] bg-[#faf5ff] hover:border-[#5b1e7e]' }}" title="{{ $title }}">
+                                    <input type="radio" name="size" value="{{ $size }}" class="sr-only peer" @checked(old('size') === $size && !$isDisabled) @disabled($isDisabled) required>
+                                    <span class="inline-flex w-full items-center justify-center rounded-3xl px-4 py-3 text-sm {{ $isDisabled ? 'text-gray-500' : 'text-[#5b1e7e]' }} font-medium transition peer-checked:border-[#5b1e7e] peer-checked:bg-[#5b1e7e] peer-checked:text-white peer-checked:ring-2 peer-checked:ring-[#5b1e7e]/50">{{ $size }}</span>
                                     @if($mapping)
-                                        <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-[#1b1b18] text-white text-xs px-3 py-2 rounded whitespace-nowrap z-10">
+                                        <div class="absolute left-1/2 bottom-full z-10 hidden -translate-x-1/2 rounded bg-[#1b1b18] px-3 py-2 text-xs text-white whitespace-nowrap group-hover:block">
                                             UK: {{ $mapping['uk'] }} | TR: {{ $mapping['turkish'] }}
                                         </div>
                                     @endif
+                                    <div class="text-xs {{ $isDisabled ? 'text-red-600' : 'text-[#766459]' }}">{{ $available > 0 ? $available . ' available' : 'Out of stock' }}</div>
                                 </label>
                             @endforeach
                         </div>
@@ -86,6 +89,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-[#4f433d]">Quantity</label>
                     <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="mt-3 w-24 rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-4 py-3 text-sm outline-none" @input="validateQuantity()" />
+                    <div class="mt-2 text-sm text-[#766459]" x-text="selectedSize ? (currentMaxStock > 0 ? `${currentMaxStock} available for size ${selectedSize}` : `Out of stock for ${selectedSize}`) : ''"></div>
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -101,6 +105,15 @@
                             selectedColor: @json(old('color')),
                             quantity: 1,
                             maxStock: @json($product->stock),
+                            sizeStock: @json($product->size_stock ?? []),
+
+                            get currentMaxStock() {
+                                if (this.selectedSize) {
+                                    return parseInt(this.sizeStock[this.selectedSize] ?? this.maxStock, 10);
+                                }
+
+                                return this.maxStock;
+                            },
 
                             get isFormValid() {
                                 const hasSizes = @json(count($product->sizes ?? [])) > 0;
@@ -108,17 +121,17 @@
 
                                 if (hasSizes && !this.selectedSize) return false;
                                 if (hasColors && !this.selectedColor) return false;
-                                if (this.quantity < 1 || this.quantity > this.maxStock) return false;
+                                if (this.quantity < 1 || this.quantity > this.currentMaxStock) return false;
                                 return true;
                             },
 
                             validateQuantity() {
                                 const quantityInput = this.$el.querySelector('input[name="quantity"]');
-                                let quantity = parseInt(quantityInput.value);
+                                let quantity = parseInt(quantityInput.value, 10);
 
-                                if (quantity > this.maxStock) {
-                                    quantityInput.value = this.maxStock;
-                                    this.quantity = this.maxStock;
+                                if (quantity > this.currentMaxStock) {
+                                    quantityInput.value = this.currentMaxStock;
+                                    this.quantity = this.currentMaxStock;
                                 } else if (quantity < 1) {
                                     quantityInput.value = 1;
                                     this.quantity = 1;
@@ -130,8 +143,8 @@
                             validateForm(event) {
                                 if (!this.isFormValid) {
                                     event.preventDefault();
-                                    if (this.quantity > this.maxStock) {
-                                        alert('You cannot add more items than available in stock. Maximum: ' + this.maxStock);
+                                    if (this.quantity > this.currentMaxStock) {
+                                        alert('You cannot add more items than available in stock. Maximum: ' + this.currentMaxStock);
                                     } else {
                                         alert('Please select all required options (size and color) before adding to cart.');
                                     }
@@ -139,15 +152,28 @@
                                 }
                             },
 
+                            updateQuantityMax() {
+                                const quantityInput = this.$el.querySelector('input[name="quantity"]');
+                                if (quantityInput) {
+                                    quantityInput.max = this.currentMaxStock;
+                                    if (this.quantity > this.currentMaxStock) {
+                                        this.quantity = this.currentMaxStock;
+                                        quantityInput.value = this.currentMaxStock;
+                                    }
+                                }
+                            },
+
                             init() {
                                 // Initialize quantity
                                 const quantityInput = this.$el.querySelector('input[name="quantity"]');
-                                this.quantity = parseInt(quantityInput.value);
+                                this.quantity = parseInt(quantityInput.value, 10);
+                                this.updateQuantityMax();
 
                                 // Listen for radio button changes
                                 this.$el.addEventListener('change', (e) => {
                                     if (e.target.name === 'size') {
                                         this.selectedSize = e.target.value;
+                                        this.updateQuantityMax();
                                     } else if (e.target.name === 'color') {
                                         this.selectedColor = e.target.value;
                                     } else if (e.target.name === 'quantity') {

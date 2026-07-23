@@ -37,8 +37,8 @@
 
                 <!-- Description -->
                 <div class="md:col-span-2">
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea name="description" id="description" rows="4"
+                    <label for="description"  class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" id="description" required rows="4"
                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description') }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -58,8 +58,9 @@
                 <!-- Stock -->
                 <div>
                     <label for="stock" class="block text-sm font-medium text-gray-700">Stock Quantity</label>
-                    <input type="number" name="stock" id="stock" min="0" value="{{ old('stock', 0) }}" required
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <input type="number" name="stock" id="stock" min="0" value="{{ old('stock', 0) }}" readonly aria-readonly="true"
+                           class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <p class="mt-1 text-sm text-gray-500">Total stock is auto-calculated from individual size quantities.</p>
                     @error('stock')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -148,19 +149,30 @@
                             }
                         @endphp
                         @foreach($sizeOptions as $size)
-                            <div class="flex items-start">
-                                <input type="checkbox" name="sizes[]" value="{{ $size }}" id="size-{{ strtolower($size) }}"
-                                       {{ in_array($size, $oldSizes) ? 'checked' : '' }}
-                                       class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <div class="ml-2">
-                                    <label for="size-{{ strtolower($size) }}" class="block text-sm font-medium text-gray-900 cursor-pointer">
-                                        {{ $size }}
-                                    </label>
-                                    @if(isset($sizeMappings[$size]))
-                                        <p class="text-xs text-gray-500">
-                                            UK: {{ $sizeMappings[$size]['uk'] }} | TR: {{ $sizeMappings[$size]['turkish'] }}
-                                        </p>
-                                    @endif
+                            <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start">
+                                        <input type="checkbox" name="sizes[]" value="{{ $size }}" id="size-{{ strtolower($size) }}"
+                                               {{ in_array($size, $oldSizes) ? 'checked' : '' }}
+                                               class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        <div class="ml-2">
+                                            <label for="size-{{ strtolower($size) }}" class="block text-sm font-medium text-gray-900 cursor-pointer">
+                                                {{ $size }}
+                                            </label>
+                                            @if(isset($sizeMappings[$size]))
+                                                <p class="text-xs text-gray-500">
+                                                    UK: {{ $sizeMappings[$size]['uk'] }} | TR: {{ $sizeMappings[$size]['turkish'] }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="w-24">
+                                        <label for="size_stock_{{ $size }}" class="sr-only">Stock for {{ $size }}</label>
+                                        <input type="number" name="size_stock[{{ $size }}]" id="size_stock_{{ $size }}" min="0"
+                                               value="{{ old('size_stock.'.$size, 0) }}"
+                                               class="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                               placeholder="Qty">
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -277,6 +289,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category_id');
     const ageRangeContainer = document.getElementById('age_range_container');
     const sizeContainer = document.getElementById('size-options');
+    const stockInput = document.getElementById('stock');
+    const form = document.querySelector('form[action="{{ route('admin.products.store') }}"]');
+    const fileInput = document.getElementById('image_uploads');
+    const preview = document.getElementById('image-preview');
+    const statusContainer = document.getElementById('upload-status');
+
+    const oldSelectedSizes = @json(old('sizes', []));
+    const oldSizeStockValues = @json(old('size_stock', []));
+    const shoeMappings = @json($shoeMappings);
 
     function getSelectedCategoryInfo() {
         const selectedOption = categorySelect.options[categorySelect.selectedIndex];
@@ -287,11 +308,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function toggleAgeRange() {
         const { parentName } = getSelectedCategoryInfo();
-        if (parentName === 'Children') {
+        if (parentName === 'Kids') {
             ageRangeContainer.classList.remove('hidden');
         } else {
             ageRangeContainer.classList.add('hidden');
         }
+    }
+
+    function renderSizeOption(size) {
+        const id = `size-${size.toLowerCase()}`;
+        const checked = oldSelectedSizes.includes(size) ? 'checked' : '';
+        const quantity = oldSizeStockValues[size] !== undefined ? oldSizeStockValues[size] : '0';
+        const mapping = shoeMappings[size] || null;
+        const mappingText = mapping ? `UK: ${mapping.uk} • TR: ${mapping.turkish}` : '';
+
+        return `
+            <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-start">
+                        <input type="checkbox" name="sizes[]" value="${size}" id="${id}" ${checked}
+                               class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <div class="ml-2">
+                            <label for="${id}" class="block text-sm font-medium text-gray-900 cursor-pointer">${size}</label>
+                            <p class="text-xs text-gray-500">${mappingText}</p>
+                        </div>
+                    </div>
+                    <div class="w-24">
+                        <input type="number" name="size_stock[${size}]" min="0" value="${quantity}"
+                               class="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                               placeholder="Qty">
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     function updateSizeOptions() {
@@ -307,47 +356,56 @@ document.addEventListener('DOMContentLoaded', function() {
         const sizeValues = isAdultShoes
             ? ['38', '39', '40', '41', '42', '43', '44']
             : isKidsShoes
-                ? ['38', '39', '40', '41', '42', '43', '44']
+                ? ['18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
+                    '28', '29', '30', '31', '32', '33', '34', '35', '36', '37']
                 : ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'];
 
-        sizeContainer.innerHTML = sizeValues.map((size) => {
-            const id = `size-${size.toLowerCase()}`;
-            return `
-                <div class="flex items-start">
-                    <input type="checkbox" name="sizes[]" value="${size}" id="${id}" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                    <div class="ml-2">
-                        <label for="${id}" class="block text-sm font-medium text-gray-900 cursor-pointer">${size}</label>
-                        <p class="text-xs text-gray-500">${size.startsWith('3') || size.startsWith('4') ? 'UK: ' + size + ' | TR: ' + size : ''}</p>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        sizeContainer.innerHTML = sizeValues.map(renderSizeOption).join('');
+        attachSizeStockListeners();
     }
 
-    categorySelect.addEventListener('change', function() {
-        toggleAgeRange();
-        updateSizeOptions();
-    });
+    function updateTotalStock() {
+        if (!stockInput) {
+            return;
+        }
 
-    toggleAgeRange();
-    updateSizeOptions();
-});
+        let total = 0;
+        document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
+            const match = input.name.match(/^size_stock\[(.+)\]$/);
+            const size = match ? match[1] : null;
+            const checkbox = size ? document.querySelector(`input[name="sizes[]"][value="${size}"]`) : null;
+            const quantity = parseInt(input.value, 10) || 0;
+            if (checkbox && checkbox.checked) {
+                total += quantity;
+            }
+        });
 
-// Image preview + AJAX upload with progress
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form[action="{{ route('admin.products.store') }}"]');
-    const fileInput = document.getElementById('image_uploads');
-    const preview = document.getElementById('image-preview');
-    const statusContainer = document.getElementById('upload-status');
+        stockInput.value = total;
+    }
+
+    function attachSizeStockListeners() {
+        document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
+            input.addEventListener('input', updateTotalStock);
+        });
+        document.querySelectorAll('input[name="sizes[]"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', updateTotalStock);
+        });
+    }
 
     function clearPreview() {
-        preview.innerHTML = '';
-        statusContainer.innerHTML = '';
+        if (preview) {
+            preview.innerHTML = '';
+        }
+        if (statusContainer) {
+            statusContainer.innerHTML = '';
+        }
     }
 
-    fileInput.addEventListener('change', function() {
-        clearPreview();
-        Array.from(fileInput.files).forEach((file, idx) => {
+    function createPreviewCards(files) {
+        if (!preview) {
+            return;
+        }
+        Array.from(files).forEach((file) => {
             const reader = new FileReader();
             const wrapper = document.createElement('div');
             wrapper.className = 'relative';
@@ -369,79 +427,112 @@ document.addEventListener('DOMContentLoaded', function() {
             wrapper.appendChild(progress);
             preview.appendChild(wrapper);
         });
-    });
+    }
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const files = fileInput.files;
-        if (files.length < 2) {
-            alert('Please select at least 2 images.');
-            return;
-        }
-
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Uploading...';
-
-        const xhr = new XMLHttpRequest();
-        const fd = new FormData(form);
-
-        xhr.open('POST', form.action, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.upload.addEventListener('progress', function(event) {
-            if (!event.lengthComputable) return;
-            const pct = Math.round((event.loaded / event.total) * 100);
-            statusContainer.textContent = `Overall upload: ${pct}%`;
-            // update per-image bars roughly
-            const bars = preview.querySelectorAll('.bg-indigo-600');
-            bars.forEach(bar => bar.style.width = pct + '%');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            toggleAgeRange();
+            updateSizeOptions();
+            updateTotalStock();
         });
+    }
 
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Create Product';
-                let body = xhr.responseText || '';
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    try {
-                        const data = JSON.parse(body || '{}');
-                        if (data.success) {
-                            window.location.href = data.redirect || '{{ route('admin.products.index') }}';
-                            return;
-                        }
-                        alert(data.message || 'Upload completed, but server returned an unexpected response.');
-                    } catch (err) {
-                        console.error(err);
-                        alert('Upload completed. Reloading...');
-                        window.location.reload();
+    if (categorySelect && categorySelect.value) {
+        toggleAgeRange();
+        updateSizeOptions();
+        updateTotalStock();
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            clearPreview();
+            if (fileInput.files.length > 0) {
+                createPreviewCards(fileInput.files);
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const files = fileInput ? fileInput.files : [];
+            if (files.length < 2) {
+                e.preventDefault();
+                alert('Please select at least 2 images.');
+                return;
+            }
+
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Uploading...';
+            }
+
+            const xhr = new XMLHttpRequest();
+            const fd = new FormData(form);
+
+            xhr.open('POST', form.action, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+            xhr.upload.addEventListener('progress', function(event) {
+                if (!event.lengthComputable) return;
+                const pct = Math.round((event.loaded / event.total) * 100);
+                if (statusContainer) {
+                    statusContainer.textContent = `Overall upload: ${pct}%`;
+                }
+                if (preview) {
+                    const bars = preview.querySelectorAll('.bg-indigo-600');
+                    bars.forEach(bar => bar.style.width = pct + '%');
+                }
+            });
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Create Product';
                     }
-                } else {
-                    // Try to parse validation or server error details
-                    try {
-                        const data = JSON.parse(body || '{}');
-                        if (data.errors) {
-                            const messages = [];
-                            for (const key in data.errors) {
-                                messages.push(...data.errors[key]);
+
+                    let body = xhr.responseText || '';
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const data = JSON.parse(body || '{}');
+                            if (data.success) {
+                                window.location.href = data.redirect || '{{ route('admin.products.index') }}';
+                                return;
                             }
-                            alert('Upload failed:\n' + messages.join('\n'));
-                        } else if (data.message) {
-                            alert('Upload failed: ' + data.message);
-                        } else {
-                            alert('Upload failed. Server returned status ' + xhr.status + '. See console for details.');
-                            console.error('Upload failed', xhr.status, body);
+                            alert(data.message || 'Upload completed, but server returned an unexpected response.');
+                        } catch (err) {
+                            console.error(err);
+                            alert('Upload completed. Reloading...');
+                            window.location.reload();
                         }
-                    } catch (err) {
-                        console.error('Upload failed, non-JSON response', xhr.status, body);
-                        alert('Upload failed. See console for details.');
+                    } else {
+                        try {
+                            const data = JSON.parse(body || '{}');
+                            if (data.errors) {
+                                const messages = [];
+                                for (const key in data.errors) {
+                                    messages.push(...data.errors[key]);
+                                }
+                                alert('Upload failed:\n' + messages.join('\n'));
+                            } else if (data.message) {
+                                alert('Upload failed: ' + data.message);
+                            } else {
+                                alert('Upload failed. Server returned status ' + xhr.status + '. See console for details.');
+                                console.error('Upload failed', xhr.status, body);
+                            }
+                        } catch (err) {
+                            console.error('Upload failed, non-JSON response', xhr.status, body);
+                            alert('Upload failed. See console for details.');
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        xhr.send(fd);
-    });
+            xhr.send(fd);
+        });
+    }
 });
 </script>
 @endsection

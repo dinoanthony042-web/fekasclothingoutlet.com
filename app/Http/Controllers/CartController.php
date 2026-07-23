@@ -43,13 +43,14 @@ class CartController extends Controller
                 ->where('color', $data['color'] ?? null)
                 ->first();
 
+            $availableStock = $product->stockForSize($data['size'] ?? null);
             $existingQuantity = $cartItem ? $cartItem->quantity : 0;
             $newQuantity = $existingQuantity + $quantityToAdd;
 
-            if ($newQuantity > $product->stock) {
-                $message = $product->stock > 0
-                    ? "You can only add {$product->stock} of this item to your cart."
-                    : 'This product is out of stock.';
+            if ($newQuantity > $availableStock) {
+                $message = $availableStock > 0
+                    ? "You can only add {$availableStock} of this item to your cart."
+                    : 'This product size is out of stock.';
 
                 if ($request->expectsJson()) {
                     return response()->json([ 'success' => false, 'message' => $message ], 422);
@@ -97,10 +98,11 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        if ($data['quantity'] > $cart->product->stock) {
-            $message = $cart->product->stock > 0
-                ? "Only {$cart->product->stock} items are available in stock."
-                : 'This product is out of stock.';
+        $availableStock = $cart->product->stockForSize($cart->size);
+        if ($data['quantity'] > $availableStock) {
+            $message = $availableStock > 0
+                ? "Only {$availableStock} items are available in stock for this size."
+                : 'This product size is out of stock.';
 
             if ($request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => $message], 422);
@@ -132,10 +134,11 @@ class CartController extends Controller
     {
         abort_unless($cart->user_id === Auth::id(), 403);
 
-        if ($cart->quantity >= $cart->product->stock) {
+        $availableStock = $cart->product->stockForSize($cart->size);
+        if ($cart->quantity >= $availableStock) {
             return response()->json([
                 'success' => false,
-                'message' => 'You have reached the available stock for this product.',
+                'message' => 'You have reached the available stock for this product size.',
                 'quantity' => $cart->quantity,
             ], 422);
         }
