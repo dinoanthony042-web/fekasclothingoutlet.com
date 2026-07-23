@@ -92,7 +92,7 @@ class ReportController extends Controller
         $products = Product::with('category')
             ->select('products.*', DB::raw('COALESCE(COUNT(order_items.id), 0) as total_sales'), DB::raw('COALESCE(SUM(order_items.price * order_items.quantity), 0) as total_revenue'))
             ->leftJoin('order_items', 'products.id', '=', 'order_items.product_id')
-            ->groupBy('products.id', 'products.name', 'products.slug', 'products.description', 'products.price', 'products.category_id', 'products.sizes', 'products.colors', 'products.styles', 'products.images', 'products.stock', 'products.is_featured', 'products.is_new', 'products.is_best_seller', 'products.age_range', 'products.created_at', 'products.updated_at')
+            ->groupBy('products.id', 'products.name', 'products.slug', 'products.description', 'products.price', 'products.category_id', 'products.sizes', 'products.size_stock', 'products.colors', 'products.styles', 'products.images', 'products.stock', 'products.is_featured', 'products.is_new', 'products.is_best_seller', 'products.age_range', 'products.created_at', 'products.updated_at')
             ->orderBy($sort === 'sales' ? 'total_sales' : ($sort === 'revenue' ? 'total_revenue' : 'products.' . $sort), $direction)
             ->paginate(20);
 
