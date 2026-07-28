@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Services\BrevoMailer;
+use App\Services\KorapayService;
 use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -13,11 +14,13 @@ use Illuminate\Support\Facades\DB;
 class PaymentController extends Controller
 {
     protected PaystackService $paystackService;
+    protected KorapayService $korapayService;
     protected BrevoMailer $brevoMailer;
 
-    public function __construct(PaystackService $paystackService, BrevoMailer $brevoMailer)
+    public function __construct(PaystackService $paystackService, KorapayService $korapayService, BrevoMailer $brevoMailer)
     {
         $this->paystackService = $paystackService;
+        $this->korapayService = $korapayService;
         $this->brevoMailer = $brevoMailer;
     }
 
@@ -79,6 +82,119 @@ class PaymentController extends Controller
 
             return redirect()->route('orders.index')->with('error', 'Payment was not successful. Please try again.');
         }
+    }
+
+    public function korapayVerify(Request $request): RedirectResponse
+    {
+        $reference = $request->query('reference');
+
+        if (!$reference) {
+            return redirect()->route('orders.index')->with('error', 'Invalid Korapay payment reference.');
+        }
+
+        $response = $this->korapayService->verifyCharge($reference);
+
+        if (!$response['status']) {
+            return redirect()->route('orders.index')->with('error', 'Korapay verification failed: ' . $response['message']);
+        }
+
+        $paymentData = $response['data'];
+        $order = Order::where('payment_reference', $reference)->first();
+
+        if (!$order) {
+            return redirect()->route('orders.index')->with('error', 'Order not found.');
+        }
+
+        if ($paymentData['status'] === 'success') {
+            return DB::transaction(function () use ($order, $paymentData, $reference) {
+                $shouldSendConfirmation = $order->payment_status !== 'completed';
+
+                $order->update([
+                    'payment_status' => 'completed',
+                    'transaction_id' => $paymentData['transaction_reference'] ?? $reference,
+                    'status' => 'confirmed',
+                ]);
+
+                if ($shouldSendConfirmation) {
+                    $this->brevoMailer->sendOrderConfirmation($order);
+                }
+
+                return redirect()->route('orders.index')->with('success', 'Payment completed successfully! Your order is being processed.');
+            });
+        }
+
+        $order->update([
+            'payment_status' => 'failed',
+            'status' => 'failed',
+        ]);
+
+        return redirect()->route('orders.index')->with('error', 'Korapay payment was not successful. Please try again.');
+    }
+
+    public function korapayWebhook(Request $request)
+    {
+        $signature = $request->header('x-korapay-signature');
+        $secret = config('korapay.secret_key');
+        $payload = json_encode($request->input('data'));
+        $hash = hash_hmac('sha256', $payload, $secret);
+
+        if ($hash !== $signature) {
+            return response()->json(['status' => false, 'message' => 'Invalid signature'], 403);
+        }
+
+        $event = $request->input('event');
+        $data = $request->input('data', []);
+
+        if ($event === 'charge.success') {
+            $this->handleKorapaySuccessfulPayment($data);
+        } elseif ($event === 'charge.failed') {
+            $this->handleKorapayFailedPayment($data);
+        }
+
+        return response()->json(['status' => true]);
+    }
+
+    protected function handleKorapaySuccessfulPayment(array $data): void
+    {
+        $paymentReference = $data['payment_reference'] ?? null;
+
+        if (!$paymentReference) {
+            return;
+        }
+
+        $order = Order::where('payment_reference', $paymentReference)->first();
+
+        if (!$order || $order->payment_status === 'completed') {
+            return;
+        }
+
+        $order->update([
+            'payment_status' => 'completed',
+            'transaction_id' => $data['reference'] ?? $data['transaction_reference'] ?? null,
+            'status' => 'confirmed',
+        ]);
+
+        $this->brevoMailer->sendOrderConfirmation($order);
+    }
+
+    protected function handleKorapayFailedPayment(array $data): void
+    {
+        $paymentReference = $data['payment_reference'] ?? null;
+
+        if (!$paymentReference) {
+            return;
+        }
+
+        $order = Order::where('payment_reference', $paymentReference)->first();
+
+        if (!$order) {
+            return;
+        }
+
+        $order->update([
+            'payment_status' => 'failed',
+            'status' => 'failed',
+        ]);
     }
 
     /**

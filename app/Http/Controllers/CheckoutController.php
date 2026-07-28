@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\BrevoMailer;
+use App\Services\KorapayService;
 use App\Services\PaystackService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,13 @@ use Illuminate\View\View;
 class CheckoutController extends Controller
 {
     protected PaystackService $paystackService;
+    protected KorapayService $korapayService;
     protected BrevoMailer $brevoMailer;
 
-    public function __construct(PaystackService $paystackService, BrevoMailer $brevoMailer)
+    public function __construct(PaystackService $paystackService, KorapayService $korapayService, BrevoMailer $brevoMailer)
     {
         $this->paystackService = $paystackService;
+        $this->korapayService = $korapayService;
         $this->brevoMailer = $brevoMailer;
     }
 
@@ -40,7 +43,7 @@ class CheckoutController extends Controller
             'shipping_state' => 'required|string|max:100',
             'shipping_postcode' => 'required|string|max:20',
             'shipping_country' => 'required|string|max:100',
-            'payment_method' => 'required|string|in:card,paypal,paystack',
+            'payment_method' => 'required|string|in:card,paypal,paystack,korapay',
         ]);
 
         $user = Auth::user();
@@ -119,6 +122,22 @@ class CheckoutController extends Controller
             // Handle payment based on method
             if ($data['payment_method'] === 'paystack') {
                 return $this->initiatePaystackPayment($order);
+            }
+
+            if ($data['payment_method'] === 'korapay') {
+                $paymentReference = 'korapay_order_' . $order->id . '_' . time();
+
+                $order->update([
+                    'payment_reference' => $paymentReference,
+                ]);
+
+                return view('checkout.korapay', [
+                    'order' => $order->fresh(),
+                    'korapayPublicKey' => config('korapay.public_key'),
+                    'successUrl' => route('payment.korapay.verify'),
+                    'failureUrl' => route('checkout.index'),
+                    'notificationUrl' => route('webhooks.korapay'),
+                ]);
             }
 
             // For other payment methods (card, paypal), mark as confirmed for now

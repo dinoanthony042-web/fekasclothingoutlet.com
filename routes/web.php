@@ -29,6 +29,7 @@ Route::get('/api/products/{product:id}', [ProductController::class, 'apiShow']);
 
 // Paystack Webhook
 Route::post('/webhooks/paystack', [PaymentController::class, 'webhook'])->withoutMiddleware('web');
+Route::post('/webhooks/korapay', [PaymentController::class, 'korapayWebhook'])->withoutMiddleware('web')->name('webhooks.korapay');
 
 /*
 |--------------------------------------------------------------------------
