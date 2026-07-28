@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
 
     // Payment routes
     Route::get('/payment/verify', [PaymentController::class, 'verify'])->name('payment.verify');
+    Route::get('/payment/korapay/verify', [PaymentController::class, 'korapayVerify'])->name('payment.korapay.verify');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
