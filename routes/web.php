@@ -23,6 +23,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{product:slug}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/policies', function () {
+    return view('policies.terms');
+})->name('policies');
 
 // API
 Route::get('/api/products/{product:id}', [ProductController::class, 'apiShow']);

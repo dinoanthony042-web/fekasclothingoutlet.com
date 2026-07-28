@@ -19,7 +19,7 @@
 
 <body class="min-h-screen bg-gradient-to-b from-[#faf5ff] via-white to-[#fff5f9] text-[#1B1B18] antialiased @auth authenticated @endauth">
 
-@unless(request()->routeIs(['login', 'register']))
+@unless(request()->routeIs(['login', 'register', 'policies']))
 
 
 
@@ -240,10 +240,10 @@
                 <div>
                     <h3 class="text-sm font-semibold text-white">Support</h3>
                     <ul class="mt-3 space-y-2 text-sm text-[#e6d9f5]">
-                        <li><a href="{{ url('/') }}" class="hover:text-white transition">About us</a></li>
-                        <li><a href="{{ url('/') }}" class="hover:text-white transition">Shipping info</a></li>
-                        <li><a href="{{ url('/') }}" class="hover:text-white transition">Returns</a></li>
-                        <li><a href="{{ url('/') }}" class="hover:text-white transition">FAQ</a></li>
+                        <li><a href="{{ route('policies') }}#terms" class="hover:text-white transition">Terms & conditions</a></li>
+                        <li><a href="{{ route('policies') }}#payment" class="hover:text-white transition">Payment policy</a></li>
+                        <li><a href="{{ route('policies') }}#shipping" class="hover:text-white transition">Shipping & delivery</a></li>
+                        <li><a href="{{ route('policies') }}#returns" class="hover:text-white transition">Returns & exchange</a></li>
                     </ul>
                 </div>
                 <div class="min-w-0">
