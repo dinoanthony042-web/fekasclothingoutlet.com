@@ -298,6 +298,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const oldSelectedSizes = @json(old('sizes', []));
     const oldSizeStockValues = @json(old('size_stock', []));
     const shoeMappings = @json($shoeMappings);
+    const adultShoeSizeOptions = @json(config('sizes.adult_shoe_options'));
+    const kidsShoeSizeOptions = @json(config('sizes.kids_shoe_options'));
+    const standardSizeOptions = @json(config('sizes.all_options'));
 
     function getSelectedCategoryInfo() {
         const selectedOption = categorySelect.options[categorySelect.selectedIndex];
@@ -354,11 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const sizeValues = isAdultShoes
-            ? ['38', '39', '40', '41', '42', '43', '44']
+            ? adultShoeSizeOptions
             : isKidsShoes
-                ? ['18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
-                    '28', '29', '30', '31', '32', '33', '34', '35', '36', '37']
-                : ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'];
+                ? kidsShoeSizeOptions
+                : standardSizeOptions;
 
         sizeContainer.innerHTML = sizeValues.map(renderSizeOption).join('');
         attachSizeStockListeners();
