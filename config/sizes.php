@@ -207,16 +207,26 @@ return [
             'turkish' => '45',
             'label' => '45 (UK 10.5)',
         ],
+        '46' => [
+            'uk' => '11',
+            'turkish' => '46',
+            'label' => '46 (UK 11)',
+        ],
+        '47' => [
+            'uk' => '12',
+            'turkish' => '47',
+            'label' => '47 (UK 12)',
+        ],
     ],
 
     /**
      * All available size options for selection in admin
      */
     'all_options' => ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'],
-    'adult_shoe_options' => ['38', '39', '40', '41', '42', '43', '44'],
+    'adult_shoe_options' => ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47'],
     'kids_shoe_options' => ['18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
     '28', '29', '30', '31', '32', '33', '34', '35', '36', '37'],
-    'shoe_options' => ['38', '39', '40', '41', '42', '43', '44'],
+    'shoe_options' => ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47'],
 
     /**
      * Get mapping for a specific size

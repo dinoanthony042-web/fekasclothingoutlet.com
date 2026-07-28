@@ -32,6 +32,8 @@ The Fekasclothing store now includes UK and Turkish size equivalents for all sta
 | 43        | 9       |              |
 | 44        | 10      |              |
 | 45        | 10.5    |              |
+| 46        | 11      |              |
+| 47        | 12      |              |
 
 ## Files Modified & Created
 
