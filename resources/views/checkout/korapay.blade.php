@@ -45,7 +45,7 @@
 <script>
     const publicKey = @json($korapayPublicKey);
     const paymentReference = @json($order->payment_reference);
-    const amount = @json((int) round($order->total * 100));
+    const amount = @json((int) round($order->total));
     const successUrl = @json($successUrl);
     const failureUrl = @json($failureUrl);
     const notificationUrl = @json($notificationUrl);
