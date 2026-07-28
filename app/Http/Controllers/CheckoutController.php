@@ -33,7 +33,7 @@ class CheckoutController extends Controller
         return view('checkout.index', compact('cartItems'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|View
     {
         $data = $request->validate([
             'shipping_name' => 'required|string|max:255',
