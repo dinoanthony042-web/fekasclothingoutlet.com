@@ -57,6 +57,8 @@ class ProductController extends Controller
             'sizes' => 'nullable|array',
             'size_stock' => 'nullable|array',
             'size_stock.*' => 'nullable|integer|min:0',
+            'color_stock' => 'nullable|array',
+            'color_stock.*' => 'nullable|integer|min:0',
             'colors' => 'nullable|array',
             'styles' => 'nullable|array',
             'age_range' => 'nullable|string',
@@ -73,8 +75,18 @@ class ProductController extends Controller
             ->map(fn ($qty) => (int) $qty)
             ->all();
 
-        if (!empty($validated['size_stock'])) {
-            $validated['stock'] = array_sum($validated['size_stock']);
+        $validated['color_stock'] = collect($validated['color_stock'] ?? [])
+            ->only($validated['colors'] ?? [])
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
+
+        $stockValues = array_values(array_filter([
+            ...($validated['size_stock'] ?? []),
+            ...($validated['color_stock'] ?? []),
+        ], fn ($value) => $value !== null));
+
+        if (!empty($stockValues)) {
+            $validated['stock'] = array_sum($stockValues);
         }
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -136,6 +148,8 @@ class ProductController extends Controller
             'sizes' => 'nullable|array',
             'size_stock' => 'nullable|array',
             'size_stock.*' => 'nullable|integer|min:0',
+            'color_stock' => 'nullable|array',
+            'color_stock.*' => 'nullable|integer|min:0',
             'colors' => 'nullable|array',
             'styles' => 'nullable|array',
             'age_range' => 'nullable|string',
@@ -152,8 +166,18 @@ class ProductController extends Controller
             ->map(fn ($qty) => (int) $qty)
             ->all();
 
-        if (!empty($validated['size_stock'])) {
-            $validated['stock'] = array_sum($validated['size_stock']);
+        $validated['color_stock'] = collect($validated['color_stock'] ?? [])
+            ->only($validated['colors'] ?? [])
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
+
+        $stockValues = array_values(array_filter([
+            ...($validated['size_stock'] ?? []),
+            ...($validated['color_stock'] ?? []),
+        ], fn ($value) => $value !== null));
+
+        if (!empty($stockValues)) {
+            $validated['stock'] = array_sum($stockValues);
         }
 
         $validated['slug'] = Str::slug($validated['name']);

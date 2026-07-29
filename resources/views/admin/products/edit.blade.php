@@ -173,21 +173,30 @@
                 </div>
 
                 <!-- Colors -->
-                <div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Colors</label>
-                    <div class="mt-2 grid grid-cols-4 gap-2">
+                    <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
                         @php
                             $colorOptions = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Gray', 'Brown', 'Navy'];
                             $oldColors = old('colors', $product->colors ?? []);
                         @endphp
                         @foreach($colorOptions as $color)
-                            <div class="flex items-center">
-                                <input type="checkbox" name="colors[]" value="{{ $color }}" id="color-{{ strtolower($color) }}"
-                                       {{ in_array($color, $oldColors) ? 'checked' : '' }}
-                                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <label for="color-{{ strtolower($color) }}" class="ml-2 block text-sm text-gray-900">
-                                    {{ $color }}
-                                </label>
+                            <div class="rounded-lg border border-gray-200 p-3">
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="colors[]" value="{{ $color }}" id="color-{{ strtolower($color) }}"
+                                           {{ in_array($color, $oldColors) ? 'checked' : '' }}
+                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                    <label for="color-{{ strtolower($color) }}" class="ml-2 block text-sm text-gray-900">
+                                        {{ $color }}
+                                    </label>
+                                </div>
+                                <div class="mt-2">
+                                    <label for="color_stock_{{ $color }}" class="sr-only">Stock for {{ $color }}</label>
+                                    <input type="number" name="color_stock[{{ $color }}]" id="color_stock_{{ $color }}" min="0"
+                                           value="{{ old('color_stock.'.$color, $product->color_stock[$color] ?? 0) }}"
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                           placeholder="Qty">
+                                </div>
                             </div>
                         @endforeach
                     </div>

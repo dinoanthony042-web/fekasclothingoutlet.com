@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'description', 'price', 'category_id', 'sizes', 'size_stock', 'colors', 'styles', 'images',
+        'name', 'slug', 'description', 'price', 'category_id', 'sizes', 'size_stock', 'colors', 'color_stock', 'styles', 'images',
         'stock', 'is_featured', 'is_new', 'is_best_seller', 'age_range'
     ];
 
@@ -17,6 +17,7 @@ class Product extends Model
         'styles' => 'array',
         'images' => 'array',
         'size_stock' => 'array',
+        'color_stock' => 'array',
         'is_featured' => 'boolean',
         'is_new' => 'boolean',
         'is_best_seller' => 'boolean',
@@ -24,11 +25,14 @@ class Product extends Model
 
     public function getAvailableStockAttribute()
     {
-        if (!is_array($this->size_stock) || empty($this->size_stock)) {
-            return $this->stock;
+        $sizeStock = is_array($this->size_stock) ? array_sum($this->size_stock) : 0;
+        $colorStock = is_array($this->color_stock) ? array_sum($this->color_stock) : 0;
+
+        if ($sizeStock > 0 || $colorStock > 0) {
+            return $sizeStock + $colorStock;
         }
 
-        return array_sum($this->size_stock);
+        return $this->stock;
     }
 
     public function stockForSize(?string $size): int
