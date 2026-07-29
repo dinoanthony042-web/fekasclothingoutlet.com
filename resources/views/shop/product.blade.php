@@ -38,8 +38,10 @@
 
                 @php
                     $productSizes = is_array($product->sizes) ? $product->sizes : (($product->sizes ?? []) ? (array) $product->sizes : []);
+                    $bagText = strtolower(trim((string) ($product->name ?? '') . ' ' . (string) ($product->description ?? '') . ' ' . (string) ($product->category->name ?? '') . ' ' . (string) ($product->category->slug ?? '')));
+                    $isBagCategory = str_contains($bagText, 'bag') || str_contains($bagText, 'bags');
                 @endphp
-                @if(!empty($productSizes))
+                @if(!$isBagCategory && !empty($productSizes))
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <label class="block text-sm font-semibold text-[#4f433d]">Size</label>
@@ -116,8 +118,8 @@
                             },
 
                             get isFormValid() {
-                                const hasSizes = @json(count($product->sizes ?? [])) > 0;
-                                const hasColors = @json(count($product->colors ?? [])) > 0;
+                                const hasSizes = @json(!$isBagCategory && count($product->sizes ?? []) > 0);
+                                const hasColors = @json(count($product->colors ?? []) > 0);
 
                                 if (hasSizes && !this.selectedSize) return false;
                                 if (hasColors && !this.selectedColor) return false;
@@ -145,8 +147,10 @@
                                     event.preventDefault();
                                     if (this.quantity > this.currentMaxStock) {
                                         alert('You cannot add more items than available in stock. Maximum: ' + this.currentMaxStock);
+                                    } else if (@json(!$isBagCategory) && this.selectedSize === undefined) {
+                                        alert('Please select a size before adding to cart.');
                                     } else {
-                                        alert('Please select all required options (size and color) before adding to cart.');
+                                        alert('Please select a color before adding to cart.');
                                     }
                                     return false;
                                 }
@@ -221,27 +225,29 @@
                 <li><strong class="text-[#1b1b18]">Category:</strong> {{ $product->category->name }}</li>
                 <li><strong class="text-[#1b1b18]">Styles:</strong> {{ implode(', ', $product->styles ?? []) }}</li>
                 <li><strong class="text-[#1b1b18]">Colors:</strong> {{ implode(', ', $product->colors ?? []) }}</li>
-                <li>
-                    <strong class="text-[#1b1b18]">Sizes:</strong>
-                    <div class="mt-2 space-y-1">
-                        @php
-                            $sizeMappings = config('sizes.mappings');
-                            $shoeMappings = config('sizes.shoe_mappings', []);
-                            $productSizes = is_array($product->sizes) ? $product->sizes : (($product->sizes ?? []) ? (array) $product->sizes : []);
-                        @endphp
-                        @foreach($productSizes as $size)
+                @if(!$isBagCategory)
+                    <li>
+                        <strong class="text-[#1b1b18]">Sizes:</strong>
+                        <div class="mt-2 space-y-1">
                             @php
-                                $mapping = $sizeMappings[$size] ?? $shoeMappings[$size] ?? null;
+                                $sizeMappings = config('sizes.mappings');
+                                $shoeMappings = config('sizes.shoe_mappings', []);
+                                $productSizes = is_array($product->sizes) ? $product->sizes : (($product->sizes ?? []) ? (array) $product->sizes : []);
                             @endphp
-                            <div class="text-sm text-[#5e534c]">
-                                {{ $size }}
-                                @if($mapping)
-                                    <span class="text-xs text-[#8c7d74]">(UK {{ $mapping['uk'] }} • TR {{ $mapping['turkish'] }})</span>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </li>
+                            @foreach($productSizes as $size)
+                                @php
+                                    $mapping = $sizeMappings[$size] ?? $shoeMappings[$size] ?? null;
+                                @endphp
+                                <div class="text-sm text-[#5e534c]">
+                                    {{ $size }}
+                                    @if($mapping)
+                                        <span class="text-xs text-[#8c7d74]">(UK {{ $mapping['uk'] }} • TR {{ $mapping['turkish'] }})</span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </li>
+                @endif
             </ul>
         </div>
 

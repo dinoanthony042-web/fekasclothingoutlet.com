@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -115,6 +116,35 @@ class Product extends Model
     public function isOnSale()
     {
         return $this->activeDiscount() !== null;
+    }
+
+    public function isBagProduct(): bool
+    {
+        $texts = collect([
+            $this->name,
+            $this->slug,
+            $this->description,
+        ]);
+
+        $category = $this->relationLoaded('category') ? $this->category : null;
+
+        if ($category) {
+            $current = $category;
+            while ($current) {
+                $texts->push($current->name);
+                $texts->push($current->slug);
+                $current = $this->relationLoaded('category') ? null : null;
+            }
+        }
+
+        foreach ($texts as $text) {
+            $value = Str::lower((string) $text);
+            if (Str::contains($value, 'bag') || Str::contains($value, 'bags')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function averageRating()

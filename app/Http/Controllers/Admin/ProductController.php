@@ -80,6 +80,35 @@ class ProductController extends Controller
             ->map(fn ($qty) => (int) $qty)
             ->all();
 
+        // Repeat bag detection for update path as well (in case this is update())
+        $category = Category::find($validated['category_id'] ?? null);
+        $isBag = false;
+        if ($category) {
+            $texts = [$category->name, $category->slug, $category->parent?->name ?? '', $category->parent?->slug ?? ''];
+            $hay = strtolower(implode(' ', array_filter($texts)));
+            $isBag = str_contains($hay, 'bag');
+        }
+
+        if ($isBag) {
+            $validated['sizes'] = [];
+            $validated['size_stock'] = [];
+        }
+
+        // If the selected category is a Bags category (singular/plural) or a Bags subcategory,
+        // ignore sizes and calculate stock only from color stock values.
+        $category = Category::find($validated['category_id'] ?? null);
+        $isBag = false;
+        if ($category) {
+            $texts = [$category->name, $category->slug, $category->parent?->name ?? '', $category->parent?->slug ?? ''];
+            $hay = strtolower(implode(' ', array_filter($texts)));
+            $isBag = str_contains($hay, 'bag');
+        }
+
+        if ($isBag) {
+            $validated['sizes'] = [];
+            $validated['size_stock'] = [];
+        }
+
         $stockValues = array_values(array_filter([
             ...($validated['size_stock'] ?? []),
             ...($validated['color_stock'] ?? []),

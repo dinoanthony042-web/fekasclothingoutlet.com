@@ -327,6 +327,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function toggleSizeVisibility() {
+        const { parentName, categoryName } = getSelectedCategoryInfo();
+        const name = (categoryName || '').toLowerCase();
+        const parent = (parentName || '').toLowerCase();
+
+        // Hide sizes for Bags or when Bags is selected under Women
+        const isBag = name.includes('bag') || parent.includes('bag') || (parent === 'women' && name.includes('bag'));
+
+        if (sizeContainer) {
+            if (isBag) {
+                sizeContainer.classList.add('hidden');
+            } else {
+                sizeContainer.classList.remove('hidden');
+            }
+        }
+    }
+
     function renderSizeOption(size) {
         const id = `size-${size.toLowerCase()}`;
         const checked = oldSelectedSizes.includes(size) ? 'checked' : '';
@@ -373,23 +390,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
         sizeContainer.innerHTML = sizeValues.map(renderSizeOption).join('');
         attachSizeStockListeners();
+        // Ensure visibility reflects current category selection
+        toggleSizeVisibility();
     }
 
     function updateTotalStock() {
         if (!stockInput) {
             return;
         }
-
         let total = 0;
-        document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
-            const match = input.name.match(/^size_stock\[(.+)\]$/);
-            const size = match ? match[1] : null;
-            const checkbox = size ? document.querySelector(`input[name="sizes[]"][value="${size}"]`) : null;
-            const quantity = parseInt(input.value, 10) || 0;
-            if (checkbox && checkbox.checked) {
-                total += quantity;
-            }
-        });
+
+        // If sizes are hidden (bags), sum color_stock for entered quantities or checked colors
+        if (sizeContainer && sizeContainer.classList.contains('hidden')) {
+            document.querySelectorAll('input[name^="color_stock["]').forEach((input) => {
+                const match = input.name.match(/^color_stock\[(.+)\]$/);
+                const color = match ? match[1] : null;
+                const checkbox = color ? document.querySelector(`input[name="colors[]"][value="${color}"]`) : null;
+                const quantity = parseInt(input.value, 10) || 0;
+                if (quantity > 0 || (checkbox && checkbox.checked)) {
+                    total += quantity;
+                }
+            });
+        } else {
+            document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
+                const match = input.name.match(/^size_stock\[(.+)\]$/);
+                const size = match ? match[1] : null;
+                const checkbox = size ? document.querySelector(`input[name="sizes[]"][value="${size}"]`) : null;
+                const quantity = parseInt(input.value, 10) || 0;
+                if (checkbox && checkbox.checked) {
+                    total += quantity;
+                }
+            });
+        }
 
         stockInput.value = total;
     }
@@ -399,6 +431,13 @@ document.addEventListener('DOMContentLoaded', function() {
             input.addEventListener('input', updateTotalStock);
         });
         document.querySelectorAll('input[name="sizes[]"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', updateTotalStock);
+        });
+        // Also listen for color stock inputs and color checkbox changes
+        document.querySelectorAll('input[name^="color_stock["]').forEach((input) => {
+            input.addEventListener('input', updateTotalStock);
+        });
+        document.querySelectorAll('input[name="colors[]"]').forEach((checkbox) => {
             checkbox.addEventListener('change', updateTotalStock);
         });
     }
