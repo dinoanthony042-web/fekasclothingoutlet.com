@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ProductController extends Controller
 {
@@ -190,9 +192,26 @@ class ProductController extends Controller
         $images = [];
 
         if ($request->hasFile('image_uploads')) {
+            $manager = new ImageManager(new Driver());
+
             foreach ($request->file('image_uploads') as $upload) {
                 if ($upload && $upload->isValid()) {
                     $path = $upload->store('products', 'public');
+                    $absolutePath = Storage::disk('public')->path($path);
+
+                    $image = $manager->read($absolutePath);
+                    $image->resize(1600, 1600, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+
+                    $format = match (strtolower($upload->getClientOriginalExtension() ?: 'jpg')) {
+                        'png' => 'png',
+                        'webp' => 'webp',
+                        default => 'jpg',
+                    };
+
+                    $image->save($absolutePath, quality: 82, format: $format);
                     $images[] = asset(Storage::url($path));
                 }
             }

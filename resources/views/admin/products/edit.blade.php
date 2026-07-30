@@ -231,7 +231,7 @@
                     @error('image_uploads.*')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-2 text-sm text-gray-500">Leave empty to keep existing images. Upload 2 to 5 new images only if you want to replace them.</p>
+                    <p class="mt-2 text-sm text-gray-500">Leave empty to keep existing images. Upload 2 to 5 new images only if you want to replace them. New images will be resized and compressed before upload to keep them loading faster.</p>
 
                     <!-- Preview & Progress -->
                     <div id="image-preview" class="mt-4 grid grid-cols-3 gap-3"></div>
@@ -343,6 +343,76 @@ document.addEventListener('DOMContentLoaded', function() {
         statusContainer.innerHTML = '';
     }
 
+    function resizeImage(file) {
+        return new Promise((resolve) => {
+            if (!file || !file.type || !file.type.startsWith('image/')) {
+                resolve(file);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDimension = 1600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxDimension) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        }
+                    } else if (height > maxDimension) {
+                        width = Math.round((width * maxDimension) / height);
+                        height = maxDimension;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const mimeType = file.type === 'image/png' ? 'image/png' : file.type === 'image/webp' ? 'image/webp' : 'image/jpeg';
+                    const extension = mimeType === 'image/png' ? 'png' : mimeType === 'image/webp' ? 'webp' : 'jpg';
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.' + extension, {
+                                type: mimeType,
+                                lastModified: Date.now()
+                            }));
+                        } else {
+                            resolve(file);
+                        }
+                    }, mimeType, 0.82);
+                };
+                img.onerror = function() {
+                    resolve(file);
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = function() {
+                resolve(file);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function buildResizedFormData(form, files) {
+        const formData = new FormData(form);
+        formData.delete('image_uploads[]');
+
+        const resizedFiles = await Promise.all(files.map((file) => resizeImage(file)));
+        resizedFiles.forEach((file) => {
+            formData.append('image_uploads[]', file, file.name);
+        });
+
+        return formData;
+    }
+
     fileInput.addEventListener('change', function() {
         clearPreview();
         Array.from(fileInput.files).forEach((file, idx) => {
@@ -369,10 +439,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const files = fileInput.files;
+        const files = Array.from(fileInput.files);
         if (files.length > 0 && files.length < 2) {
             alert('If replacing images, upload at least 2 images.');
             return;
@@ -383,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = 'Uploading...';
 
         const xhr = new XMLHttpRequest();
-        const fd = new FormData(form);
+        const fd = files.length > 0 ? await buildResizedFormData(form, files) : new FormData(form);
 
         xhr.open('POST', form.action, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
