@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 
 class ProductController extends Controller
 {
@@ -245,32 +244,85 @@ class ProductController extends Controller
         $images = [];
 
         if ($request->hasFile('image_uploads')) {
-            $manager = new ImageManager(new Driver());
-
             foreach ($request->file('image_uploads') as $upload) {
                 if ($upload && $upload->isValid()) {
                     $path = $upload->store('products', 'public');
                     $absolutePath = Storage::disk('public')->path($path);
 
-                    $image = $manager->read($absolutePath);
-                    $image->resize(1600, 1600, function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
+                    if (class_exists(\Intervention\Image\ImageManager::class)) {
+                        try {
+                            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                            $image = $manager->read($absolutePath);
+                            $image->resize(1600, 1600, function ($constraint) {
+                                $constraint->aspectRatio();
+                                $constraint->upsize();
+                            });
 
-                    $format = match (strtolower($upload->getClientOriginalExtension() ?: 'jpg')) {
-                        'png' => 'png',
-                        'webp' => 'webp',
-                        default => 'jpg',
-                    };
+                            $format = match (strtolower($upload->getClientOriginalExtension() ?: 'jpg')) {
+                                'png' => 'png',
+                                'webp' => 'webp',
+                                default => 'jpg',
+                            };
 
-                    $image->save($absolutePath, quality: 82, format: $format);
+                            $image->save($absolutePath, quality: 82, format: $format);
+                        } catch (\Throwable) {
+                            $this->resizeImageWithGd($absolutePath, $upload);
+                        }
+                    } else {
+                        $this->resizeImageWithGd($absolutePath, $upload);
+                    }
+
                     $images[] = asset(Storage::url($path));
                 }
             }
         }
 
         return array_values(array_unique($images));
+    }
+
+    protected function resizeImageWithGd(string $absolutePath, UploadedFile $upload): void
+    {
+        $source = @file_get_contents($absolutePath);
+        if ($source === false || $source === '') {
+            return;
+        }
+
+        $resource = @imagecreatefromstring($source);
+        if ($resource === false) {
+            return;
+        }
+
+        $width = imagesx($resource);
+        $height = imagesy($resource);
+        $maxDimension = 1600;
+
+        if ($width > $height) {
+            $newWidth = min($width, $maxDimension);
+            $newHeight = (int) round(($height / $width) * $newWidth);
+        } else {
+            $newHeight = min($height, $maxDimension);
+            $newWidth = (int) round(($width / $height) * $newHeight);
+        }
+
+        $resized = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($resized, $resource, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+        $format = match (strtolower($upload->getClientOriginalExtension() ?: 'jpg')) {
+            'png' => 'png',
+            'webp' => 'webp',
+            default => 'jpg',
+        };
+
+        if ($format === 'png') {
+            imagepng($resized, $absolutePath, 8);
+        } elseif ($format === 'webp') {
+            imagewebp($resized, $absolutePath, 82);
+        } else {
+            imagejpeg($resized, $absolutePath, 82);
+        }
+
+        imagedestroy($resource);
+        imagedestroy($resized);
     }
 
     /**
