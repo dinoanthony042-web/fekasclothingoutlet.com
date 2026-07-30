@@ -99,7 +99,7 @@
                 </div>
 
                 <!-- Sizes -->
-                <div class="md:col-span-2">
+                <div id="size-options" class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Sizes</label>
                     <p class="mt-1 text-sm text-gray-500">Select available sizes. Shown with UK and Turkish equivalents for customer reference.</p>
                     <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -173,21 +173,30 @@
                 </div>
 
                 <!-- Colors -->
-                <div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Colors</label>
-                    <div class="mt-2 grid grid-cols-4 gap-2">
+                    <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
                         @php
                             $colorOptions = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Gray', 'Brown', 'Navy'];
                             $oldColors = old('colors', $product->colors ?? []);
                         @endphp
                         @foreach($colorOptions as $color)
-                            <div class="flex items-center">
-                                <input type="checkbox" name="colors[]" value="{{ $color }}" id="color-{{ strtolower($color) }}"
-                                       {{ in_array($color, $oldColors) ? 'checked' : '' }}
-                                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <label for="color-{{ strtolower($color) }}" class="ml-2 block text-sm text-gray-900">
-                                    {{ $color }}
-                                </label>
+                            <div class="rounded-lg border border-gray-200 p-3">
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="colors[]" value="{{ $color }}" id="color-{{ strtolower($color) }}"
+                                           {{ in_array($color, $oldColors) ? 'checked' : '' }}
+                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                    <label for="color-{{ strtolower($color) }}" class="ml-2 block text-sm text-gray-900">
+                                        {{ $color }}
+                                    </label>
+                                </div>
+                                <div class="mt-2">
+                                    <label for="color_stock_{{ $color }}" class="sr-only">Stock for {{ $color }}</label>
+                                    <input type="number" name="color_stock[{{ $color }}]" id="color_stock_{{ $color }}" min="0"
+                                           value="{{ old('color_stock.'.$color, $product->color_stock[$color] ?? 0) }}"
+                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                           placeholder="Qty">
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -286,6 +295,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category_id');
     const ageRangeContainer = document.getElementById('age_range_container');
+    const sizeContainer = document.getElementById('size-options');
 
     function toggleAgeRange() {
         const selectedOption = categorySelect.options[categorySelect.selectedIndex];
@@ -297,7 +307,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function toggleSizeVisibility() {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const parentName = selectedOption ? selectedOption.getAttribute('data-parent') : '';
+        const categoryName = selectedOption ? selectedOption.textContent.trim() : '';
+        const name = (categoryName || '').toLowerCase();
+        const parent = (parentName || '').toLowerCase();
+
+        const isBag = name.includes('bag') || parent.includes('bag') || (parent === 'women' && name.includes('bag'));
+
+        if (sizeContainer) {
+            if (isBag) {
+                sizeContainer.classList.add('hidden');
+            } else {
+                sizeContainer.classList.remove('hidden');
+            }
+        }
+    }
+
     categorySelect.addEventListener('change', toggleAgeRange);
+    categorySelect.addEventListener('change', toggleSizeVisibility);
 
     function updateTotalStock() {
         const stockInput = document.getElementById('stock');
@@ -305,15 +334,29 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         let total = 0;
-        document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
-            const match = input.name.match(/^size_stock\[(.+)\]$/);
-            const size = match ? match[1] : null;
-            const checkbox = size ? document.querySelector(`input[name="sizes[]"][value="${size}"]`) : null;
-            const quantity = parseInt(input.value, 10) || 0;
-            if (checkbox && checkbox.checked) {
-                total += quantity;
-            }
-        });
+
+        if (sizeContainer && sizeContainer.classList.contains('hidden')) {
+            document.querySelectorAll('input[name^="color_stock["]').forEach((input) => {
+                const match = input.name.match(/^color_stock\[(.+)\]$/);
+                const color = match ? match[1] : null;
+                const checkbox = color ? document.querySelector(`input[name="colors[]"][value="${color}"]`) : null;
+                const quantity = parseInt(input.value, 10) || 0;
+                if (quantity > 0 || (checkbox && checkbox.checked)) {
+                    total += quantity;
+                }
+            });
+        } else {
+            document.querySelectorAll('input[name^="size_stock["]').forEach((input) => {
+                const match = input.name.match(/^size_stock\[(.+)\]$/);
+                const size = match ? match[1] : null;
+                const checkbox = size ? document.querySelector(`input[name="sizes[]"][value="${size}"]`) : null;
+                const quantity = parseInt(input.value, 10) || 0;
+                if (checkbox && checkbox.checked) {
+                    total += quantity;
+                }
+            });
+        }
+
         stockInput.value = total;
     }
 
@@ -324,11 +367,19 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('input[name="sizes[]"]').forEach((checkbox) => {
             checkbox.addEventListener('change', updateTotalStock);
         });
+        // Also watch color stock inputs and color checkboxes
+        document.querySelectorAll('input[name^="color_stock["]').forEach((input) => {
+            input.addEventListener('input', updateTotalStock);
+        });
+        document.querySelectorAll('input[name="colors[]"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', updateTotalStock);
+        });
     }
 
     attachSizeStockListeners();
     updateTotalStock();
     toggleAgeRange(); // Initial check
+    toggleSizeVisibility();
 });
 
 // Image preview + AJAX upload with progress (edit form)

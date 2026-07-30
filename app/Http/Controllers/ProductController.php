@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function show(Product $product): View
     {
-        $product->load(['category.discounts', 'discounts']);
+        $product->load(['category.parent', 'category.discounts', 'discounts']);
 
         $related = Product::with(['category.discounts', 'discounts'])
             ->where('category_id', $product->category_id)
