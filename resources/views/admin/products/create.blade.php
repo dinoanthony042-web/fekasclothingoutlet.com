@@ -187,7 +187,7 @@
                     <label class="block text-sm font-medium text-gray-700">Colors</label>
                     <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
                         @php
-                            $colorOptions = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Gray', 'Brown', 'Navy'];
+                            $colorOptions = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Gray', 'Brown', 'Navy','Gold','Silver','Beige','Teal','Maroon','Olive','Cyan','Magenta',Turquoise','Lime','Indigo','Violet','Coral','Salmon','Chocolate','Tan','Khaki','Ivory','Mint','Peach','Plum','Mustard','Cream','Charcoal','Rose','Sapphire','Emerald','Ruby','Amber','Jade','Onyx','Pearl','Topaz','Quartz','Obsidian','Cobalt','Cerulean','Fuchsia','Lavender','Periwinkle','wine'];
                             $oldColors = old('colors', []);
                         @endphp
                         @foreach($colorOptions as $color)
