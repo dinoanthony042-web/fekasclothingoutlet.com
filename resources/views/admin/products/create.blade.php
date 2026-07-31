@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <div class="ml-2">
                             <label for="${id}" class="block text-sm font-medium text-gray-900 cursor-pointer">${mapping ? mapping.turkish : size}</label>
-                            <p class="text-xs text-gray-500">${mappingText}</p>
+                            <p class="text-xs text-gray-500">  ${mapping ? `EU: ${size} • UK: ${mapping.uk}` : ''}</p>
                         </div>
                     </div>
                     <div class="w-24">
