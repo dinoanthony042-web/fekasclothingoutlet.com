@@ -70,6 +70,21 @@
             </div>
             <a href="{{ route('admin.reports.sales') }}" class="text-yellow-600 text-sm font-medium mt-4 inline-block hover:text-yellow-700">View Reports →</a>
         </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Manage Users</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ $totalUsers }}</p>
+                </div>
+                <div class="p-3 bg-indigo-100 rounded-lg">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 0114 0" />
+                    </svg>
+                </div>
+            </div>
+            <a href="{{ route('admin.users.index') }}" class="text-indigo-600 text-sm font-medium mt-4 inline-block hover:text-indigo-700">Manage Users →</a>
+        </div>
     </div>
 
     <!-- Secondary Metrics -->

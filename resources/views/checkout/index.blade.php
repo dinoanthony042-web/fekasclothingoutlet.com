@@ -23,29 +23,46 @@
                 </div>
             </div>
 
-            <div class="grid gap-1 sm:gap-4">
-                <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Street address</label>
-                <input type="text" name="shipping_street" value="{{ old('shipping_street') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
-            </div>
-
-            <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">City</label>
-                    <input type="text" name="shipping_city" value="{{ old('shipping_city') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">State</label>
-                    <input type="text" name="shipping_state" value="{{ old('shipping_state') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Postcode</label>
-                    <input type="text" name="shipping_postcode" value="{{ old('shipping_postcode') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
-                </div>
-            </div>
-
             <div>
-                <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Country</label>
-                <input type="text" name="shipping_country" value="{{ old('shipping_country') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
+                <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Delivery option</label>
+                <div class="mt-2 flex flex-wrap gap-3">
+                    <label class="flex items-center gap-2 rounded-full border border-[#e4dad1] bg-[#f9f4f0] px-3 py-2 text-xs sm:text-sm text-[#4f433d]">
+                        <input type="radio" name="delivery_method" value="delivery" checked>
+                        <span>Delivery</span>
+                    </label>
+                    <label class="flex items-center gap-2 rounded-full border border-[#e4dad1] bg-[#f9f4f0] px-3 py-2 text-xs sm:text-sm text-[#4f433d]">
+                        <input type="radio" name="delivery_method" value="pickup">
+                        <span>Pickup</span>
+                    </label>
+                </div>
+                <p class="mt-2 text-xs text-[#766459]">Choose delivery for home shipping or pickup for in-store collection.</p>
+            </div>
+
+            <div id="delivery-address-fields">
+                <div class="grid gap-1 sm:gap-4">
+                    <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Street address</label>
+                    <input type="text" name="shipping_street" value="{{ old('shipping_street') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
+                </div>
+
+                <div class="mt-4 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">City</label>
+                        <input type="text" name="shipping_city" value="{{ old('shipping_city') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">State</label>
+                        <input type="text" name="shipping_state" value="{{ old('shipping_state') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Postcode</label>
+                        <input type="text" name="shipping_postcode" value="{{ old('shipping_postcode') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Country</label>
+                    <input type="text" name="shipping_country" value="{{ old('shipping_country') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
+                </div>
             </div>
 
             <div>
@@ -59,6 +76,32 @@
 
             <button type="submit" class="w-full rounded-full bg-[#1b1b18] px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#403c39]">Place order</button>
         </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const container = document.getElementById('delivery-address-fields');
+                const inputs = container ? Array.from(container.querySelectorAll('input[required]')) : [];
+
+                const toggleAddressFields = () => {
+                    const selected = document.querySelector('input[name="delivery_method"]:checked')?.value;
+                    const isPickup = selected === 'pickup';
+
+                    if (container) {
+                        container.classList.toggle('hidden', isPickup);
+                    }
+
+                    inputs.forEach((input) => {
+                        input.required = !isPickup;
+                    });
+                };
+
+                document.querySelectorAll('input[name="delivery_method"]').forEach((radio) => {
+                    radio.addEventListener('change', toggleAddressFields);
+                });
+
+                toggleAddressFields();
+            });
+        </script>
     </section>
 
     <aside class="space-y-4 sm:space-y-6">

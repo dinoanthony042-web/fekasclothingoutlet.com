@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\HeroSliderController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +76,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.orders.destroy',
     ])->only(['index', 'show', 'destroy']);
     Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+
+    Route::resource('users', UserController::class)->names([
+        'index' => 'admin.users.index',
+        'edit' => 'admin.users.edit',
+        'update' => 'admin.users.update',
+        'destroy' => 'admin.users.destroy',
+    ])->only(['index', 'edit', 'update', 'destroy']);
 
     // Reports
     Route::prefix('reports')->name('admin.reports.')->group(function () {

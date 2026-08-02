@@ -35,16 +35,24 @@ class CheckoutController extends Controller
 
     public function store(Request $request): RedirectResponse|View
     {
-        $data = $request->validate([
+        $rules = [
             'shipping_name' => 'required|string|max:255',
             'shipping_phone' => 'required|string|max:30',
-            'shipping_street' => 'required|string|max:255',
-            'shipping_city' => 'required|string|max:100',
-            'shipping_state' => 'required|string|max:100',
-            'shipping_postcode' => 'required|string|max:20',
-            'shipping_country' => 'required|string|max:100',
             'payment_method' => 'required|string|in:card,paypal,paystack,korapay',
-        ]);
+            'delivery_method' => 'required|string|in:delivery,pickup',
+        ];
+
+        if ($request->input('delivery_method') !== 'pickup') {
+            $rules = array_merge($rules, [
+                'shipping_street' => 'required|string|max:255',
+                'shipping_city' => 'required|string|max:100',
+                'shipping_state' => 'required|string|max:100',
+                'shipping_postcode' => 'required|string|max:20',
+                'shipping_country' => 'required|string|max:100',
+            ]);
+        }
+
+        $data = $request->validate($rules);
 
         $user = Auth::user();
         $cartItems = $user->carts()->with('product')->get();
@@ -80,20 +88,22 @@ class CheckoutController extends Controller
                 'shipping_address' => [
                     'name' => $data['shipping_name'],
                     'phone' => $data['shipping_phone'],
-                    'street' => $data['shipping_street'],
-                    'city' => $data['shipping_city'],
-                    'state' => $data['shipping_state'],
-                    'postcode' => $data['shipping_postcode'],
-                    'country' => $data['shipping_country'],
+                    'delivery_method' => $data['delivery_method'],
+                    'street' => $data['shipping_street'] ?? '',
+                    'city' => $data['shipping_city'] ?? '',
+                    'state' => $data['shipping_state'] ?? '',
+                    'postcode' => $data['shipping_postcode'] ?? '',
+                    'country' => $data['shipping_country'] ?? '',
                 ],
                 'billing_address' => [
                     'name' => $data['shipping_name'],
                     'phone' => $data['shipping_phone'],
-                    'street' => $data['shipping_street'],
-                    'city' => $data['shipping_city'],
-                    'state' => $data['shipping_state'],
-                    'postcode' => $data['shipping_postcode'],
-                    'country' => $data['shipping_country'],
+                    'delivery_method' => $data['delivery_method'],
+                    'street' => $data['shipping_street'] ?? '',
+                    'city' => $data['shipping_city'] ?? '',
+                    'state' => $data['shipping_state'] ?? '',
+                    'postcode' => $data['shipping_postcode'] ?? '',
+                    'country' => $data['shipping_country'] ?? '',
                 ],
                 'payment_method' => $data['payment_method'],
             ]);

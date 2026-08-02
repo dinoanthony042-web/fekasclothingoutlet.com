@@ -33,6 +33,7 @@
                     <a href="{{ route('admin.sliders.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Hero Sliders</a>
                     <a href="{{ route('admin.discounts.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Discounts</a>
                     <a href="{{ route('admin.orders.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Orders</a>
+                    <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Users</a>
                     <a href="{{ route('admin.reports.sales') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Reports</a>
                     <a href="{{ url('/') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">View Store</a>
                 </nav>

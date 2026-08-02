@@ -47,8 +47,8 @@
 
             <div class="rounded-[2rem] border border-[#E7DDD4] bg-white p-8 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.14)]">
                 <div class="flex items-center justify-between gap-4">
-                    <h2 class="text-xl font-semibold text-[#1b1b18]">Shipping address</h2>
-                    <span class="text-sm font-semibold text-[#5e534c]">Delivery: Free</span>
+                    <h2 class="text-xl font-semibold text-[#1b1b18]">Shipping / pickup</h2>
+                    <span class="text-sm font-semibold text-[#5e534c]">{{ ucfirst($order->shipping_address['delivery_method'] ?? 'delivery') }}</span>
                 </div>
                 <div class="mt-5 grid gap-4 sm:grid-cols-2 text-sm text-[#5e534c]">
                     <div>
@@ -58,9 +58,13 @@
                     </div>
                     <div>
                         <p class="font-semibold text-[#1b1b18]">Address</p>
-                        <p>{{ $order->shipping_address['street'] }}</p>
-                        <p>{{ $order->shipping_address['city'] }}, {{ $order->shipping_address['state'] }}</p>
-                        <p>{{ $order->shipping_address['postcode'] }}, {{ $order->shipping_address['country'] }}</p>
+                        @if(($order->shipping_address['delivery_method'] ?? 'delivery') === 'pickup')
+                            <p>Pickup at store.</p>
+                        @else
+                            <p>{{ $order->shipping_address['street'] }}</p>
+                            <p>{{ $order->shipping_address['city'] }}, {{ $order->shipping_address['state'] }}</p>
+                            <p>{{ $order->shipping_address['postcode'] }}, {{ $order->shipping_address['country'] }}</p>
+                        @endif
                     </div>
                 </div>
             </div>
