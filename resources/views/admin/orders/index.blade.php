@@ -122,6 +122,21 @@
                 <div class="mt-3 text-xs text-gray-600 space-y-1">
                     <p>Email: {{ $order->user?->email ?? 'N/A' }}</p>
                     <p>Items: {{ $order->items->count() }}</p>
+                    @if($order->items->isNotEmpty())
+                        <div class="mt-2 rounded-lg bg-gray-50 p-2">
+                            @foreach($order->items as $item)
+                                <p class="font-medium text-gray-700">
+                                    {{ $item->product->name ?? 'Deleted Product' }}
+                                    @if($item->size || $item->color)
+                                        <span class="text-gray-500">
+                                            @if($item->size) · Size: {{ $item->size }} @endif
+                                            @if($item->color) · Color: {{ $item->color }} @endif
+                                        </span>
+                                    @endif
+                                </p>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
                 <a href="{{ route('admin.orders.show', $order) }}" class="block w-full text-center bg-blue-600 text-white rounded-xl px-4 py-2 mt-4 text-sm font-medium hover:bg-blue-700 transition">

@@ -48,6 +48,24 @@
                             <p>{{ ucfirst($order->payment_method) }}</p>
                         </div>
                     </div>
+                    @if($order->items->isNotEmpty())
+                        <div class="mt-4 rounded-2xl border border-[#E7DDD4] bg-[#faf5ff] p-4 text-sm text-[#5b1e7e]">
+                            <p class="font-semibold">Items ordered</p>
+                            <div class="mt-2 space-y-1">
+                                @foreach($order->items as $item)
+                                    <div>
+                                        <span class="font-medium">{{ $item->product->name ?? 'Product unavailable' }}</span>
+                                        @if($item->size || $item->color)
+                                            <span class="text-[#5e534c]">
+                                                @if($item->size) · Size: {{ $item->size }} @endif
+                                                @if($item->color) · Color: {{ $item->color }} @endif
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </a>
             @endforeach
         </div>

@@ -123,6 +123,7 @@
                                     <td class="px-6 py-4 text-sm text-gray-700">{{ $item->quantity }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-700">₦{{ number_format($item->price, 2) }}</td>
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">₦{{ number_format($item->price * $item->quantity, 2) }}</td>
+                                    
                                 </tr>
                             @endforeach
                         </tbody>
