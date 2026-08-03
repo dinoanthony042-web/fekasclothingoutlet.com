@@ -39,7 +39,48 @@
             </div>
 
             <div id="delivery-address-fields">
-                <div class="grid gap-1 sm:gap-4">
+                <div class="space-y-3">
+                    <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Delivery area</label>
+                    <div class="mt-2 flex flex-wrap gap-3">
+                        <label class="flex items-center gap-2 rounded-full border border-[#e4dad1] bg-[#f9f4f0] px-3 py-2 text-xs sm:text-sm text-[#4f433d]">
+                            <input type="radio" name="delivery_zone" value="outside_abuja" checked>
+                            <span>Outside Abuja</span>
+                        </label>
+                        <label class="flex items-center gap-2 rounded-full border border-[#e4dad1] bg-[#f9f4f0] px-3 py-2 text-xs sm:text-sm text-[#4f433d]">
+                            <input type="radio" name="delivery_zone" value="within_abuja">
+                            <span>Within Abuja</span>
+                        </label>
+                    </div>
+
+                    <div id="abuja-location-field" class="hidden">
+                        <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Select Abuja location</label>
+                        <select name="abuja_location" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none">
+                            <option value="">Choose area</option>
+                            <option value="hillview-estate-zone-life-camp" data-fee="2900">Hillview Estate Zone (Life Camp) - ₦2,900</option>
+                            <option value="gwarinpa" data-fee="2900">Gwarinpa - ₦2,900</option>
+                            <option value="dutse" data-fee="4900">Dutse - ₦4,900</option>
+                            <option value="apo" data-fee="3300">Apo - ₦3,300</option>
+                            <option value="kubwa" data-fee="5900">Kubwa - ₦5,900</option>
+                            <option value="galadima" data-fee="3900">Galadima - ₦3,900</option>
+                            <option value="maitama" data-fee="2400">Maitama - ₦2,400</option>
+                            <option value="guzape" data-fee="2900">Guzape - ₦2,900</option>
+                            <option value="asokoro" data-fee="4900">Asokoro - ₦4,900</option>
+                            <option value="kado" data-fee="2900">Kado - ₦2,900</option>
+                            <option value="utako" data-fee="2400">Utako - ₦2,400</option>
+                            <option value="berger" data-fee="2400">Berger - ₦2,400</option>
+                            <option value="garki" data-fee="2900">Garki - ₦2,900</option>
+                            <option value="lugbe" data-fee="3900">Lugbe - ₦3,900</option>
+                            <option value="wuse" data-fee="2900">Wuse - ₦2,900</option>
+                            <option value="jabi" data-fee="2400">Jabi - ₦2,400</option>
+                            <option value="bwari" data-fee="5900">Bwari - ₦5,900</option>
+                            <option value="dowaki" data-fee="5900">Dowaki - ₦5,900</option>
+                            <option value="mpape" data-fee="2900">Mpape - ₦2,900</option>
+                            <option value="deidei" data-fee="7400">Deidei - ₦7,400</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 grid gap-1 sm:gap-4">
                     <label class="block text-xs sm:text-sm font-semibold text-[#4f433d]">Street address</label>
                     <input type="text" name="shipping_street" value="{{ old('shipping_street') }}" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none" required />
                 </div>
@@ -81,6 +122,17 @@
             document.addEventListener('DOMContentLoaded', () => {
                 const container = document.getElementById('delivery-address-fields');
                 const inputs = container ? Array.from(container.querySelectorAll('input[required]')) : [];
+                const shippingStreet = document.querySelector('input[name="shipping_street"]');
+                const shippingCity = document.querySelector('input[name="shipping_city"]');
+                const shippingState = document.querySelector('input[name="shipping_state"]');
+                const shippingPostcode = document.querySelector('input[name="shipping_postcode"]');
+                const shippingCountry = document.querySelector('input[name="shipping_country"]');
+                const subtotalElement = document.getElementById('checkout-subtotal');
+                const shippingValueElement = document.getElementById('shipping-value');
+                const totalValueElement = document.getElementById('checkout-total');
+                const deliveryZoneInputs = document.querySelectorAll('input[name="delivery_zone"]');
+                const abujaLocationField = document.getElementById('abuja-location-field');
+                const abujaLocationSelect = document.querySelector('select[name="abuja_location"]');
 
                 const toggleAddressFields = () => {
                     const selected = document.querySelector('input[name="delivery_method"]:checked')?.value;
@@ -95,11 +147,50 @@
                     });
                 };
 
+                const updateShippingEstimate = () => {
+                    const selectedZone = document.querySelector('input[name="delivery_zone"]:checked')?.value || 'outside_abuja';
+                    const selectedOption = abujaLocationSelect?.selectedOptions?.[0];
+                    const amount = selectedZone === 'within_abuja'
+                        ? Number(selectedOption?.dataset?.fee || 1500)
+                        : 9500;
+                    const label = selectedZone === 'within_abuja'
+                        ? `Within Abuja${selectedOption ? ` - ${selectedOption.text.split(' — ')[0]}` : ''}`
+                        : 'Outside Abuja';
+                    const subtotal = Number(subtotalElement?.dataset.amount || 0);
+
+                    if (shippingValueElement) {
+                        shippingValueElement.textContent = `₦${amount.toLocaleString()}`;
+                    }
+
+                    if (totalValueElement) {
+                        totalValueElement.textContent = `₦${(subtotal + amount).toLocaleString('en-NG', { maximumFractionDigits: 2 })}`;
+                    }
+
+                    const labelTarget = document.getElementById('shipping-zone-label');
+                    if (labelTarget) {
+                        labelTarget.textContent = label;
+                    }
+                };
+
                 document.querySelectorAll('input[name="delivery_method"]').forEach((radio) => {
                     radio.addEventListener('change', toggleAddressFields);
                 });
 
+                deliveryZoneInputs.forEach((input) => {
+                    input.addEventListener('change', () => {
+                        if (abujaLocationField) {
+                            abujaLocationField.classList.toggle('hidden', document.querySelector('input[name="delivery_zone"]:checked')?.value !== 'within_abuja');
+                        }
+                        updateShippingEstimate();
+                    });
+                });
+
+                if (abujaLocationSelect) {
+                    abujaLocationSelect.addEventListener('change', updateShippingEstimate);
+                }
+
                 toggleAddressFields();
+                updateShippingEstimate();
             });
         </script>
     </section>
@@ -115,7 +206,7 @@
                 @endphp
                 <div class="flex items-center justify-between">
                     <span>Subtotal</span>
-                    <span class="font-semibold text-[#1b1b18]">₦{{ number_format($originalSubtotal, 2) }}</span>
+                    <span id="checkout-subtotal" class="font-semibold text-[#1b1b18]" data-amount="{{ $subtotal }}">₦{{ number_format($originalSubtotal, 2) }}</span>
                 </div>
                 @if($discountAmount > 0)
                     <div class="flex items-center justify-between text-[#e91e8c]">
@@ -125,11 +216,14 @@
                 @endif
                 <div class="flex items-center justify-between">
                     <span>Shipping</span>
-                    <span>Free</span>
+                    <span id="shipping-value">₦0.00</span>
+                </div>
+                <div class="mt-2 text-xs text-[#766459]">
+                    <span id="shipping-zone-label">Outside Abuja</span>
                 </div>
                 <div class="flex items-center justify-between text-sm sm:text-base font-semibold text-[#1b1b18] border-t pt-2 sm:pt-3 mt-2 sm:mt-3">
                     <span>Total</span>
-                    <span>₦{{ number_format($subtotal, 2) }}</span>
+                    <span id="checkout-total" data-subtotal="{{ $subtotal }}">₦{{ number_format($subtotal, 2) }}</span>
                 </div>
             </div>
         </div>
@@ -140,4 +234,5 @@
         </div>
     </aside>
 </div>
+
 @endsection

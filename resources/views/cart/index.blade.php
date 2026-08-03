@@ -89,10 +89,7 @@ console.log('All localStorage keys:', Object.keys(localStorage));
                                 <span>Subtotal</span>
                                 <span class="font-semibold text-[#5b1e7e] cart-subtotal">₦{{ number_format($cartItems->sum(fn($item) => $item->product->isOnSale() ? $item->product->discounted_price * $item->quantity : $item->product->price * $item->quantity), 2) }}</span>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span>Estimated delivery</span>
-                                <span>Free</span>
-                            </div>
+                           
                             <div class="flex items-center justify-between text-sm sm:text-base font-semibold text-[#5b1e7e]">
                                 <span>Total</span>
                                 <span class="cart-total">₦{{ number_format($cartItems->sum(fn($item) => $item->product->isOnSale() ? $item->product->discounted_price * $item->quantity : $item->product->price * $item->quantity), 2) }}</span>

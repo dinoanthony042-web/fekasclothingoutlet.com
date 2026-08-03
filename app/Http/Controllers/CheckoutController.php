@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\User;
 use App\Services\BrevoMailer;
 use App\Services\KorapayService;
 use App\Services\PaystackService;
+use App\Services\ShippingCalculator;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -18,17 +21,21 @@ class CheckoutController extends Controller
     protected PaystackService $paystackService;
     protected KorapayService $korapayService;
     protected BrevoMailer $brevoMailer;
+    protected ShippingCalculator $shippingCalculator;
 
-    public function __construct(PaystackService $paystackService, KorapayService $korapayService, BrevoMailer $brevoMailer)
+    public function __construct(PaystackService $paystackService, KorapayService $korapayService, BrevoMailer $brevoMailer, ShippingCalculator $shippingCalculator)
     {
         $this->paystackService = $paystackService;
         $this->korapayService = $korapayService;
         $this->brevoMailer = $brevoMailer;
+        $this->shippingCalculator = $shippingCalculator;
     }
 
     public function index(): View
     {
-        $cartItems = Auth::user()->carts()->with('product.category')->get();
+        $user = Auth::user();
+        /** @var User $user */
+        $cartItems = $user->carts()->with('product.category')->get();
 
         return view('checkout.index', compact('cartItems'));
     }
@@ -55,19 +62,34 @@ class CheckoutController extends Controller
         $data = $request->validate($rules);
 
         $user = Auth::user();
+        /** @var User $user */
+        $deliveryZone = $request->input('delivery_zone', 'outside_abuja');
+        $abujaLocation = trim((string) $request->input('abuja_location', ''));
+        $shippingAddress = trim((string) ($data['shipping_street'] ?? ''));
+
+        $shipping = $request->input('delivery_method') === 'pickup'
+            ? ['amount' => 0, 'zone' => 'pickup', 'label' => 'Pickup']
+            : $this->shippingCalculator->calculateShipping(
+                $data['shipping_city'] ?? '',
+                $data['shipping_state'] ?? '',
+                $data['shipping_country'] ?? '',
+                $shippingAddress,
+                $deliveryZone,
+                $abujaLocation
+            );
         $cartItems = $user->carts()->with('product')->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        \Log::info('Checkout attempt', [
+        Log::info('Checkout attempt', [
             'user_id' => $user->id,
             'cart_items_count' => $cartItems->count(),
             'payment_method' => $data['payment_method']
         ]);
 
-        return DB::transaction(function () use ($user, $cartItems, $data) {
+        return DB::transaction(function () use ($user, $cartItems, $data, $request, $shipping, $deliveryZone, $abujaLocation) {
             $total = 0;
             foreach ($cartItems as $item) {
                 $available = $item->product?->stockForSize($item->size) ?? 0;
@@ -78,6 +100,8 @@ class CheckoutController extends Controller
 
                 $total += $item->product->discounted_price * $item->quantity;
             }
+
+            $total += $shipping['amount'];
 
             // Create order with pending status
             $order = Order::create([
@@ -94,6 +118,11 @@ class CheckoutController extends Controller
                     'state' => $data['shipping_state'] ?? '',
                     'postcode' => $data['shipping_postcode'] ?? '',
                     'country' => $data['shipping_country'] ?? '',
+                    'delivery_fee' => $shipping['amount'],
+                    'shipping_zone' => $shipping['zone'],
+                    'shipping_label' => $shipping['label'],
+                    'delivery_zone' => $deliveryZone,
+                    'abuja_location' => $abujaLocation,
                 ],
                 'billing_address' => [
                     'name' => $data['shipping_name'],
@@ -104,11 +133,16 @@ class CheckoutController extends Controller
                     'state' => $data['shipping_state'] ?? '',
                     'postcode' => $data['shipping_postcode'] ?? '',
                     'country' => $data['shipping_country'] ?? '',
+                    'delivery_fee' => $shipping['amount'],
+                    'shipping_zone' => $shipping['zone'],
+                    'shipping_label' => $shipping['label'],
+                    'delivery_zone' => $deliveryZone,
+                    'abuja_location' => $abujaLocation,
                 ],
                 'payment_method' => $data['payment_method'],
             ]);
 
-            \Log::info('Order created', [
+            Log::info('Order created', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
                 'total' => $total
