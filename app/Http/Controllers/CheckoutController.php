@@ -103,42 +103,30 @@ class CheckoutController extends Controller
 
             $total += $shipping['amount'];
 
+            $shippingAddressPayload = [
+                'name' => $data['shipping_name'],
+                'phone' => $data['shipping_phone'],
+                'delivery_method' => $data['delivery_method'],
+                'street' => $data['shipping_street'] ?? '',
+                'city' => $data['shipping_city'] ?? '',
+                'state' => $data['shipping_state'] ?? '',
+                'postcode' => $data['shipping_postcode'] ?? '',
+                'country' => $data['shipping_country'] ?? '',
+                'delivery_fee' => $shipping['amount'],
+                'shipping_zone' => $shipping['zone'],
+                'shipping_label' => $shipping['label'],
+                'delivery_zone' => $deliveryZone,
+                'abuja_location' => $abujaLocation,
+            ];
+
             // Create order with pending status
             $order = Order::create([
                 'user_id' => $user->id,
                 'total' => $total,
                 'status' => 'pending',
                 'payment_status' => 'pending',
-                'shipping_address' => [
-                    'name' => $data['shipping_name'],
-                    'phone' => $data['shipping_phone'],
-                    'delivery_method' => $data['delivery_method'],
-                    'street' => $data['shipping_street'] ?? '',
-                    'city' => $data['shipping_city'] ?? '',
-                    'state' => $data['shipping_state'] ?? '',
-                    'postcode' => $data['shipping_postcode'] ?? '',
-                    'country' => $data['shipping_country'] ?? '',
-                    'delivery_fee' => $shipping['amount'],
-                    'shipping_zone' => $shipping['zone'],
-                    'shipping_label' => $shipping['label'],
-                    'delivery_zone' => $deliveryZone,
-                    'abuja_location' => $abujaLocation,
-                ],
-                'billing_address' => [
-                    'name' => $data['shipping_name'],
-                    'phone' => $data['shipping_phone'],
-                    'delivery_method' => $data['delivery_method'],
-                    'street' => $data['shipping_street'] ?? '',
-                    'city' => $data['shipping_city'] ?? '',
-                    'state' => $data['shipping_state'] ?? '',
-                    'postcode' => $data['shipping_postcode'] ?? '',
-                    'country' => $data['shipping_country'] ?? '',
-                    'delivery_fee' => $shipping['amount'],
-                    'shipping_zone' => $shipping['zone'],
-                    'shipping_label' => $shipping['label'],
-                    'delivery_zone' => $deliveryZone,
-                    'abuja_location' => $abujaLocation,
-                ],
+                'shipping_address' => $shippingAddressPayload,
+                'billing_address' => $shippingAddressPayload,
                 'payment_method' => $data['payment_method'],
             ]);
 
