@@ -37,7 +37,9 @@
                                     {{ ucfirst($user->role ?? 'user') }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-600">{{ $user->created_at->format('M d, Y') }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">
+                                {{ optional($user->created_at)->format('M d, Y') ?? 'N/A' }}
+                            </td>
                             <td class="px-4 py-3 text-right text-sm">
                                 <div class="flex justify-end gap-3">
                                     <a href="{{ route('admin.users.edit', $user) }}" class="font-medium text-blue-600 hover:text-blue-800">Edit</a>
