@@ -57,7 +57,7 @@
                         <select name="abuja_location" class="mt-1 sm:mt-2 w-full rounded-2xl sm:rounded-3xl border border-[#e4dad1] bg-[#f9f4f0] px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm outline-none">
                             <option value="">Choose area</option>
                             <option value="hillview-estate-zone-life-camp" data-fee="2900">Hillview Estate Zone (Life Camp) - ₦2,900</option>
-                            <option value="gwarinpa" data-fee="200">Gwarinpa - ₦2900</option>
+                            <option value="gwarinpa" data-fee="2900">Gwarinpa - ₦2900</option>
                             <option value="dutse" data-fee="4900">Dutse - ₦4,900</option>
                             <option value="apo" data-fee="3300">Apo - ₦3,300</option>
                             <option value="kubwa" data-fee="5900">Kubwa - ₦5,900</option>
