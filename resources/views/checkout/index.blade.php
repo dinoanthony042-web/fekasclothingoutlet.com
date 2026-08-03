@@ -148,18 +148,23 @@
                 };
 
                 const updateShippingEstimate = () => {
+                    const selectedMethod = document.querySelector('input[name="delivery_method"]:checked')?.value || 'delivery';
                     const selectedZone = document.querySelector('input[name="delivery_zone"]:checked')?.value || 'outside_abuja';
                     const selectedOption = abujaLocationSelect?.selectedOptions?.[0];
-                    const amount = selectedZone === 'within_abuja'
-                        ? Number(selectedOption?.dataset?.fee || 1500)
-                        : 9500;
-                    const label = selectedZone === 'within_abuja'
-                        ? `Within Abuja${selectedOption ? ` - ${selectedOption.text.split(' — ')[0]}` : ''}`
-                        : 'Outside Abuja';
+                    const amount = selectedMethod === 'pickup'
+                        ? 0
+                        : selectedZone === 'within_abuja'
+                            ? Number(selectedOption?.dataset?.fee || 0)
+                            : 9500;
+                    const label = selectedMethod === 'pickup'
+                        ? 'Pickup - Free'
+                        : selectedZone === 'within_abuja'
+                            ? `Within Abuja${selectedOption ? ` - ${selectedOption.text.split(' - ')[0]}` : ''}`
+                            : 'Outside Abuja';
                     const subtotal = Number(subtotalElement?.dataset.amount || 0);
 
                     if (shippingValueElement) {
-                        shippingValueElement.textContent = `₦${amount.toLocaleString()}`;
+                        shippingValueElement.textContent = amount === 0 ? '₦0.00' : `₦${amount.toLocaleString()}`;
                     }
 
                     if (totalValueElement) {
@@ -173,7 +178,10 @@
                 };
 
                 document.querySelectorAll('input[name="delivery_method"]').forEach((radio) => {
-                    radio.addEventListener('change', toggleAddressFields);
+                    radio.addEventListener('change', () => {
+                        toggleAddressFields();
+                        updateShippingEstimate();
+                    });
                 });
 
                 deliveryZoneInputs.forEach((input) => {
