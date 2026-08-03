@@ -48,8 +48,11 @@ class Product extends Model
     public function decrementStock(int $quantity, ?string $size = null): void
     {
         if ($size && is_array($this->size_stock) && array_key_exists($size, $this->size_stock)) {
-            $this->size_stock[$size] = max(0, $this->size_stock[$size] - $quantity);
-            $this->stock = max(0, array_sum($this->size_stock));
+            $sizeStock = is_array($this->size_stock) ? $this->size_stock : [];
+            $sizeStock[$size] = max(0, (int) ($sizeStock[$size] ?? 0) - $quantity);
+            $this->attributes['size_stock'] = $sizeStock;
+            $this->attributes['stock'] = max(0, array_sum($sizeStock));
+            $this->syncOriginal();
             $this->saveQuietly();
             return;
         }
