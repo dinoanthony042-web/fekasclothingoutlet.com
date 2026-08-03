@@ -101,6 +101,8 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
@@ -112,18 +114,13 @@
                                     <td class="px-6 py-4 text-sm text-gray-700">
                                         <div>
                                             <p class="font-medium">{{ $item->product->name ?? 'Deleted Product' }}</p>
-                                            @if($item->size)
-                                                <p class="text-gray-600 text-xs">Size: {{ $item->size }}</p>
-                                            @endif
-                                            @if($item->color)
-                                                <p class="text-gray-600 text-xs">Color: {{ $item->color }}</p>
-                                            @endif
                                         </div>
                                     </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $item->size ?? '—' }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $item->color ?? '—' }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-700">{{ $item->quantity }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-700">₦{{ number_format($item->price, 2) }}</td>
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">₦{{ number_format($item->price * $item->quantity, 2) }}</td>
-                                    
                                 </tr>
                             @endforeach
                         </tbody>
