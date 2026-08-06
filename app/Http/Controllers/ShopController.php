@@ -16,7 +16,7 @@ class ShopController extends Controller
                 $query->orderBy('name');
             }]);
         $styles = ['Casual', 'Corporate', 'Party', 'Streetwear', 'Traditional', 'English'];
-        $colors = ['Blush', 'Black', 'Ivory', 'Nude', 'Gold'];
+        $colors = ['Blush', 'Black', 'Ivory', 'Nude', 'Gold', 'Cream'];
         $sizes = array_values(array_unique(array_merge(config('sizes.all_options', []), config('sizes.shoe_options', []))));
 
         $selectedCategory = null;
