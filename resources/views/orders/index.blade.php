@@ -60,6 +60,8 @@
                                                 @if($item->size) · Size: {{ $item->size }} @endif
                                                 @if($item->color) · Color: {{ $item->color }} @endif
                                             </span>
+                                        @else
+                                            <span class="text-[#8c7d74]"> · Variant details unavailable</span>
                                         @endif
                                     </div>
                                 @endforeach

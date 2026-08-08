@@ -8,6 +8,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 describe('checkout delivery options', function () {
+    it('shows paystack and korapay as checkout payment options', function () {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('checkout.index'))
+            ->assertSee('value="paystack"', false)
+            ->assertSee('value="korapay"', false);
+    });
+
     it('stores the selected delivery method on checkout', function () {
         $user = User::factory()->create();
         $category = Category::factory()->create();

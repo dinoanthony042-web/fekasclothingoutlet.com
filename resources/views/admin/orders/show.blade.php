@@ -114,6 +114,12 @@
                                     <td class="px-6 py-4 text-sm text-gray-700">
                                         <div>
                                             <p class="font-medium">{{ $item->product->name ?? 'Deleted Product' }}</p>
+                                            @if($item->size || $item->color)
+                                                <p class="mt-1 text-xs text-gray-500">
+                                                    @if($item->size) Size: {{ $item->size }} @endif
+                                                    @if($item->color) Color: {{ $item->color }} @endif
+                                                </p>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-700">{{ $item->size ?? '—' }}</td>

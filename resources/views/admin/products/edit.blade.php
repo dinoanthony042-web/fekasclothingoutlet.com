@@ -180,7 +180,7 @@
                     <label class="block text-sm font-medium text-gray-700">Colors</label>
                     <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3">
                         @php
-                            $colorOptions = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Gray', 'Brown', 'Navy', 'Gold', 'Silver', 'Wine'];
+                            $colorOptions = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Pink', 'Purple', 'Orange', 'Gray', 'Brown', 'Navy', 'Gold', 'Silver', 'Wine', 'Cream'];
                             $oldColors = old('colors', $product->colors ?? []);
                         @endphp
                         @foreach($colorOptions as $color)

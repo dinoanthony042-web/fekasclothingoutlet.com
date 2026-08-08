@@ -77,7 +77,12 @@
                             <div class="flex flex-wrap items-center justify-between gap-4">
                                 <div>
                                     <p class="font-semibold text-[#1b1b18]">{{ $item->product->name ?? 'Product unavailable' }}</p>
-                                    <p class="text-sm text-[#5e534c]">Qty: {{ $item->quantity }} @if($item->size) · Size: {{ $item->size }} @endif @if($item->color) · Color: {{ $item->color }} @endif</p>
+                                    <p class="text-sm text-[#5e534c]">
+                                        Qty: {{ $item->quantity }}
+                                        @if($item->size) · Size: {{ $item->size }} @endif
+                                        @if($item->color) · Color: {{ $item->color }} @endif
+                                        @if(!$item->size && !$item->color) · Variant details unavailable @endif
+                                    </p>
                                 </div>
                                 <p class="text-sm font-semibold text-[#5b1e7e]">₦{{ number_format($item->price * $item->quantity, 2) }}</p>
                             </div>
