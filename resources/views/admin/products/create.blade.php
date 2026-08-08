@@ -146,6 +146,9 @@
                             } elseif ($selectedCategoryName === 'Shoes' && $selectedParentName === 'Kids') {
                                 $sizeOptions = config('sizes.kids_shoe_options');
                                 $sizeMappings = $shoeMappings;
+                            } elseif ($selectedParentName === 'Women' && in_array(strtolower($selectedCategoryName ?? ''), ['dress', 'dresses'], true)) {
+                                $sizeOptions = config('sizes.women_dress_options');
+                                $sizeMappings = config('sizes.women_dress_mappings', []);
                             }
                         @endphp
                         @foreach($sizeOptions as $size)
@@ -307,8 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const oldSelectedSizes = @json(old('sizes', []));
     const oldSizeStockValues = @json(old('size_stock', []));
     const shoeMappings = @json($shoeMappings);
+    const womenDressMappings = @json(config('sizes.women_dress_mappings', []));
     const adultShoeSizeOptions = @json(config('sizes.adult_shoe_options'));
     const kidsShoeSizeOptions = @json(config('sizes.kids_shoe_options'));
+    const womenDressSizeOptions = @json(config('sizes.women_dress_options'));
     const standardSizeOptions = @json(config('sizes.all_options'));
 
     function getSelectedCategoryInfo() {
@@ -348,8 +353,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const id = `size-${size.toLowerCase()}`;
         const checked = oldSelectedSizes.includes(size) ? 'checked' : '';
         const quantity = oldSizeStockValues[size] !== undefined ? oldSizeStockValues[size] : '0';
-        const mapping = shoeMappings[size] || null;
-        const mappingText = mapping ? `UK: ${mapping.uk} • TR: ${mapping.turkish}` : '';
+        const mapping = womenDressMappings[size] || shoeMappings[size] || null;
+        const label = mapping?.label || (mapping?.standard ? `${size} (${mapping.standard})` : size);
+        const alt = mapping?.uk ? `UK: ${mapping.uk}` : '';
+        const extra = mapping?.turkish ? `TR: ${mapping.turkish}` : '';
 
         return `
             <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
@@ -358,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="checkbox" name="sizes[]" value="${size}" id="${id}" ${checked}
                                class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <div class="ml-2">
-                            <label for="${id}" class="block text-sm font-medium text-gray-900 cursor-pointer">${mapping ? mapping.turkish : size}</label>
-                            <p class="text-xs text-gray-500">  ${mapping ? `EU: ${size} • UK: ${mapping.uk}` : ''}</p>
+                            <label for="${id}" class="block text-sm font-medium text-gray-900 cursor-pointer">${label}</label>
+                            <p class="text-xs text-gray-500">${mapping ? `${alt}${alt && extra ? ' • ' : ''}${extra}` : 'Regular size'}</p>
                         </div>
                     </div>
                     <div class="w-24">
@@ -377,6 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isShoeCategory = categoryName === 'Shoes' || parentName === 'Shoes';
         const isAdultShoes = isShoeCategory && ['Men', 'Women'].includes(parentName);
         const isKidsShoes = isShoeCategory && parentName === 'Kids';
+        const isWomenDress = (parentName || '').toLowerCase() === 'women' && (categoryName || '').toLowerCase().includes('dress');
 
         if (!sizeContainer) {
             return;
@@ -386,7 +394,9 @@ document.addEventListener('DOMContentLoaded', function() {
             ? adultShoeSizeOptions
             : isKidsShoes
                 ? kidsShoeSizeOptions
-                : standardSizeOptions;
+                : isWomenDress
+                    ? womenDressSizeOptions
+                    : standardSizeOptions;
 
         sizeContainer.innerHTML = sizeValues.map(renderSizeOption).join('');
         attachSizeStockListeners();

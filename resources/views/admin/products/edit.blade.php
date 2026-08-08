@@ -136,6 +136,9 @@
                             } elseif ($selectedCategoryName === 'Shoes' && $selectedParentName === 'Kids') {
                                 $sizeOptions = config('sizes.kids_shoe_options');
                                 $sizeMappings = $shoeMappings;
+                            } elseif ($selectedParentName === 'Women' && in_array(strtolower($selectedCategoryName ?? ''), ['dress', 'dresses'], true)) {
+                                $sizeOptions = config('sizes.women_dress_options');
+                                $sizeMappings = config('sizes.women_dress_mappings', []);
                             }
                         @endphp
                         @foreach($sizeOptions as $size)
@@ -297,6 +300,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const ageRangeContainer = document.getElementById('age_range_container');
     const sizeContainer = document.getElementById('size-options');
 
+    const womenDressMappings = @json(config('sizes.women_dress_mappings', []));
+    const womenDressSizeOptions = @json(config('sizes.women_dress_options'));
+
     function toggleAgeRange() {
         const selectedOption = categorySelect.options[categorySelect.selectedIndex];
         const parentName = selectedOption ? selectedOption.getAttribute('data-parent') : '';
@@ -325,8 +331,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function updateSizeOptionsForWomenDress() {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const parentName = selectedOption ? selectedOption.getAttribute('data-parent') : '';
+        const categoryName = selectedOption ? selectedOption.textContent.trim() : '';
+        const isWomenDress = (parentName || '').toLowerCase() === 'women' && (categoryName || '').toLowerCase().includes('dress');
+
+        if (!sizeContainer || !isWomenDress) {
+            return;
+        }
+
+        const existingInputs = Array.from(document.querySelectorAll('#size-options input[name="sizes[]"]'));
+        if (existingInputs.length === 0) {
+            return;
+        }
+
+        const values = womenDressSizeOptions;
+        const currentValues = new Set(existingInputs.map((input) => input.value));
+
+        values.forEach((size) => {
+            const input = document.querySelector(`#size-${size.toLowerCase()}`);
+            if (!input) {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col gap-2 border border-gray-200 rounded-lg p-3';
+                div.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start">
+                            <input type="checkbox" name="sizes[]" value="${size}" id="size-${size.toLowerCase()}" class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <div class="ml-2">
+                                <label for="size-${size.toLowerCase()}" class="block text-sm font-medium text-gray-900 cursor-pointer">${size}</label>
+                                <p class="text-xs text-gray-500">${womenDressMappings[size]?.label ?? ''}</p>
+                            </div>
+                        </div>
+                        <div class="w-24">
+                            <label for="size_stock_${size}" class="sr-only">Stock for ${size}</label>
+                            <input type="number" name="size_stock[${size}]" id="size_stock_${size}" min="0" value="0"
+                                   class="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Qty">
+                        </div>
+                    </div>
+                `;
+                const container = document.getElementById('size-options').querySelector('div');
+                if (container) {
+                    container.appendChild(div);
+                }
+            }
+        });
+
+        existingInputs.forEach((input) => {
+            if (!values.includes(input.value) && !currentValues.has(input.value)) {
+                const row = input.closest('div.flex.flex-col.gap-2');
+                if (row) {
+                    row.remove();
+                }
+            }
+        });
+    }
+
     categorySelect.addEventListener('change', toggleAgeRange);
     categorySelect.addEventListener('change', toggleSizeVisibility);
+    categorySelect.addEventListener('change', updateSizeOptionsForWomenDress);
 
     function updateTotalStock() {
         const stockInput = document.getElementById('stock');

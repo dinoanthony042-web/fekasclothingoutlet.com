@@ -223,6 +223,22 @@ return [
      * All available size options for selection in admin
      */
     'all_options' => ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'],
+    'women_dress_options' => ['30', '32', '34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54'],
+    'women_dress_mappings' => [
+        '30' => ['uk' => '6', 'turkish' => '30', 'label' => '30 (XS)', 'standard' => 'XS'],
+        '32' => ['uk' => '8', 'turkish' => '32', 'label' => '32 (S)', 'standard' => 'S'],
+        '34' => ['uk' => '10', 'turkish' => '34', 'label' => '34 (M)', 'standard' => 'M'],
+        '36' => ['uk' => '12', 'turkish' => '36', 'label' => '36 (M)', 'standard' => 'M'],
+        '38' => ['uk' => '14', 'turkish' => '38', 'label' => '38 (L)', 'standard' => 'L'],
+        '40' => ['uk' => '16', 'turkish' => '40', 'label' => '40 (XL)', 'standard' => 'XL'],
+        '42' => ['uk' => '18', 'turkish' => '42', 'label' => '42 (XXL)', 'standard' => 'XXL'],
+        '44' => ['uk' => '20', 'turkish' => '44', 'label' => '44 (XXXL)', 'standard' => 'XXXL'],
+        '46' => ['uk' => '22', 'turkish' => '46', 'label' => '46 (4XL)', 'standard' => '4XL'],
+        '48' => ['uk' => '24', 'turkish' => '48', 'label' => '48 (5XL)', 'standard' => '5XL'],
+        '50' => ['uk' => '26', 'turkish' => '50', 'label' => '50 (6XL)', 'standard' => '6XL'],
+        '52' => ['uk' => '28', 'turkish' => '52', 'label' => '52 (7XL)', 'standard' => '7XL'],
+        '54' => ['uk' => '30', 'turkish' => '54', 'label' => '54 (8XL)', 'standard' => '8XL'],
+    ],
     'adult_shoe_options' => ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47'],
     'kids_shoe_options' => ['18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
     '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47'],
