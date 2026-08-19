@@ -146,7 +146,7 @@
                             } elseif ($selectedCategoryName === 'Shoes' && $selectedParentName === 'Kids') {
                                 $sizeOptions = config('sizes.kids_shoe_options');
                                 $sizeMappings = $shoeMappings;
-                            } elseif ($selectedParentName === 'Women' && in_array(strtolower($selectedCategoryName ?? ''), ['dress', 'dresses'], true)) {
+                            } elseif ($selectedParentName === 'Women' && in_array(strtolower($selectedCategoryName ?? ''), ['dress', 'dresses', 'top', 'tops', 'blouse', 'shirt', 't-shirt'], true)) {
                                 $sizeOptions = config('sizes.women_dress_options');
                                 $sizeMappings = config('sizes.women_dress_mappings', []);
                             }
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isShoeCategory = categoryName === 'Shoes' || parentName === 'Shoes';
         const isAdultShoes = isShoeCategory && ['Men', 'Women'].includes(parentName);
         const isKidsShoes = isShoeCategory && parentName === 'Kids';
-        const isWomenDress = (parentName || '').toLowerCase() === 'women' && (categoryName || '').toLowerCase().includes('dress');
+        const isWomenDress = (parentName || '').toLowerCase() === 'women' && (categoryName || '').toLowerCase().match(/dress|tops?|blouse|shirt|t-?shirt/);
 
         if (!sizeContainer) {
             return;

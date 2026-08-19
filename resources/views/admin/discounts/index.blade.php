@@ -39,6 +39,14 @@
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                     Product: {{ $discount->product->name ?? 'N/A' }}
                                 </span>
+                            @elseif($discount->apply_all_categories)
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    All Categories
+                                </span>
+                            @elseif(!empty($discount->category_ids) && is_array($discount->category_ids) && count($discount->category_ids) > 1)
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    Categories: {{ count($discount->category_ids) }} selected
+                                </span>
                             @elseif($discount->category_id)
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
                                     Category: {{ $discount->category->name ?? 'N/A' }}

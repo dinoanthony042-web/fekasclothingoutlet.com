@@ -103,7 +103,30 @@ class Product extends Model
             return $discount;
         }
 
-        return $this->category?->discounts()->active()->first();
+        $category = $this->category;
+        if (!$category) {
+            return null;
+        }
+
+        // collect category and ancestor ids (if loaded)
+        $categoryIds = [$category->id];
+        $current = $category;
+        while ($current && isset($current->parent) && $current->parent) {
+            $current = $current->parent;
+            $categoryIds[] = $current->id;
+        }
+
+        $query = \App\Models\Discount::active()
+            ->where(function ($q) use ($categoryIds) {
+                $q->where('apply_all_categories', true)
+                  ->orWhereIn('category_id', $categoryIds);
+
+                foreach ($categoryIds as $cid) {
+                    $q->orWhereJsonContains('category_ids', $cid);
+                }
+            });
+
+        return $query->first();
     }
 
     public function getDiscountedPriceAttribute()

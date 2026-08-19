@@ -46,21 +46,36 @@ class DiscountController extends Controller
             'is_active' => 'boolean',
             'product_id' => 'nullable|exists:products,id',
             'category_id' => 'nullable|exists:categories,id',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
+            'apply_all_categories' => 'boolean',
         ]);
 
-        // Ensure only one of product_id or category_id is set
         $productId = $validated['product_id'] ?? null;
         $categoryId = $validated['category_id'] ?? null;
+        $categoryIds = $validated['category_ids'] ?? null;
+        $applyAll = $validated['apply_all_categories'] ?? false;
 
-        if ($productId && $categoryId) {
-            return back()->withErrors(['product_id' => 'You can only apply discount to either a product or a category, not both.']);
+        // Validate mutually exclusive targets
+        if ($productId && ($categoryId || $categoryIds || $applyAll)) {
+            return back()->withErrors(['product_id' => 'You can only apply discount to either a product or categories, not both.']);
         }
 
-        if (!$productId && !$categoryId) {
-            return back()->withErrors(['product_id' => 'You must select either a product or a category for the discount.']);
+        if (!$productId && !$categoryId && !$categoryIds && !$applyAll) {
+            return back()->withErrors(['product_id' => 'You must select either a product or one or more categories (or choose all categories) for the discount.']);
         }
 
-        Discount::create($validated);
+        // Normalize data to store
+        $data = $validated;
+        if (!empty($categoryIds)) {
+            $data['category_ids'] = array_values($categoryIds);
+            // clear single category_id to avoid ambiguity
+            $data['category_id'] = null;
+        }
+
+        $data['apply_all_categories'] = (bool) ($applyAll);
+
+        Discount::create($data);
 
         return redirect()->route('admin.discounts.index')->with('success', 'Discount created successfully.');
     }
@@ -98,21 +113,33 @@ class DiscountController extends Controller
             'is_active' => 'boolean',
             'product_id' => 'nullable|exists:products,id',
             'category_id' => 'nullable|exists:categories,id',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
+            'apply_all_categories' => 'boolean',
         ]);
 
-        // Ensure only one of product_id or category_id is set
         $productId = $validated['product_id'] ?? null;
         $categoryId = $validated['category_id'] ?? null;
+        $categoryIds = $validated['category_ids'] ?? null;
+        $applyAll = $validated['apply_all_categories'] ?? false;
 
-        if ($productId && $categoryId) {
-            return back()->withErrors(['product_id' => 'You can only apply discount to either a product or a category, not both.']);
+        if ($productId && ($categoryId || $categoryIds || $applyAll)) {
+            return back()->withErrors(['product_id' => 'You can only apply discount to either a product or categories, not both.']);
         }
 
-        if (!$productId && !$categoryId) {
-            return back()->withErrors(['product_id' => 'You must select either a product or a category for the discount.']);
+        if (!$productId && !$categoryId && !$categoryIds && !$applyAll) {
+            return back()->withErrors(['product_id' => 'You must select either a product or one or more categories (or choose all categories) for the discount.']);
         }
 
-        $discount->update($validated);
+        $data = $validated;
+        if (!empty($categoryIds)) {
+            $data['category_ids'] = array_values($categoryIds);
+            $data['category_id'] = null;
+        }
+
+        $data['apply_all_categories'] = (bool) ($applyAll);
+
+        $discount->update($data);
 
         return redirect()->route('admin.discounts.index')->with('success', 'Discount updated successfully.');
     }

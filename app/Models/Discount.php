@@ -15,14 +15,24 @@ class Discount extends Model
         'ends_at',
         'is_active',
         'product_id',
-        'category_id'
+        'category_id',
+        'category_ids',
+        'apply_all_categories'
+    ];
+
+    
+
+    protected $attributes = [
+        'apply_all_categories' => false,
     ];
 
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'is_active' => 'boolean',
-        'value' => 'decimal:2'
+        'value' => 'decimal:2',
+        'category_ids' => 'array',
+        'apply_all_categories' => 'boolean',
     ];
 
     public function product()

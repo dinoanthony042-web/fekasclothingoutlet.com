@@ -73,23 +73,45 @@
                                            onchange="toggleApplyTo()" {{ old('apply_to') == 'category' ? 'checked' : '' }}>
                                     <span class="ml-2">Category / Subcategory</span>
                                 </label>
-                                <select name="category_id" id="category_select"
-                                        class="ml-6 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                        {{ old('apply_to') == 'category' ? '' : 'disabled' }}>
-                                    <option value="">-- Select a category --</option>
-                                    @foreach($categories as $category)
-                                        <optgroup label="{{ $category->name }}">
-                                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
+
+                                <div class="ml-6 space-y-2">
+                                    <input type="hidden" name="apply_all_categories" value="0">
+                                    <label class="inline-flex items-center text-sm">
+                                        <input type="checkbox" id="apply_all_checkbox" name="apply_all_categories" value="1" onchange="toggleApplyAll()" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" {{ old('apply_all_categories') ? 'checked' : '' }}>
+                                        <span class="ml-2 text-gray-700">Apply to all categories</span>
+                                    </label>
+
+                                    <label class="block text-sm text-gray-600">Select multiple categories (hold Ctrl / Cmd)</label>
+                                    <select name="category_ids[]" id="category_multi_select" multiple
+                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                            {{ old('apply_to') == 'category' ? '' : 'disabled' }}>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ (is_array(old('category_ids')) && in_array($category->id, old('category_ids'))) ? 'selected' : '' }}>{{ $category->name }}</option>
                                             @foreach($category->children as $subcategory)
-                                                <option value="{{ $subcategory->id }}" {{ old('category_id') == $subcategory->id ? 'selected' : '' }}>
-                                                    &nbsp;&nbsp;{{ $subcategory->name }}
-                                                </option>
+                                                <option value="{{ $subcategory->id }}" {{ (is_array(old('category_ids')) && in_array($subcategory->id, old('category_ids'))) ? 'selected' : '' }}>&nbsp;&nbsp;{{ $subcategory->name }}</option>
                                             @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                </select>
+                                        @endforeach
+                                    </select>
+
+                                    <label class="block text-sm text-gray-600">Or select a single category</label>
+                                    <select name="category_id" id="category_select"
+                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                            {{ old('apply_to') == 'category' ? '' : 'disabled' }}>
+                                        <option value="">-- Select a category --</option>
+                                        @foreach($categories as $category)
+                                            <optgroup label="{{ $category->name }}">
+                                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                                @foreach($category->children as $subcategory)
+                                                    <option value="{{ $subcategory->id }}" {{ old('category_id') == $subcategory->id ? 'selected' : '' }}>
+                                                        &nbsp;&nbsp;{{ $subcategory->name }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div>
@@ -174,11 +196,31 @@ function toggleApplyTo() {
         productSelect.disabled = true;
         categorySelect.name = 'category_id';
         productSelect.name = '';
+        const multi = document.getElementById('category_multi_select');
+        if (multi) { multi.disabled = false; }
     } else if (productRadio.checked) {
         categorySelect.disabled = true;
         productSelect.disabled = false;
         categorySelect.name = '';
         productSelect.name = 'product_id';
+        const multi = document.getElementById('category_multi_select');
+        if (multi) { multi.disabled = true; }
+    }
+}
+
+function toggleApplyAll() {
+    const allCheckbox = document.getElementById('apply_all_checkbox');
+    const categorySelect = document.getElementById('category_select');
+    const multi = document.getElementById('category_multi_select');
+    if (allCheckbox.checked) {
+        if (categorySelect) { categorySelect.disabled = true; }
+        if (multi) { multi.disabled = true; }
+    } else {
+        const categoryRadio = document.getElementById('category_id');
+        if (categoryRadio && categoryRadio.checked) {
+            if (categorySelect) { categorySelect.disabled = false; }
+            if (multi) { multi.disabled = false; }
+        }
     }
 }
 
@@ -186,6 +228,7 @@ function toggleApplyTo() {
 document.addEventListener('DOMContentLoaded', function() {
     updateValueLabel();
     toggleApplyTo();
+    toggleApplyAll();
 });
 </script>
 @endsection
