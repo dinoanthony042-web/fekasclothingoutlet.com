@@ -149,6 +149,11 @@
                             } elseif ($selectedParentName === 'Women' && in_array(strtolower($selectedCategoryName ?? ''), ['dress', 'dresses', 'top', 'tops', 'blouse', 'shirt', 't-shirt'], true)) {
                                 $sizeOptions = config('sizes.women_dress_options');
                                 $sizeMappings = config('sizes.women_dress_mappings', []);
+                            } else {
+                                // Apply standard clothing size mappings to every other non-shoe category,
+                                // so future categories like jumpsuits automatically inherit UK/Turkey equivalents.
+                                $sizeOptions = config('sizes.all_options');
+                                $sizeMappings = config('sizes.mappings');
                             }
                         @endphp
                         @foreach($sizeOptions as $size)

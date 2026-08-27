@@ -139,6 +139,11 @@
                             } elseif ($selectedParentName === 'Women' && in_array(strtolower($selectedCategoryName ?? ''), ['dress', 'dresses', 'top', 'tops', 'blouse', 'shirt', 't-shirt'], true)) {
                                 $sizeOptions = config('sizes.women_dress_options');
                                 $sizeMappings = config('sizes.women_dress_mappings', []);
+                            } else {
+                                // Apply standard clothing size mappings to every other non-shoe category,
+                                // so future categories like jumpsuits automatically inherit UK/Turkey equivalents.
+                                $sizeOptions = config('sizes.all_options');
+                                $sizeMappings = config('sizes.mappings');
                             }
                         @endphp
                         @foreach($sizeOptions as $size)
@@ -335,9 +340,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedOption = categorySelect.options[categorySelect.selectedIndex];
         const parentName = selectedOption ? selectedOption.getAttribute('data-parent') : '';
         const categoryName = selectedOption ? selectedOption.textContent.trim() : '';
+        const isShoeCategory = categoryName === 'Shoes' || parentName === 'Shoes';
         const isWomenDress = (parentName || '').toLowerCase() === 'women' && (categoryName || '').toLowerCase().match(/dress|tops?|blouse|shirt|t-?shirt/);
 
-        if (!sizeContainer || !isWomenDress) {
+        if (!sizeContainer || isShoeCategory || !isWomenDress) {
             return;
         }
 
