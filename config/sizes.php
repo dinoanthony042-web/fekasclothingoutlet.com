@@ -44,6 +44,16 @@ return [
             'turkish' => '46',
             'label' => 'XXXL (UK 20, TR 46)',
         ],
+        '4XL' => [
+            'uk' => '22',
+            'turkish' => '48',
+            'label' => '4XL (UK 22, TR 48)',
+        ],
+        '5XL' => [
+            'uk' => '24',
+            'turkish' => '50',
+            'label' => '5XL (UK 24, TR 50)',
+        ],
     ],
 
     /**

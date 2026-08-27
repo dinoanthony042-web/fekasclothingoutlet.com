@@ -305,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ageRangeContainer = document.getElementById('age_range_container');
     const sizeContainer = document.getElementById('size-options');
 
+    const standardMappings = @json(config('sizes.mappings', []));
     const womenDressMappings = @json(config('sizes.women_dress_mappings', []));
     const womenDressSizeOptions = @json(config('sizes.women_dress_options'));
 

@@ -315,6 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const oldSelectedSizes = @json(old('sizes', []));
     const oldSizeStockValues = @json(old('size_stock', []));
     const shoeMappings = @json($shoeMappings);
+    const standardMappings = @json(config('sizes.mappings', []));
     const womenDressMappings = @json(config('sizes.women_dress_mappings', []));
     const adultShoeSizeOptions = @json(config('sizes.adult_shoe_options'));
     const kidsShoeSizeOptions = @json(config('sizes.kids_shoe_options'));
@@ -358,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const id = `size-${size.toLowerCase()}`;
         const checked = oldSelectedSizes.includes(size) ? 'checked' : '';
         const quantity = oldSizeStockValues[size] !== undefined ? oldSizeStockValues[size] : '0';
-        const mapping = womenDressMappings[size] || shoeMappings[size] || null;
+        const mapping = womenDressMappings[size] || shoeMappings[size] || standardMappings[size] || null;
         const label = mapping?.label || (mapping?.standard ? `${size} (${mapping.standard})` : size);
         const alt = mapping?.uk ? `UK: ${mapping.uk}` : '';
         const extra = mapping?.turkish ? `TR: ${mapping.turkish}` : '';
