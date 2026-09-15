@@ -6,12 +6,17 @@
 <div class="space-y-4 sm:space-y-6">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Products</h1>
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <a href="{{ route('admin.sales.create') }}" class="inline-flex items-center px-3 sm:px-4 py-2 bg-green-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-green-700 transition w-full sm:w-auto justify-center sm:justify-start">
+            Record Walk-in Sale
+        </a>
         <a href="{{ route('admin.products.create') }}" class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition w-full sm:w-auto justify-center sm:justify-start">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
             Add Product
         </a>
+        </div>
     </div>
 
     <div class="mt-4 bg-white rounded-2xl shadow-sm border border-gray-200 p-4">

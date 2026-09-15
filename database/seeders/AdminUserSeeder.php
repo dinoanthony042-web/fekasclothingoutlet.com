@@ -12,7 +12,22 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
+        $adminRole = \Spatie\Permission\Models\Role::findOrCreate('admin');
+
+        $permissions = collect([
+            'manage products',
+            'manage categories',
+            'manage discounts',
+            'manage sliders',
+            'manage orders',
+            'manage sales',
+            'manage users',
+            'view reports',
+        ])->map(fn (string $name) => \Spatie\Permission\Models\Permission::findOrCreate($name))->all();
+
+        $adminRole->syncPermissions($permissions);
+
+        $firstAdmin = User::firstOrCreate(
             ['email' => 'admin@fekas.com'],
             [
                 'name' => 'Admin User',
@@ -22,7 +37,7 @@ class AdminUserSeeder extends Seeder
             ]
         );
 
-        User::firstOrCreate(
+        $secondAdmin = User::firstOrCreate(
             ['email' => 'admin@fekas001.com'],
             [
                 'name' => 'Admin User',
@@ -31,5 +46,8 @@ class AdminUserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        $firstAdmin->assignRole($adminRole);
+        $secondAdmin->assignRole($adminRole);
     }
 }

@@ -31,6 +31,22 @@ class OrderController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter by sale type. Older orders without a walk-in marker are online sales.
+        if ($request->filled('sale_type')) {
+            $request->validate([
+                'sale_type' => 'in:online,walk_in',
+            ]);
+
+            if ($request->sale_type === 'walk_in') {
+                $query->whereJsonContains('shipping_address->delivery_method', 'walk_in');
+            } else {
+                $query->where(function ($q) {
+                    $q->whereNull('shipping_address->delivery_method')
+                        ->orWhere('shipping_address->delivery_method', '!=', 'walk_in');
+                });
+            }
+        }
+
         // Filter by date range
         if ($request->filled('from_date')) {
             $query->whereDate('created_at', '>=', $request->from_date);

@@ -29,6 +29,7 @@
                 <nav id="navMenu" class="hidden sm:flex w-full sm:w-auto sm:items-center gap-2 sm:gap-6 order-last sm:order-none basis-full sm:basis-auto py-3 sm:py-0 border-t sm:border-0">
                     <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Dashboard</a>
                     <a href="{{ route('admin.products.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Products</a>
+                    <a href="{{ route('admin.sales.create') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Walk-in Sale</a>
                     <a href="{{ route('admin.categories.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Categories</a>
                     <a href="{{ route('admin.sliders.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Hero Sliders</a>
                     <a href="{{ route('admin.discounts.index') }}" class="block px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium text-gray-700 hover:text-gray-900 transition">Discounts</a>
