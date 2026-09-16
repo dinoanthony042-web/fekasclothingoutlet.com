@@ -7,6 +7,15 @@
 
     <meta name="description" content="Feka Clothing is a premium  destination for modern dresses, bags, accessories and curated luxury essentials.">
 
+    @php
+        $indexableRoutes = ['home', 'shop.index', 'product.show', 'policies'];
+        $isIndexable = request()->routeIs($indexableRoutes);
+    @endphp
+    <meta name="robots" content="{{ $isIndexable ? 'index, follow' : 'noindex, nofollow' }}">
+    @if($isIndexable)
+        <link rel="canonical" href="{{ route(request()->route()->getName(), request()->route()->parameters()) }}">
+    @endif
+
     <title>@yield('title', 'Fekas Clothing Outlet') | Fekas Clothing Outlet</title>
 
     <link rel="icon" href="{{ asset('images/fekasdark.png') }}" type="image/png">
